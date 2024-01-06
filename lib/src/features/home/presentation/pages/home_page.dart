@@ -1,5 +1,4 @@
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
-import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/adaptive_navigation.dart';
@@ -34,15 +33,11 @@ class HomePage extends StatelessWidget {
               .toList(),
           selectedIndex: currentIndex,
           onDestinationSelected: onSelected,
-          child: Column(
-            children: [
-              Expanded(
-                child: _Switcher(
-                  key: _switcherKey,
-                  child: child,
-                ),
-              ),
-            ],
+          child: Expanded(
+            child: _Switcher(
+              key: _switcherKey,
+              child: child,
+            ),
           ),
         );
       },
@@ -60,14 +55,12 @@ class _Switcher extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return context.isDesktop
-        ? child
-        : AnimatedSwitcher(
-            key: key,
-            duration: const Duration(milliseconds: 200),
-            switchInCurve: Curves.easeInOut,
-            switchOutCurve: Curves.easeInOut,
-            child: child,
-          );
+    return AnimatedSwitcher(
+      key: key,
+      duration: const Duration(milliseconds: 300),
+      switchInCurve: Curves.easeInOut,
+      switchOutCurve: Curves.easeInOut,
+      child: child,
+    );
   }
 }

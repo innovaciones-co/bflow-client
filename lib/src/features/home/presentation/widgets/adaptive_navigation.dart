@@ -31,6 +31,8 @@ class _AdaptiveNavigationState extends State<AdaptiveNavigation> {
           return Scaffold(
             appBar: const AppBarWidget(),
             body: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 NavigationRail(
                   extended: isExtended,
@@ -50,8 +52,12 @@ class _AdaptiveNavigationState extends State<AdaptiveNavigation> {
                       .toList(),
                   selectedIndex: widget.selectedIndex,
                   onDestinationSelected: widget.onDestinationSelected,
+                  elevation: 1,
                 ),
-                Expanded(child: widget.child),
+                Expanded(
+                  flex: 3,
+                  child: widget.child,
+                ),
               ],
             ),
           );
