@@ -1,4 +1,3 @@
-import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/adaptive_navigation.dart';
