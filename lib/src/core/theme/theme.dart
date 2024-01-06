@@ -2,8 +2,9 @@ import "package:flutter/material.dart";
 
 class MaterialTheme {
   final TextTheme textTheme;
+  bool isLight = true;
 
-  const MaterialTheme(this.textTheme);
+  MaterialTheme(this.textTheme);
 
   static MaterialScheme lightScheme() {
     return const MaterialScheme(
@@ -238,6 +239,7 @@ class MaterialTheme {
   }
 
   ThemeData dark() {
+    isLight = false;
     return theme(darkScheme().toColorScheme());
   }
 
@@ -374,8 +376,12 @@ class MaterialTheme {
 
   AppBarTheme _abbBarTheme() {
     return AppBarTheme(
-      color: MaterialTheme.black.light.colorContainer,
-      foregroundColor: MaterialTheme.black.light.onColor,
+      color: isLight
+          ? MaterialTheme.black.light.colorContainer
+          : MaterialTheme.black.dark.colorContainer,
+      foregroundColor: isLight
+          ? MaterialTheme.black.light.onColor
+          : MaterialTheme.black.dark.onColorContainer,
     );
   }
 
