@@ -54,10 +54,7 @@ class _AdaptiveNavigationState extends State<AdaptiveNavigation> {
                   onDestinationSelected: widget.onDestinationSelected,
                   elevation: 1,
                 ),
-                Expanded(
-                  flex: 3,
-                  child: widget.child,
-                ),
+                Expanded(child: widget.child),
               ],
             ),
           );

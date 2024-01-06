@@ -32,11 +32,9 @@ class HomePage extends StatelessWidget {
               .toList(),
           selectedIndex: currentIndex,
           onDestinationSelected: onSelected,
-          child: Expanded(
-            child: _Switcher(
-              key: _switcherKey,
-              child: child,
-            ),
+          child: _Switcher(
+            key: _switcherKey,
+            child: child,
           ),
         );
       },
