@@ -7,8 +7,8 @@ TextTheme textTheme(BuildContext context) {
     displayLarge: GoogleFonts.robotoCondensed(),
     displayMedium: GoogleFonts.robotoCondensed(),
     displaySmall: GoogleFonts.robotoCondensed(),
-    bodyLarge: GoogleFonts.oswald(),
-    bodyMedium: GoogleFonts.oswald(),
-    bodySmall: GoogleFonts.oswald(),
+    bodyLarge: GoogleFonts.figtree(),
+    bodyMedium: GoogleFonts.figtree(),
+    bodySmall: GoogleFonts.figtree(),
   );
 }
