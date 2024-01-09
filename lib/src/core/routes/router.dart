@@ -1,7 +1,7 @@
 import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:bflow_client/src/features/home/presentation/pages/home_page.dart';
-import 'package:bflow_client/src/features/jobs/presentation/pages/pages.dart';
-import 'package:bflow_client/src/features/login/presentation/pages/pages.dart';
+import 'package:bflow_client/src/features/jobs/presentation/pages/jobs_page.dart';
+import 'package:bflow_client/src/features/login/presentation/pages/login_page.dart';
 import 'package:bflow_client/src/features/users/presentation/pages/users_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
