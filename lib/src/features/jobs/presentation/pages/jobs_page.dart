@@ -10,16 +10,17 @@ class JobsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PageContainerWidget(
-      title: "Jobs (Construction list)", 
+    return PageContainerWidget(
+      title: "Jobs (Construction list)",
       child: Column(
         children: [
-          JobsFilterWidget(),
-          JobItemWidget(),
-          JobItemWidget(),
-          JobItemWidget(),
-          JobItemWidget(),
-          JobItemWidget(),
+          const JobsFilterWidget(),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 5,
+              itemBuilder: (_, i) => const JobItemWidget(),
+            ),
+          )
         ],
       ),
     );
