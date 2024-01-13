@@ -22,12 +22,6 @@ const List<CustomNavigationDestination> homeDestinations = [
     route: RoutesName.users,
     child: UsersPage(),
   ),
-  CustomNavigationDestination(
-    label: 'Logout',
-    icon: Icon(Icons.logout),
-    route: RoutesName.login,
-    child: LoginPage(),
-  ),
 ];
 
 class CustomNavigationDestination {
@@ -59,5 +53,15 @@ final appRouter = GoRouter(
           ),
         ),
       ),
+    // LoginScreen
+    GoRoute(
+      path: RoutesName.login,
+      pageBuilder: (context, state) => const MaterialPage<void>(
+        key: _pageKey,
+        child: LoginPage(
+          key: _scaffoldKey,
+        ),
+      ),
+    ),
   ],
 );
