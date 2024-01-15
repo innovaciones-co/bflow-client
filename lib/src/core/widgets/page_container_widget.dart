@@ -13,10 +13,15 @@ class PageContainerWidget extends StatelessWidget {
       width: double.infinity,
       child: Stack(
         children: [
-          Image.asset(
-            'assets/img/background.png',
-            height: _getHeight(context),
-            fit: BoxFit.fitHeight,
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              'assets/img/background.png',
+              height: _getHeight(context),
+              fit: BoxFit.fitWidth,
+            ),
           ),
           Padding(
             padding: _getPadding(context),
