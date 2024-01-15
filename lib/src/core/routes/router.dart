@@ -1,5 +1,6 @@
 import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:bflow_client/src/features/home/presentation/pages/home_page.dart';
+import 'package:bflow_client/src/features/jobs/presentation/pages/job_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/jobs_page.dart';
 import 'package:bflow_client/src/features/login/presentation/pages/login_page.dart';
 import 'package:bflow_client/src/features/users/presentation/pages/users_page.dart';
@@ -59,6 +60,16 @@ final appRouter = GoRouter(
       pageBuilder: (context, state) => const MaterialPage<void>(
         key: _pageKey,
         child: LoginPage(
+          key: _scaffoldKey,
+        ),
+      ),
+    ),
+    // Job Screen
+    GoRoute(
+      path: RoutesName.job,
+      pageBuilder: (context, state) => const MaterialPage<void>(
+        key: _pageKey,
+        child: JobPage(
           key: _scaffoldKey,
         ),
       ),

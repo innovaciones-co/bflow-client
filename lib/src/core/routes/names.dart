@@ -5,4 +5,5 @@ class RoutesName {
   static const login = '/login';
   static const users = '/users';
   static const jobs = '/jobs';
+  static const job = '/job';
 }
