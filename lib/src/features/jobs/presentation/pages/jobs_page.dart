@@ -1,5 +1,4 @@
 import 'package:bflow_client/src/core/config/config.dart';
-import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/utils/map_failure_to_error_message.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
@@ -42,7 +41,7 @@ class JobsPage extends StatelessWidget {
                 if (state is JobsLoaded) {
                   return ListView.builder(
                     itemCount: state.jobs.length,
-                    itemBuilder: (_, i) => const JobItemWidget(),
+                    itemBuilder: (_, i) => JobItemWidget(job: state.jobs[i]),
                   );
                 }
 

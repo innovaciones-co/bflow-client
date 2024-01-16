@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/custom_chip_widget.dart';
+import '../../domain/entities/job_entity.dart';
 
 class JobItemWidget extends StatelessWidget {
+  final Job job;
   const JobItemWidget({
     super.key,
+    required this.job,
   });
 
   @override
@@ -30,14 +33,14 @@ class JobItemWidget extends StatelessWidget {
       padding: const EdgeInsets.only(left: 15, right: 8, top: 15, bottom: 15),
       children: [
         _mobileCellJob(
-            title: "Job Number", width: 110, child: const Text("SH2201")),
+            title: "Job Number", width: 110, child: Text(job.jobNumber)),
         _mobileCellJob(
             title: "Address",
             width: 160,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("#94 Pola st Dianella"),
+                Text(job.address),
                 TextButton(
                   onPressed: () {},
                   style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
@@ -99,14 +102,14 @@ class JobItemWidget extends StatelessWidget {
       padding: const EdgeInsets.only(left: 15, right: 8, top: 15, bottom: 15),
       child: Row(
         children: [
-          _cellJob(title: "Job Number", flex: 1, child: const Text("SH2201")),
+          _cellJob(title: "Job Number", flex: 1, child: Text(job.jobNumber)),
           _cellJob(
               title: "Address",
               flex: 2,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("#94 Pola st Dianella"),
+                  Text(job.address),
                   TextButton(
                     onPressed: () {},
                     style:
@@ -180,7 +183,7 @@ Widget _progressBar({required double percentage, required double width}) {
             borderRadius: BorderRadius.circular(5),
           ),
           child: FractionallySizedBox(
-            widthFactor: percentage, // THIS porcentaje
+            widthFactor: percentage,
             alignment: Alignment.centerLeft,
             child: Container(
               decoration: BoxDecoration(
