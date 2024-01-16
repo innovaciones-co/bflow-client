@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 extension BuildContextEntension<T> on BuildContext {
   bool get isMobile => MediaQuery.of(this).size.width <= 500.0;
 
-  bool get isTablet =>
-      MediaQuery.of(this).size.width < 1024.0 &&
-      MediaQuery.of(this).size.width >= 650.0;
-
   bool get isSmallTablet =>
       MediaQuery.of(this).size.width < 650.0 &&
       MediaQuery.of(this).size.width > 500.0;
+
+  bool get isTablet =>
+      MediaQuery.of(this).size.width < 1024.0 &&
+      MediaQuery.of(this).size.width >= 650.0;
 
   bool get isDesktop => MediaQuery.of(this).size.width >= 1024.0;
 
@@ -26,7 +27,6 @@ extension BuildContextEntension<T> on BuildContext {
   // text styles
 
   TextStyle? get displayMedium => Theme.of(this).textTheme.displayMedium;
-
   TextStyle? get displaySmall => Theme.of(this).textTheme.displaySmall;
   TextStyle? get headlineLarge => Theme.of(this).textTheme.headlineLarge;
   TextStyle? get headlineMedium => Theme.of(this).textTheme.headlineMedium;
