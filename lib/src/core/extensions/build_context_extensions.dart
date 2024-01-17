@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 extension BuildContextEntension<T> on BuildContext {
   bool get isMobile => MediaQuery.of(this).size.width <= 500.0;
