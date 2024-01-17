@@ -1,3 +1,5 @@
+import 'package:bflow_client/src/core/extensions/format_extensions.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:equatable/equatable.dart';
 
 class Job implements Equatable {
@@ -9,6 +11,8 @@ class Job implements Equatable {
   final String address;
   final String? description;
   final String owner;
+  final TaskStage stage;
+  final double progress;
 
   Job({
     required this.id,
@@ -17,8 +21,10 @@ class Job implements Equatable {
     required this.plannedStartDate,
     required this.plannedEndDate,
     required this.address,
-    required this.description,
+    this.description,
     required this.owner,
+    this.stage = TaskStage.SLAB_DOWN,
+    this.progress = 0,
   });
 
   @override
@@ -35,4 +41,8 @@ class Job implements Equatable {
 
   @override
   bool? get stringify => true;
+
+  int get daysOfConstruction => progress == 1
+      ? plannedStartDate.daysDifference(plannedEndDate)
+      : plannedStartDate.daysDifference(DateTime.now());
 }

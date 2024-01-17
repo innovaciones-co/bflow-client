@@ -1,4 +1,5 @@
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -35,19 +36,20 @@ class JobItemWidget extends StatelessWidget {
         _mobileCellJob(
             title: "Job Number", width: 110, child: Text(job.jobNumber)),
         _mobileCellJob(
-            title: "Address",
-            width: 160,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(job.address),
-                TextButton(
-                  onPressed: () {},
-                  style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
-                  child: const Text("Open in Goole maps"),
-                ), // THIS ?link
-              ],
-            )),
+          title: "Address",
+          width: 160,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(job.address),
+              TextButton(
+                onPressed: () {},
+                style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
+                child: const Text("Open in Goole maps"),
+              ), // THIS ?link
+            ],
+          ),
+        ),
         _mobileCellJob(
             title: "Supervisor",
             width: 140,
@@ -55,21 +57,23 @@ class JobItemWidget extends StatelessWidget {
         _mobileCellJob(
           title: "Job Stage",
           width: 110,
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomChipWidget(
-                label: "Slab down",
+                label: job.stage.toString(),
               ),
             ],
           ),
         ),
         _mobileCellJob(
-            title: "Days in construction", width: 160, child: const Text("90")),
+            title: "Days in construction",
+            width: 160,
+            child: Text(job.daysOfConstruction.toString())),
         _mobileCellJob(
           title: "Progress",
           width: 150,
-          child: _progressBar(percentage: 0.7, width: 140),
+          child: _progressBar(percentage: job.progress, width: 140),
         ),
         const SizedBox(width: 40),
         Column(
@@ -84,9 +88,7 @@ class JobItemWidget extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5)),
               ),
-              onPressed: () {
-                context.go(RoutesName.job);
-              },
+              onPressed: () => _goToDetails(context),
               child: const Text(
                 'View details',
               ),
@@ -125,21 +127,26 @@ class JobItemWidget extends StatelessWidget {
           _cellJob(
             title: "Job Stage",
             flex: 2,
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomChipWidget(
-                  label: "Slab down",
+                  label: job.stage.toString(),
                 ),
               ],
             ),
           ),
           _cellJob(
-              title: "Days in construction", flex: 2, child: const Text("90")),
+            title: "Days in construction",
+            flex: 2,
+            child: Text(
+              job.daysOfConstruction.toString(),
+            ),
+          ),
           _cellJob(
               title: "Progress",
               flex: 2,
-              child: _progressBar(percentage: 0.7, width: 200)),
+              child: _progressBar(percentage: job.progress, width: 200)),
           Expanded(
             flex: 2,
             child: Column(
@@ -154,7 +161,7 @@ class JobItemWidget extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5)),
                   ),
-                  onPressed: () {},
+                  onPressed: () => _goToDetails(context),
                   child: const Text(
                     'View details',
                   ),
@@ -165,6 +172,10 @@ class JobItemWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _goToDetails(BuildContext context) {
+    context.go(RoutesName.job.replaceAll(":id", job.id.toString()));
   }
 }
 
@@ -195,7 +206,7 @@ Widget _progressBar({required double percentage, required double width}) {
         ),
         Center(
             child: Text(
-          "${percentage * 100}% complete",
+          "${percentage.toPercentage()} complete",
         )),
       ],
     ),
