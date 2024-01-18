@@ -3,6 +3,10 @@ library dependency_injection;
 import 'package:bflow_client/src/core/api/api_service.dart';
 import 'package:bflow_client/src/features/jobs/data/sources/jobs_remote_data_source.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/job_reposiroty.dart';
+import 'package:bflow_client/src/features/users/data/implements/users_repository_imp.dart';
+import 'package:bflow_client/src/features/users/data/sources/users_remote_data_source.dart';
+import 'package:bflow_client/src/features/users/domain/repositories/users_repository.dart';
+import 'package:bflow_client/src/features/users/domain/usecases/get_supervisors_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -30,15 +34,24 @@ class DependencyInjection {
     sl.registerLazySingleton(
       () => GetJobsUseCase(repository: sl()),
     );
+    sl.registerLazySingleton(
+      () => GetSupervisorsUseCase(repository: sl()),
+    );
 
     // Repository
     sl.registerLazySingleton<JobsRepository>(
       () => JobsRepositoryImp(remoteDataSource: sl()),
     );
+    sl.registerLazySingleton<UsersRepository>(
+      () => UsersRepositoryImp(remoteDataSource: sl()),
+    );
 
     // Data sources
-    sl.registerLazySingleton(
+    sl.registerLazySingleton<JobsRemoteDataSource>(
       () => JobsRemoteDataSource(sl()),
+    );
+    sl.registerLazySingleton<UsersRemoteDataSource>(
+      () => UsersRemoteDataSource(apiService: sl()),
     );
   }
 }

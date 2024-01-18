@@ -3,14 +3,13 @@ import 'dart:convert';
 
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
+import 'package:bflow_client/src/features/users/data/models/user_model.dart';
 
 import 'file_model.dart';
 import 'note_model.dart';
 
 class JobModel extends Job {
   final String? buildingType;
-  final int? client;
-  final int? user;
   final List<NoteModel>? notes;
   final List<FileModel>? files;
 
@@ -23,13 +22,13 @@ class JobModel extends Job {
     required super.address,
     required super.description,
     this.buildingType,
-    this.client,
-    this.user,
+    required super.user,
+    super.client,
     this.notes,
     this.files,
     super.stage,
     super.progress = 0,
-  }) : super(owner: '');
+  });
 
   factory JobModel.fromJson(String str) => JobModel.fromMap(json.decode(str));
 
@@ -45,7 +44,7 @@ class JobModel extends Job {
         description: json["description"],
         buildingType: json["buildingType"],
         client: json["client"],
-        user: json["user"],
+        user: UsersModel.fromMap(json["user"]),
         stage: TaskStage.fromString(json["stage"]),
         progress: json["progress"] / 100 ?? 0,
         notes: json["notes"] == null

@@ -51,9 +51,7 @@ class JobItemWidget extends StatelessWidget {
           ),
         ),
         _mobileCellJob(
-            title: "Supervisor",
-            width: 140,
-            child: const Text("Alberto Federico")),
+            title: "Supervisor", width: 140, child: Text(job.user.fullName)),
         _mobileCellJob(
           title: "Job Stage",
           width: 110,
@@ -121,9 +119,7 @@ class JobItemWidget extends StatelessWidget {
                 ],
               )),
           _cellJob(
-              title: "Supervisor",
-              flex: 2,
-              child: const Text("Alberto Federico")),
+              title: "Supervisor", flex: 2, child: Text(job.user.fullName)),
           _cellJob(
             title: "Job Stage",
             flex: 2,
