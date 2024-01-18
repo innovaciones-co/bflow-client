@@ -1,6 +1,5 @@
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
-import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/utils/map_failure_to_error_message.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
@@ -27,43 +26,35 @@ class JobsPage extends StatelessWidget {
         title: "Jobs (Construction list)",
         child: Column(
           children: [
-            if (context.isDesktop || context.isTablet)
-              Row(
-                children: _getJobCards(context),
-              )
-            else
-              SizedBox(
-                height: 180,
-                child: Column(
-                  children: _getJobCards(context),
-                ),
-              ),
-            const JobsFilterWidget(),
+            _getJobCards(context),
+            JobsFilterWidget(),
             Expanded(
-              child:
-                  BlocBuilder<JobsBloc, JobsState>(builder: (context, state) {
-                if (state is JobsInitial) {
-                  return const SizedBox.shrink();
-                }
+              child: BlocBuilder<JobsBloc, JobsState>(
+                buildWhen: (previous, current) => true,
+                builder: (context, state) {
+                  if (state is JobsInitial) {
+                    return const SizedBox.shrink();
+                  }
 
-                if (state is JobsError) {
-                  final message = mapFailureToErrorMessage(state.failure);
-                  return Center(
-                    child: Text(message),
+                  if (state is JobsError) {
+                    final message = mapFailureToErrorMessage(state.failure);
+                    return Center(
+                      child: Text(message),
+                    );
+                  }
+
+                  if (state is JobsLoaded) {
+                    return ListView.builder(
+                      itemCount: state.jobs.length,
+                      itemBuilder: (_, i) => JobItemWidget(job: state.jobs[i]),
+                    );
+                  }
+
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
-                }
-
-                if (state is JobsLoaded) {
-                  return ListView.builder(
-                    itemCount: state.jobs.length,
-                    itemBuilder: (_, i) => const JobItemWidget(),
-                  );
-                }
-
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }),
+                },
+              ),
             )
           ],
         ),
@@ -128,24 +119,50 @@ class JobsPage extends StatelessWidget {
     );
   }
 
-  _getJobCards(BuildContext context) {
-    return [
-      _jobsTotalCard(context,
-          color: AppColor.lightPurple,
-          borderColor: AppColor.purple,
-          title: "Jobs in construction",
-          total: "2630",
-          imagePath: 'assets/img/digger_1.png'),
-      SizedBox(
-        width: context.isDesktop ? 50 : context.isTablet ? 15 : null,
-        height: !context.isDesktop ? 10 : null,
-      ),
-      _jobsTotalCard(context,
-          color: AppColor.lightGreen,
-          borderColor: AppColor.green,
-          title: "Jobs completed",
-          total: "2630",
-          imagePath: 'assets/img/digger_2.png'),
-    ];
+  Widget _getJobCards(BuildContext context) {
+    return BlocBuilder<JobsBloc, JobsState>(builder: (context, state) {
+      var completedJobs = 0;
+      var inProgressJobs = 0;
+      if (state is JobsLoaded) {
+        completedJobs = state.completedJobs;
+        inProgressJobs = state.inProgressJobs;
+      }
+
+      final widgets = [
+        _jobsTotalCard(context,
+            color: AppColor.lightPurple,
+            borderColor: AppColor.purple,
+            title: "Jobs in construction",
+            total: inProgressJobs.toString(),
+            imagePath: 'assets/img/digger_1.png'),
+        SizedBox(
+          width: context.isDesktop
+              ? 50
+              : context.isTablet
+                  ? 15
+                  : null,
+          height: !context.isDesktop ? 10 : null,
+        ),
+        _jobsTotalCard(context,
+            color: AppColor.lightGreen,
+            borderColor: AppColor.green,
+            title: "Jobs completed",
+            total: completedJobs.toString(),
+            imagePath: 'assets/img/digger_2.png'),
+      ];
+
+      if (context.isDesktop || context.isTablet) {
+        return Row(
+          children: widgets,
+        );
+      } else {
+        return SizedBox(
+          height: 180,
+          child: Column(
+            children: widgets,
+          ),
+        );
+      }
+    });
   }
 }

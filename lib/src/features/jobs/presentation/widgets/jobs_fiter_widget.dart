@@ -1,4 +1,7 @@
+import 'package:bflow_client/src/core/config/config.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class JobsFilterWidget extends StatelessWidget {
   const JobsFilterWidget({
@@ -14,28 +17,34 @@ class JobsFilterWidget extends StatelessWidget {
           Container(
             width: 300,
             decoration: const BoxDecoration(
-              //color: Colors.white,
-            ),
-            child: TextField(
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(22),
-                  borderSide: const BorderSide(color: Colors.grey, width: 1),
+                //color: Colors.white,
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(22),
-                  borderSide: const BorderSide(color: Colors.grey, width: 1.5),
+            child: Builder(builder: (context) {
+              return TextField(
+                onChanged: (val) => _searchJobs(val, context),
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(22),
+                    borderSide: const BorderSide(color: Colors.grey, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(22),
+                    borderSide:
+                        const BorderSide(color: Colors.grey, width: 1.5),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.only(top: 0, bottom: 0, right: 10),
+                  isDense: true,
+                  filled: true,
+                  fillColor: Colors.white,
+                  prefixIcon: const Icon(Icons.search),
+                  hintText: "Search",
                 ),
-                contentPadding: const EdgeInsets.only(top: 0, bottom: 0, right: 10),
-                isDense: true,
-                filled: true,
-                fillColor: Colors.white,
-                prefixIcon: const Icon(Icons.search),
-                hintText: "Search",
-              ),
-            ),
+              );
+            }),
           ),
-          Container( // THIS ?ok
+          Container(
+            // THIS ?ok
             width: 1,
             height: 25,
             margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -43,11 +52,13 @@ class JobsFilterWidget extends StatelessWidget {
           ),
           const TextButton(
             style: ButtonStyle(
-              padding: MaterialStatePropertyAll(EdgeInsets.only(left: 0, right: 20),),
-              
+              padding: MaterialStatePropertyAll(
+                EdgeInsets.only(left: 0, right: 20),
+              ),
+
               //backgroundColor: MaterialStatePropertyAll(Colors.amber)
             ),
-            onPressed: null, 
+            onPressed: null,
             child: Row(
               children: [
                 Icon(
@@ -62,7 +73,8 @@ class JobsFilterWidget extends StatelessWidget {
               ],
             ),
           ),
-          const Chip( // THIS
+          const Chip(
+            // THIS
             label: Text("Filter Chip"),
             deleteIcon: Icon(Icons.tune), // THIS no funciona
             onDeleted: null,
@@ -75,13 +87,14 @@ class JobsFilterWidget extends StatelessWidget {
               border: Border.all(
                 color: Colors.grey.shade800,
                 width: 0.8,
-              ),),
+              ),
+            ),
             child: const Row(
               children: [
                 Text("Alberto Federico"),
                 //SizedBox(width: 8),
                 IconButton(
-                  onPressed: null, 
+                  onPressed: null,
                   icon: Icon(Icons.close),
                   iconSize: 15,
                   mouseCursor: MaterialStateMouseCursor.clickable,
@@ -92,5 +105,13 @@ class JobsFilterWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _searchJobs(String value, BuildContext context) {
+    if (value.isNotEmpty) {
+      context.read<JobsBloc>().add(FilterJobsEvent(value));
+    } else {
+      context.read<JobsBloc>().add(GetJobsEvent());
+    }
   }
 }

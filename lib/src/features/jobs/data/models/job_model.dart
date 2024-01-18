@@ -1,25 +1,13 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 
 import 'file_model.dart';
 import 'note_model.dart';
 
 class JobModel extends Job {
-  @override
-  final int id;
-  @override
-  final String jobNumber;
-  @override
-  final String name;
-  @override
-  final DateTime plannedStartDate;
-  @override
-  final DateTime plannedEndDate;
-  @override
-  final String address;
-  @override
-  final String description;
   final String? buildingType;
   final int? client;
   final int? user;
@@ -27,27 +15,21 @@ class JobModel extends Job {
   final List<FileModel>? files;
 
   JobModel({
-    required this.id,
-    required this.jobNumber,
-    required this.name,
-    required this.plannedStartDate,
-    required this.plannedEndDate,
-    required this.address,
-    required this.description,
+    required super.id,
+    required super.jobNumber,
+    required super.name,
+    required super.plannedStartDate,
+    required super.plannedEndDate,
+    required super.address,
+    required super.description,
     this.buildingType,
     this.client,
     this.user,
     this.notes,
     this.files,
-  }) : super(
-            id: id,
-            jobNumber: jobNumber,
-            name: name,
-            plannedStartDate: plannedStartDate,
-            plannedEndDate: plannedEndDate,
-            address: address,
-            description: description,
-            owner: '');
+    super.stage,
+    super.progress = 0,
+  }) : super(owner: '');
 
   factory JobModel.fromJson(String str) => JobModel.fromMap(json.decode(str));
 
@@ -64,6 +46,8 @@ class JobModel extends Job {
         buildingType: json["buildingType"],
         client: json["client"],
         user: json["user"],
+        stage: TaskStage.fromString(json["stage"]),
+        progress: json["progress"] / 100 ?? 0,
         notes: json["notes"] == null
             ? []
             : List<NoteModel>.from(

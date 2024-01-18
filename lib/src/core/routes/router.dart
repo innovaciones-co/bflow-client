@@ -67,12 +67,31 @@ final appRouter = GoRouter(
     // Job Screen
     GoRoute(
       path: RoutesName.job,
-      pageBuilder: (context, state) => const MaterialPage<void>(
-        key: _pageKey,
-        child: JobPage(
-          key: _scaffoldKey,
-        ),
-      ),
+      pageBuilder: (context, state) {
+        final idStr = state.pathParameters["id"];
+        final int? jobId = idStr != null ? int.tryParse(idStr) : null;
+        if (jobId != null) {
+          return MaterialPage<void>(
+            key: _pageKey,
+            child: HomePage(
+              key: _scaffoldKey,
+              currentIndex: homeDestinations
+                  .indexWhere((element) => element.route == RoutesName.initial),
+              child: JobPage(
+                jobId: jobId,
+              ),
+            ),
+          );
+        }
+
+        return MaterialPage(
+          child: HomePage(
+            currentIndex: homeDestinations
+                .indexWhere((element) => element.route == RoutesName.initial),
+            child: const Text("Not found"),
+          ),
+        );
+      },
     ),
   ],
 );

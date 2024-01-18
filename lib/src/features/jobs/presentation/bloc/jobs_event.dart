@@ -7,3 +7,11 @@ abstract class JobsEvent extends Equatable {
 }
 
 class GetJobsEvent extends JobsEvent {}
+
+class FilterJobsEvent extends JobsEvent {
+  final String filter;
+  const FilterJobsEvent(this.filter);
+
+  @override
+  List<Object> get props => [filter];
+}

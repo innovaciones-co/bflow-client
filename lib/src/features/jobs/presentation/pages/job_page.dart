@@ -3,7 +3,8 @@ import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_wid
 import 'package:flutter/material.dart';
 
 class JobPage extends StatelessWidget {
-  const JobPage({super.key});
+  final int jobId;
+  const JobPage({super.key, required this.jobId});
 
   @override
   Widget build(BuildContext context) {
