@@ -158,7 +158,6 @@ class JobItemWidget extends StatelessWidget {
   }
 
   void _goToDetails(BuildContext context) {
-    print("Go to details");
     context.go(RoutesName.job.replaceAll(":id", job.id.toString()));
   }
 }
