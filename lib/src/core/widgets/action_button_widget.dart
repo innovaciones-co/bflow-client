@@ -30,7 +30,8 @@ class ActionButtonWidget extends StatelessWidget {
         return TextButton(
           onPressed: onPressed,
           style: ButtonStyle(
-            padding: const MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 0, horizontal: 0)),
+            padding: const MaterialStatePropertyAll(
+                EdgeInsets.symmetric(vertical: 0, horizontal: 0)),
             overlayColor: MaterialStateProperty.all(Colors.transparent),
             backgroundColor: MaterialStateProperty.all(backgroundColor),
             foregroundColor: MaterialStateProperty.all(foregroundColor),
@@ -47,9 +48,10 @@ class ActionButtonWidget extends StatelessWidget {
         );
       case ButtonType.elevatedButton:
         return ElevatedButton(
-          onPressed: () {},
+          onPressed: onPressed,
           style: ButtonStyle(
-            padding: const MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 18, horizontal: 15)),
+            padding: const MaterialStatePropertyAll(
+                EdgeInsets.symmetric(vertical: 18, horizontal: 15)),
             overlayColor: MaterialStateProperty.all(Colors.transparent),
             backgroundColor: MaterialStateProperty.all(backgroundColor),
             foregroundColor: MaterialStateProperty.all(foregroundColor),

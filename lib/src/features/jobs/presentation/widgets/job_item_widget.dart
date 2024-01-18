@@ -78,7 +78,13 @@ class JobItemWidget extends StatelessWidget {
         Column(
           //mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ActionButtonWidget(onPressed: () => _goToDetails(context), type: ButtonType.elevatedButton, title: "View details", backgroundColor: context.background, foregroundColor: context.primary,),
+            ActionButtonWidget(
+              onPressed: () => _goToDetails(context),
+              type: ButtonType.elevatedButton,
+              title: "View details",
+              backgroundColor: context.background,
+              foregroundColor: context.primary,
+            ),
           ],
         ),
       ],
@@ -136,7 +142,13 @@ class JobItemWidget extends StatelessWidget {
             child: Column(
               //mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ActionButtonWidget(onPressed: () => _goToDetails(context), type: ButtonType.elevatedButton, title: "View details", backgroundColor: context.background, foregroundColor: context.primary,),
+                ActionButtonWidget(
+                  onPressed: () => _goToDetails(context),
+                  type: ButtonType.elevatedButton,
+                  title: "View details",
+                  backgroundColor: context.background,
+                  foregroundColor: context.primary,
+                ),
               ],
             ),
           ),
@@ -146,6 +158,7 @@ class JobItemWidget extends StatelessWidget {
   }
 
   void _goToDetails(BuildContext context) {
+    print("Go to details");
     context.go(RoutesName.job.replaceAll(":id", job.id.toString()));
   }
 }
