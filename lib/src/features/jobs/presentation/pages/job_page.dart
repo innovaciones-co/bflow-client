@@ -1,4 +1,6 @@
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
+import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -8,18 +10,19 @@ class JobPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Job job123 = Job(id: 12, jobNumber: "J123", name: "Coco Antonio", plannedStartDate: DateTime.now(), plannedEndDate: DateTime.now(), address: "Cll123", owner: "Hernesto Perez");
     return Scaffold(
       body: PageContainerWidget(
         title: "Call forward",
         child: Column(
           children: [
-            const JobItemWidget(),
+            JobItemWidget(job: job123),
             Row(
               children: [
-                TextButtonWidget(
-                    title: "View jobs documents", icon: Icons.all_inbox_sharp),
-                TextButtonWidget(
-                    title: "View all task", icon: Icons.task_outlined),
+                ActionButtonWidget(
+                    onPressed: () {}, type: ButtonType.textButton, title: "View jobs documents", icon: Icons.all_inbox_sharp),
+                ActionButtonWidget(
+                    onPressed: () {}, type: ButtonType.textButton, title: "View all task", icon: Icons.task_outlined),
                 const Switch(
                   // TODO: make it work
                   value: false,
@@ -32,52 +35,16 @@ class JobPage extends StatelessWidget {
             Row(
               children: [
                 const Text("Search"),
-                const Text("Filter"),
+                ActionButtonWidget(onPressed: () {}, type: ButtonType.textButton, title: "Filter", icon: Icons.tune, foregroundColor: Colors.black,),
                 const Text("Water Meter call up"),
-                TextButtonWidget(title: "Delete", icon: Icons.delete_outline),
-                TextButtonWidget(title: "Send task", icon: Icons.mail_outline, backgroundColor: Colors.blue.shade50, foregroundColor: Colors.blue,),
+                ActionButtonWidget(onPressed: () {}, type: ButtonType.textButton, title: "Delete", icon: Icons.delete_outline),
+                ActionButtonWidget(onPressed: () {}, type: ButtonType.elevatedButton, title: "Send task", icon: Icons.mail_outline, backgroundColor: Colors.blue.shade50,),
                 const SizedBox(width: 12),
-                TextButtonWidget(title: "New Activity", icon: Icons.add, backgroundColor: Colors.blue, foregroundColor: Colors.white,),
+                ActionButtonWidget(onPressed: () {}, type: ButtonType.elevatedButton, title: "New Activity", icon: Icons.add, backgroundColor: Colors.blue, foregroundColor: Colors.white,),
               ],
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class TextButtonWidget extends StatelessWidget {
-  final String title;
-  IconData? icon;
-  Color? backgroundColor;
-  Color? foregroundColor;
-
-  TextButtonWidget({
-    super.key,
-    required this.title,
-    this.icon,
-    this.backgroundColor,
-    this.foregroundColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () {},
-      style: ButtonStyle(
-        padding: backgroundColor != null ? const MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 18, horizontal: 15)) : const MaterialStatePropertyAll(EdgeInsets.all(0)),
-        overlayColor: MaterialStateProperty.all(Colors.transparent),
-        backgroundColor: MaterialStateProperty.all(backgroundColor),
-        foregroundColor: MaterialStateProperty.all(foregroundColor),
-        shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))),
-      ),
-      child: Row(
-        children: [
-          icon != null ? Icon(icon, size: 18) : const SizedBox(),
-          icon != null ? const SizedBox(width: 6) : const SizedBox(),
-          Text(title),
-        ],
       ),
     );
   }

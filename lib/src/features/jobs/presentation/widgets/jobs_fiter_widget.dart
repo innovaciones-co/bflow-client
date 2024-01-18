@@ -1,4 +1,5 @@
 import 'package:bflow_client/src/core/config/config.dart';
+import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,29 +51,7 @@ class JobsFilterWidget extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 20),
             color: Colors.grey.shade400,
           ),
-          const TextButton(
-            style: ButtonStyle(
-              padding: MaterialStatePropertyAll(
-                EdgeInsets.only(left: 0, right: 20),
-              ),
-
-              //backgroundColor: MaterialStatePropertyAll(Colors.amber)
-            ),
-            onPressed: null,
-            child: Row(
-              children: [
-                Icon(
-                  Icons.tune,
-                  size: 18,
-                  color: Colors.black,
-                ),
-                Text(
-                  "Filter",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ],
-            ),
-          ),
+          ActionButtonWidget(onPressed: () {}, type: ButtonType.textButton, title: "Filter", icon: Icons.tune, foregroundColor: Colors.black,),
           const Chip(
             // THIS
             label: Text("Filter Chip"),
