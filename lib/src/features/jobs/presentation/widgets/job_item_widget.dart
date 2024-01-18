@@ -1,6 +1,7 @@
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/routes/routes.dart';
+import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -77,20 +78,7 @@ class JobItemWidget extends StatelessWidget {
         Column(
           //mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 1, horizontal: 20), // THIS no hace nada
-                foregroundColor: context.primary,
-                backgroundColor: context.background,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5)),
-              ),
-              onPressed: () => _goToDetails(context),
-              child: const Text(
-                'View details',
-              ),
-            ),
+            ActionButtonWidget(onPressed: () => _goToDetails(context), type: ButtonType.elevatedButton, title: "View details", backgroundColor: context.background, foregroundColor: context.primary,),
           ],
         ),
       ],
@@ -148,20 +136,7 @@ class JobItemWidget extends StatelessWidget {
             child: Column(
               //mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 1, horizontal: 20), // THIS no hace nada
-                    foregroundColor: context.primary,
-                    backgroundColor: context.background,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5)),
-                  ),
-                  onPressed: () => _goToDetails(context),
-                  child: const Text(
-                    'View details',
-                  ),
-                ),
+                ActionButtonWidget(onPressed: () => _goToDetails(context), type: ButtonType.elevatedButton, title: "View details", backgroundColor: context.background, foregroundColor: context.primary,),
               ],
             ),
           ),
