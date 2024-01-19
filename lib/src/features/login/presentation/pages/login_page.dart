@@ -1,4 +1,5 @@
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/core/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
@@ -62,54 +63,9 @@ class LoginPage extends StatelessWidget {
                       style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                     const SizedBox(height: 25),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text("User"),
-                    ),
-                    const SizedBox(height: 5),
-                    TextField(
-                      decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.grey, width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.grey, width: 1.5),
-                        ),
-                        //contentPadding: const EdgeInsets.all(10),
-                        isDense: true,
-                        filled: true,
-                        fillColor: Colors.white,
-                        hintText: "",
-                      ),
-                    ),
+                    const InputWidget(title: "User",),
                     const SizedBox(height: 20),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text("Password"),
-                    ),
-                    const SizedBox(height: 5),
-                    TextField(
-                      obscureText: true,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.grey, width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.grey, width: 1.5),
-                        ),
-                        //contentPadding: const EdgeInsets.all(10),
-                        isDense: true,
-                        filled: true,
-                        fillColor: Colors.white,
-                        hintText: "",
-                      ),
-                    ),
+                    const InputWidget(title: "Password", obscureText: true),
                     const SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.only(top: 30, right: 20, left: 20),
