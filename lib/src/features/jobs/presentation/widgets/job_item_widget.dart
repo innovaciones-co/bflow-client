@@ -140,14 +140,18 @@ class JobItemWidget extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Column(
-              //mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ActionButtonWidget(
-                  onPressed: () => _goToDetails(context),
-                  type: ButtonType.elevatedButton,
-                  title: "View details",
-                  backgroundColor: context.background,
-                  foregroundColor: context.primary,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ActionButtonWidget(
+                      onPressed: () => _goToDetails(context),
+                      type: ButtonType.elevatedButton,
+                      title: "View details",
+                      backgroundColor: context.background,
+                      foregroundColor: context.primary,
+                    ),
+                  ],
                 ),
               ],
             ),

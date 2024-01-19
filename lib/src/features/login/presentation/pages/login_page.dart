@@ -1,4 +1,5 @@
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -10,39 +11,40 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       body: Row(
         children: [
-          context.isDesktop ? Expanded(
-            flex: 1,
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 0,
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/img/background_login.png'),
-                        fit: BoxFit.cover
-                      )
-                    ),
+          context.isDesktop
+              ? Expanded(
+                  flex: 1,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: 0,
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage(
+                                      'assets/img/background_login.png'),
+                                  fit: BoxFit.cover)),
+                        ),
+                      ),
+                      Positioned(
+                        top: 0,
+                        child: Container(
+                          height: 300,
+                          width: 380,
+                          decoration: BoxDecoration(
+                            color: const Color(0x80000000).withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Image.asset('assets/img/sh_logo_and_text.png'),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Positioned(
-                  top: 0,
-                  child: Container(
-                    height: 300,
-                    width: 380,
-                    decoration: BoxDecoration(
-                      color: const Color(0x80000000).withOpacity(0.6),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Image.asset('assets/img/sh_logo_and_text.png'),
-                  ),
-                ),
-              ],
-            ),
-          ) : const SizedBox.shrink(),
+                )
+              : const SizedBox.shrink(),
           Expanded(
             flex: 1,
             child: Center(
@@ -63,27 +65,24 @@ class LoginPage extends StatelessWidget {
                       style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                     const SizedBox(height: 25),
-                    const InputWidget(title: "User",),
+                    const InputWidget(
+                      title: "User",
+                    ),
                     const SizedBox(height: 20),
                     const InputWidget(title: "Password", obscureText: true),
                     const SizedBox(height: 20),
                     Padding(
-                      padding: const EdgeInsets.only(top: 30, right: 20, left: 20),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.blue,
-                          minimumSize: const Size.fromHeight(60),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
+                      padding:
+                          const EdgeInsets.only(top: 30, right: 20, left: 20),
+                      child: ActionButtonWidget(
                         onPressed: () {},
-                        child: const Text(
-                          'Log in',
-                        ),
+                        type: ButtonType.elevatedButton,
+                        title: "Log in",
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        paddingVertical: 24,
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),
