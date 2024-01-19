@@ -47,7 +47,8 @@ class JobsBloc extends Bloc<JobsEvent, JobsState> {
             (e.description != null ? e.description!.search(filter) : false) ||
             e.jobNumber.search(filter) ||
             e.address.search(filter) ||
-            e.name.search(filter))
+            e.name.search(filter) ||
+            e.user.fullName.search(filter))
         .toList();
   }
 }
