@@ -1,5 +1,6 @@
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/core/widgets/switch_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_widget.dart';
 import 'package:bflow_client/src/features/users/domain/entities/user_entity.dart';
@@ -43,13 +44,8 @@ class JobPage extends StatelessWidget {
                     type: ButtonType.textButton,
                     title: "View all task",
                     icon: Icons.task_outlined),
-                const Switch(
-                  // TODO: make it work
-                  value: false,
-                  activeColor: Colors.red,
-                  onChanged: null,
-                ),
-                const Text("View calendar")
+                const SwitchWidget(title: "View calendar",),
+
               ],
             ),
             Row(
