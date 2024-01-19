@@ -1,10 +1,10 @@
 enum TaskStage {
-  SLAB_DOWN("Slab Down"),
-  PLATE_HEIGH("Plate Heigh"),
-  ROOF_COVER("Roof cover"),
-  LOCK_UP("Lock Up"),
-  CABINETS("Cabinates"),
-  PCI("PCI");
+  slabDown("Slab Down"),
+  plateHeigh("Plate Heigh"),
+  roofCover("Roof cover"),
+  lockUp("Lock Up"),
+  cabinets("Cabinates"),
+  pCI("PCI");
 
   final String name;
   const TaskStage(this.name);
@@ -15,20 +15,20 @@ enum TaskStage {
   static TaskStage fromString(String str) {
     switch (str.toLowerCase()) {
       case "slab down":
-        return TaskStage.SLAB_DOWN;
+        return TaskStage.slabDown;
       case "plate height":
-        return TaskStage.PLATE_HEIGH;
+        return TaskStage.plateHeigh;
       case "roof cover":
-        return TaskStage.ROOF_COVER;
+        return TaskStage.roofCover;
       case "lock up":
-        return TaskStage.LOCK_UP;
+        return TaskStage.lockUp;
       case "cabinets":
-        return TaskStage.CABINETS;
+        return TaskStage.cabinets;
       case "pci":
-        return TaskStage.PCI;
+        return TaskStage.pCI;
       default:
         return TaskStage
-            .SLAB_DOWN; // Default to SLAB_DOWN if the input is not recognized
+            .slabDown; // Default to SLAB_DOWN if the input is not recognized
     }
   }
 }

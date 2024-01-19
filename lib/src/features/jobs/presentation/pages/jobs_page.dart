@@ -2,8 +2,10 @@ import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/utils/map_failure_to_error_message.dart';
+import 'package:bflow_client/src/core/widgets/left_dialog_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/create_job_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,41 +24,50 @@ class JobsPage extends StatelessWidget {
         jobsBloc.add(GetJobsEvent());
         return jobsBloc;
       },
-      child: PageContainerWidget(
-        title: "Jobs (Construction list)",
-        child: Column(
-          children: [
-            _getJobCards(context),
-            JobsFilterWidget(),
-            Expanded(
-              child: BlocBuilder<JobsBloc, JobsState>(
-                buildWhen: (previous, current) => true,
-                builder: (context, state) {
-                  if (state is JobsInitial) {
-                    return const SizedBox.shrink();
-                  }
+      child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _dialogBuilder(context),
+          child: const Icon(
+            Icons.add_task_outlined,
+          ),
+        ),
+        body: PageContainerWidget(
+          title: "Jobs (Construction list)",
+          child: Column(
+            children: [
+              _getJobCards(context),
+              const JobsFilterWidget(),
+              Expanded(
+                child: BlocBuilder<JobsBloc, JobsState>(
+                  buildWhen: (previous, current) => true,
+                  builder: (context, state) {
+                    if (state is JobsInitial) {
+                      return const SizedBox.shrink();
+                    }
 
-                  if (state is JobsError) {
-                    final message = mapFailureToErrorMessage(state.failure);
-                    return Center(
-                      child: Text(message),
+                    if (state is JobsError) {
+                      final message = mapFailureToErrorMessage(state.failure);
+                      return Center(
+                        child: Text(message),
+                      );
+                    }
+
+                    if (state is JobsLoaded) {
+                      return ListView.builder(
+                        itemCount: state.jobs.length,
+                        itemBuilder: (_, i) =>
+                            JobItemWidget(job: state.jobs[i]),
+                      );
+                    }
+
+                    return const Center(
+                      child: CircularProgressIndicator(),
                     );
-                  }
-
-                  if (state is JobsLoaded) {
-                    return ListView.builder(
-                      itemCount: state.jobs.length,
-                      itemBuilder: (_, i) => JobItemWidget(job: state.jobs[i]),
-                    );
-                  }
-
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
-              ),
-            )
-          ],
+                  },
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -164,5 +175,17 @@ class JobsPage extends StatelessWidget {
         );
       }
     });
+  }
+
+  Future<void> _dialogBuilder(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return const LeftDialogWidget(
+          title: "New Job",
+          child: CreateJobWidget(),
+        );
+      },
+    );
   }
 }

@@ -52,9 +52,7 @@ class JobItemWidget extends StatelessWidget {
           ),
         ),
         _mobileCellJob(
-            title: "Supervisor",
-            width: 140,
-            child: const Text("Alberto Federico")),
+            title: "Supervisor", width: 140, child: Text(job.user.fullName)),
         _mobileCellJob(
           title: "Job Stage",
           width: 110,
@@ -80,7 +78,13 @@ class JobItemWidget extends StatelessWidget {
         Column(
           //mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ActionButtonWidget(onPressed: () => _goToDetails(context), type: ButtonType.elevatedButton, title: "View details", backgroundColor: context.background, foregroundColor: context.primary,),
+            ActionButtonWidget(
+              onPressed: () => _goToDetails(context),
+              type: ButtonType.elevatedButton,
+              title: "View details",
+              backgroundColor: context.background,
+              foregroundColor: context.primary,
+            ),
           ],
         ),
       ],
@@ -109,9 +113,7 @@ class JobItemWidget extends StatelessWidget {
                 ],
               )),
           _cellJob(
-              title: "Supervisor",
-              flex: 2,
-              child: const Text("Alberto Federico")),
+              title: "Supervisor", flex: 2, child: Text(job.user.fullName)),
           _cellJob(
             title: "Job Stage",
             flex: 2,
@@ -140,7 +142,13 @@ class JobItemWidget extends StatelessWidget {
             child: Column(
               //mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ActionButtonWidget(onPressed: () => _goToDetails(context), type: ButtonType.elevatedButton, title: "View details", backgroundColor: context.background, foregroundColor: context.primary,),
+                ActionButtonWidget(
+                  onPressed: () => _goToDetails(context),
+                  type: ButtonType.elevatedButton,
+                  title: "View details",
+                  backgroundColor: context.background,
+                  foregroundColor: context.primary,
+                ),
               ],
             ),
           ),

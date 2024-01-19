@@ -51,7 +51,13 @@ class JobsFilterWidget extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 20),
             color: Colors.grey.shade400,
           ),
-          ActionButtonWidget(onPressed: () {}, type: ButtonType.textButton, title: "Filter", icon: Icons.tune, foregroundColor: Colors.black,),
+          ActionButtonWidget(
+            onPressed: () {},
+            type: ButtonType.textButton,
+            title: "Filter",
+            icon: Icons.tune,
+            foregroundColor: Colors.black,
+          ),
           const Chip(
             // THIS
             label: Text("Filter Chip"),
