@@ -26,7 +26,7 @@ class LeftDialogWidget extends StatelessWidget {
                   style: context.titleLarge,
                 ),
                 const SizedBox(
-                  height: 15,
+                  height: 35,
                 ),
                 child,
               ],

@@ -1,5 +1,7 @@
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/core/routes/names.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class PageContainerWidget extends StatelessWidget {
   const PageContainerWidget({super.key, required this.title, this.child});
@@ -29,9 +31,19 @@ class PageContainerWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: context.displaySmall,
+                Row(
+                  children: [
+                    context.canPop()
+                        ? IconButton(
+                            onPressed: () => context.pop(),
+                            icon: const Icon(Icons.back_hand_outlined),
+                          )
+                        : const SizedBox.shrink(),
+                    Text(
+                      title,
+                      style: context.displaySmall,
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 30,
