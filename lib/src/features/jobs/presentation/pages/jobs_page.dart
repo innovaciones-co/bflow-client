@@ -33,12 +33,12 @@ class JobsPage extends StatelessWidget {
         ),
         body: PageContainerWidget(
           title: "Jobs (Construction list)",
-          child: Column(
-            children: [
-              _getJobCards(context),
-              const JobsFilterWidget(),
-              Expanded(
-                child: BlocBuilder<JobsBloc, JobsState>(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _getJobCards(context),
+                const JobsFilterWidget(),
+                BlocBuilder<JobsBloc, JobsState>(
                   buildWhen: (previous, current) => true,
                   builder: (context, state) {
                     if (state is JobsInitial) {
@@ -53,10 +53,10 @@ class JobsPage extends StatelessWidget {
                     }
 
                     if (state is JobsLoaded) {
-                      return ListView.builder(
-                        itemCount: state.jobs.length,
-                        itemBuilder: (_, i) =>
-                            JobItemWidget(job: state.jobs[i]),
+                      return Column(
+                        children: state.jobs
+                            .map((job) => JobItemWidget(job: job))
+                            .toList(),
                       );
                     }
 
@@ -64,9 +64,9 @@ class JobsPage extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     );
                   },
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),
