@@ -1,5 +1,7 @@
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final double height;
@@ -35,7 +37,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           width: 10,
         ),
         IconButton(
-          onPressed: null,
+          onPressed: () => context.go(RoutesName.login),
           icon: Icon(
             Icons.logout_outlined,
             color: context.onSecondary,

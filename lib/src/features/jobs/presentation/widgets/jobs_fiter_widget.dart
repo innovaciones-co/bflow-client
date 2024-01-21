@@ -1,4 +1,3 @@
-import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
 import 'package:flutter/material.dart';

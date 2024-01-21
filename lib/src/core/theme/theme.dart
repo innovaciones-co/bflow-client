@@ -362,17 +362,17 @@ class MaterialTheme {
   }
 
   ThemeData theme(ColorScheme colorScheme) => ThemeData(
-        useMaterial3: true,
-        brightness: colorScheme.brightness,
-        colorScheme: colorScheme,
-        textTheme: textTheme.apply(
-          bodyColor: colorScheme.onSurface,
-          displayColor: colorScheme.onSurface,
-        ),
-        scaffoldBackgroundColor: colorScheme.background,
-        canvasColor: colorScheme.surface,
-        appBarTheme: _abbBarTheme(),
-      );
+      useMaterial3: true,
+      brightness: colorScheme.brightness,
+      colorScheme: colorScheme,
+      textTheme: textTheme.apply(
+        bodyColor: colorScheme.onSurface,
+        displayColor: colorScheme.onSurface,
+      ),
+      scaffoldBackgroundColor: colorScheme.background,
+      canvasColor: colorScheme.surface,
+      appBarTheme: _abbBarTheme(),
+      elevatedButtonTheme: _elevatedButtonTheme(colorScheme));
 
   AppBarTheme _abbBarTheme() {
     return AppBarTheme(
@@ -516,6 +516,15 @@ class MaterialTheme {
         alert,
         black,
       ];
+
+  _elevatedButtonTheme(ColorScheme colorScheme) {
+    return ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+      ),
+    );
+  }
 }
 
 class MaterialScheme {

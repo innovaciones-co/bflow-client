@@ -1,13 +1,14 @@
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
-import 'package:bflow_client/src/core/routes/names.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class PageContainerWidget extends StatelessWidget {
-  const PageContainerWidget({super.key, required this.title, this.child});
+  const PageContainerWidget(
+      {super.key, required this.title, this.child, this.actions});
 
   final String title;
   final Widget? child;
+  final List<Widget>? actions;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +44,12 @@ class PageContainerWidget extends StatelessWidget {
                       title,
                       style: context.displaySmall,
                     ),
+                    const Spacer(),
+                    actions != null
+                        ? Row(
+                            children: actions!,
+                          )
+                        : const SizedBox.shrink(),
                   ],
                 ),
                 const SizedBox(

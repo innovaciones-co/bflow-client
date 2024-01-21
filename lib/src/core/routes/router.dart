@@ -13,13 +13,13 @@ const _scaffoldKey = ValueKey('_scaffoldKey');
 const List<CustomNavigationDestination> homeDestinations = [
   CustomNavigationDestination(
     label: 'Jobs',
-    icon: Icon(Icons.work),
+    icon: Icon(Icons.construction_outlined),
     route: RoutesName.initial,
     child: JobsPage(),
   ),
   CustomNavigationDestination(
     label: 'Users',
-    icon: Icon(Icons.people_alt),
+    icon: Icon(Icons.people_outlined),
     route: RoutesName.users,
     child: UsersPage(),
   ),

@@ -34,6 +34,15 @@ class JobPage extends StatelessWidget {
             JobItemWidget(job: job123),
             Row(
               children: [
+                TextButton.icon(
+                  onPressed: () => print("Hola"),
+                  icon: const Icon(Icons.abc_outlined),
+                  label: const Text("View jobs documents"),
+                  // style: ElevatedButton.styleFrom(
+                  //   backgroundColor: colorScheme.background,
+                  //   foregroundColor: foregroundColor,
+                  // ),
+                ),
                 ActionButtonWidget(
                     onPressed: () {},
                     type: ButtonType.textButton,
@@ -44,8 +53,9 @@ class JobPage extends StatelessWidget {
                     type: ButtonType.textButton,
                     title: "View all task",
                     icon: Icons.task_outlined),
-                const SwitchWidget(title: "View calendar",),
-
+                const SwitchWidget(
+                  title: "View calendar",
+                ),
               ],
             ),
             Row(
@@ -79,6 +89,15 @@ class JobPage extends StatelessWidget {
                   icon: Icons.add,
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
+                ),
+                ElevatedButton.icon(
+                  onPressed: () => print("Hola"),
+                  icon: const Icon(Icons.add),
+                  label: const Text("New Activity"),
+                  // style: ElevatedButton.styleFrom(
+                  //   backgroundColor: colorScheme.background,
+                  //   foregroundColor: foregroundColor,
+                  // ),
                 ),
               ],
             ),

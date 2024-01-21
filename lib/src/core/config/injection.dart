@@ -7,6 +7,8 @@ import 'package:bflow_client/src/features/users/data/implements/users_repository
 import 'package:bflow_client/src/features/users/data/sources/users_remote_data_source.dart';
 import 'package:bflow_client/src/features/users/domain/repositories/users_repository.dart';
 import 'package:bflow_client/src/features/users/domain/usecases/get_supervisors_use_case.dart';
+import 'package:bflow_client/src/features/users/domain/usecases/get_users_use_case.dart';
+import 'package:bflow_client/src/features/users/presentation/bloc/users_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -26,13 +28,19 @@ class DependencyInjection {
     );
 
     // BLoC
-    sl.registerFactory(
+    sl.registerFactory<JobsBloc>(
       () => JobsBloc(sl()),
+    );
+    sl.registerFactory<UsersBloc>(
+      () => UsersBloc(sl()),
     );
 
     // Use cases
     sl.registerLazySingleton(
       () => GetJobsUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => GetUsersUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => GetSupervisorsUseCase(repository: sl()),
