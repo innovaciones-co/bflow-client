@@ -1,5 +1,4 @@
+library global;
 
-    library global;
-    export 'names.dart';
-    export 'pages.dart';
-    
+export 'names.dart';
+export 'router.dart';

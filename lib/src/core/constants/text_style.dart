@@ -11,5 +11,5 @@
     // 
     class AppTextStyle extends TextStyle {
 
-        static TextStyle get header => TextStyle();
+        static TextStyle get header => const TextStyle();
     }
