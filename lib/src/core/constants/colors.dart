@@ -1,5 +1,7 @@
 library app_colors;
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class AppColor {
@@ -28,5 +30,7 @@ class AppColor {
     const Color(0xffC0EDE3),
   ];
 
-  // TODO: get randomColors
+  static Color getRandomColor() {
+    return todoColors.elementAt(Random().nextInt(todoColors.length));
+  }
 }
