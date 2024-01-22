@@ -3,6 +3,7 @@ library dependency_injection;
 import 'package:bflow_client/src/core/api/api_service.dart';
 import 'package:bflow_client/src/features/jobs/data/sources/jobs_remote_data_source.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/job_reposiroty.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/create_job_use_case.dart';
 import 'package:bflow_client/src/features/users/data/implements/users_repository_imp.dart';
 import 'package:bflow_client/src/features/users/data/sources/users_remote_data_source.dart';
 import 'package:bflow_client/src/features/users/domain/repositories/users_repository.dart';
@@ -29,7 +30,7 @@ class DependencyInjection {
 
     // BLoC
     sl.registerFactory<JobsBloc>(
-      () => JobsBloc(sl()),
+      () => JobsBloc(sl(), sl()),
     );
     sl.registerFactory<UsersBloc>(
       () => UsersBloc(sl()),
@@ -38,6 +39,9 @@ class DependencyInjection {
     // Use cases
     sl.registerLazySingleton(
       () => GetJobsUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => CreateJobUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => GetUsersUseCase(repository: sl()),
