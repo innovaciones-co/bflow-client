@@ -1,3 +1,4 @@
+import "package:bflow_client/src/core/constants/colors.dart";
 import "package:flutter/material.dart";
 
 class MaterialTheme {
@@ -532,15 +533,15 @@ class MaterialTheme {
     return InputDecorationTheme(
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: Colors.grey, width: 1),
+        borderSide: BorderSide(color: AppColor.grey, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: Colors.grey, width: 1.5),
+        borderSide: BorderSide(color: AppColor.grey, width: 1.5),
       ),
       isDense: true,
       filled: true,
-      fillColor: Colors.white,
+      fillColor: AppColor.white,
     );
   }
 }
