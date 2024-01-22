@@ -27,17 +27,6 @@ class InputWidget extends StatelessWidget {
           enableSuggestions: obscureText ? false : true,
           autocorrect: obscureText ? false : true,
           decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
-              borderSide: const BorderSide(color: Colors.grey, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
-              borderSide: const BorderSide(color: Colors.grey, width: 1.5),
-            ),
-            isDense: true,
-            filled: true,
-            fillColor: Colors.white,
             hintText: hintText,
           ),
         ),
