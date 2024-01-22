@@ -66,10 +66,10 @@ class LoginPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 25),
                     const InputWidget(
-                      title: "User",
+                      label: "User",
                     ),
                     const SizedBox(height: 20),
-                    const InputWidget(title: "Password", obscureText: true),
+                    const InputWidget(label: "Password", obscureText: true),
                     const SizedBox(height: 20),
                     Padding(
                       padding:

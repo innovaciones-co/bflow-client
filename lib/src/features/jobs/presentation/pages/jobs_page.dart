@@ -181,7 +181,7 @@ class JobsPage extends StatelessWidget {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return const LeftDialogWidget(
+        return LeftDialogWidget(
           title: "New Job",
           child: CreateJobWidget(),
         );

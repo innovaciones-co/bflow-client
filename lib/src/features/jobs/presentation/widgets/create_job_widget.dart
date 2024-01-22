@@ -1,10 +1,16 @@
+import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/core/widgets/date_picker_widget.dart';
+import 'package:bflow_client/src/core/widgets/dropdown_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
 
-const List<String> list = <String>['One', 'Two', 'Three', 'Four'];
+const List<String> list = ['One', 'Two', 'Three', 'Four']; // Dropdown list
 
 class CreateJobWidget extends StatelessWidget {
-  const CreateJobWidget({super.key});
+  CreateJobWidget({super.key});
+
+  final TextEditingController starDateController = TextEditingController();
+  final TextEditingController endDateController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -12,62 +18,61 @@ class CreateJobWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const InputWidget(title: "Job Number"),
-        const InputWidget(title: "Address"),
-        const InputWidget(title: "Project supervisor"),
-        const InputWidget(title: "Owner name"),
-        const InputWidget(title: "Template"),
-        const Row(
+        const InputWidget(label: "Job Number"),
+        const SizedBox(height: 20),
+        const InputWidget(label: "Address"),
+        const SizedBox(height: 20),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Text("Project supervisor"),
+        ),
+        const SizedBox(height: 5),
+        const DropdownWidget(),
+        const SizedBox(height: 20),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Text("Owner name"),
+        ),
+        const SizedBox(height: 5),
+        const DropdownWidget(),
+        const SizedBox(height: 20),
+        Row(
           children: [
-            Expanded(child: InputWidget(title: "Start Date")),
-            Expanded(child: InputWidget(title: "Start Date")),
+            Expanded(
+              child: DatePickerWidget(
+                dateController: starDateController,
+                label: "Start Date",
+              ),
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: DatePickerWidget(
+                dateController: endDateController,
+                label: "End Date",
+              ),
+            ),
           ],
         ),
-        TextField(
-          decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
-              borderSide: const BorderSide(color: Colors.grey, width: 1),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            ActionButtonWidget(
+              onPressed: () {},
+              type: ButtonType.textButton,
+              title: "Cancel",
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
-              borderSide: const BorderSide(color: Colors.grey, width: 1.5),
+            const SizedBox(width: 20),
+            ActionButtonWidget(
+              onPressed: () {},
+              type: ButtonType.elevatedButton,
+              title: "Save",
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
             ),
-            isDense: true,
-            filled: true,
-            fillColor: Colors.white,
-            hintText: "",
-          ),
-        ),
-        const DropdownMenuExample(), // TODO: Customize
+          ],
+        )
       ],
-    );
-  }
-}
-
-class DropdownMenuExample extends StatefulWidget {
-  const DropdownMenuExample({super.key});
-
-  @override
-  State<DropdownMenuExample> createState() => _DropdownMenuExampleState();
-}
-
-class _DropdownMenuExampleState extends State<DropdownMenuExample> {
-  String dropdownValue = list.first;
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownMenu<String>(
-      expandedInsets: EdgeInsets.zero,
-      initialSelection: list.first,
-      onSelected: (String? value) {
-        setState(() {
-          dropdownValue = value!;
-        });
-      },
-      dropdownMenuEntries: list.map<DropdownMenuEntry<String>>((String value) {
-        return DropdownMenuEntry<String>(value: value, label: value);
-      }).toList(),
     );
   }
 }
