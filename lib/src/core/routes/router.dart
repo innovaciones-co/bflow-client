@@ -85,7 +85,9 @@ final appRouter = GoRouter(
         }
 
         return MaterialPage(
+          key: _pageKey,
           child: HomePage(
+            key: _scaffoldKey,
             currentIndex: homeDestinations
                 .indexWhere((element) => element.route == RoutesName.initial),
             child: const Text("Not found"),

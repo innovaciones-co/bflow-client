@@ -1,6 +1,7 @@
 library dependency_injection;
 
 import 'package:bflow_client/src/core/api/api_service.dart';
+import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/data/sources/jobs_remote_data_source.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/job_reposiroty.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_job_use_case.dart';
@@ -29,8 +30,11 @@ class DependencyInjection {
     );
 
     // BLoC
+    sl.registerSingleton<HomeBloc>(
+      HomeBloc(),
+    );
     sl.registerFactory<JobsBloc>(
-      () => JobsBloc(sl(), sl()),
+      () => JobsBloc(sl(), sl(), sl()),
     );
     sl.registerFactory<UsersBloc>(
       () => UsersBloc(sl()),
