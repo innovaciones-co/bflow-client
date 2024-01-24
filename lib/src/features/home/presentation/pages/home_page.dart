@@ -2,11 +2,10 @@ import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../../core/config/config.dart';
-import '../widgets/adaptive_navigation.dart';
-import '../../../../core/routes/router.dart' as router;
 import 'package:go_router/go_router.dart' as go;
+
+import '../../../../core/routes/router.dart' as router;
+import '../widgets/adaptive_navigation.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key, required this.child, required this.currentIndex});
