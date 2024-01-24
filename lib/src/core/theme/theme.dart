@@ -531,6 +531,7 @@ class MaterialTheme {
 
   _inputDecorationTheme(ColorScheme colorScheme) {
     return InputDecorationTheme(
+      contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
         borderSide: BorderSide(color: AppColor.grey, width: 1),

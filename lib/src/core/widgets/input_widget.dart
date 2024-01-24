@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class InputWidget extends StatelessWidget {
-  final String title;
+  final String label;
   final bool obscureText;
   final String hintText;
 
   const InputWidget({
     super.key,
-    required this.title,
+    required this.label,
     this.obscureText = false,
     this.hintText = "",
   });
@@ -19,7 +19,7 @@ class InputWidget extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(title),
+          child: Text(label),
         ),
         const SizedBox(height: 5),
         TextField(
