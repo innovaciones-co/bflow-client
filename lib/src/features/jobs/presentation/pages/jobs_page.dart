@@ -1,6 +1,4 @@
-import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
-import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/utils/map_failure_to_error_message.dart';
 import 'package:bflow_client/src/core/widgets/left_dialog_widget.dart';
