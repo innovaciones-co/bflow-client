@@ -41,6 +41,7 @@ dependencies:
   dio: ^5.4.0
   dartz: ^0.10.1
   get_it: ^7.6.6
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:

@@ -1,9 +1,10 @@
-import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.dart';
-
-import 'api.dart';
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.dart';
 import 'package:dio/dio.dart';
+
+import 'api.dart';
 
 enum Methods {
   put("PUT"),
@@ -24,10 +25,12 @@ class ApiService {
 
   ApiService();
 
-  Future<dynamic> get(String endpoint) async {
+  Future<dynamic> get(
+      {required String endpoint, Map<String, String>? params}) async {
     try {
       final response = await _performRequest(
-          Methods.get, '${ApiConstants.baseUrl}/$endpoint');
+          Methods.get, '${ApiConstants.baseUrl}/$endpoint',
+          queryParams: params);
       return response.data;
     } on SocketException {
       throw RemoteDataSourceException('No internet connection');
@@ -124,11 +127,17 @@ class ApiService {
     Methods method,
     String url, {
     Map<String, String>? headers,
+    Map<String, dynamic>? queryParams,
     String? body,
   }) async {
     try {
       final options = Options(method: method.toString());
-      final response = await client.request(url, options: options, data: body);
+      final response = await client.request(
+        url,
+        options: options,
+        data: body,
+        queryParameters: queryParams,
+      );
       return response;
     } on DioException catch (e) {
       throw RemoteDataSourceException('Unexpected error: ${e.message}');
