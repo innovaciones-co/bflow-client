@@ -22,19 +22,9 @@ class CreateJobWidget extends StatelessWidget {
         const SizedBox(height: 20),
         const InputWidget(label: "Address"),
         const SizedBox(height: 20),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Text("Project supervisor"),
-        ),
-        const SizedBox(height: 5),
-        const DropdownWidget(),
+        const DropdownWidget(label: "Project supervisor"),
         const SizedBox(height: 20),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Text("Owner name"),
-        ),
-        const SizedBox(height: 5),
-        const DropdownWidget(),
+        const DropdownWidget(label: "Owner name"),
         const SizedBox(height: 20),
         Row(
           children: [

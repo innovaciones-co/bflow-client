@@ -2,9 +2,9 @@ import 'package:bflow_client/src/features/jobs/presentation/widgets/create_job_w
 import 'package:flutter/material.dart';
 
 class DropdownWidget extends StatefulWidget {
-  final String? lable; // TODO: implement optional label
+  final String? label;
 
-  const DropdownWidget({super.key, this.lable});
+  const DropdownWidget({super.key, this.label});
 
   @override
   State<DropdownWidget> createState() => _DropdownWidgetState();
@@ -18,8 +18,15 @@ class _DropdownWidgetState extends State<DropdownWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        //label != null ? Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: Text(label),) : SizedBox.shrink();
-        //label != null ? SizedBox(height: 5) : SizedBox.shrink();
+        widget.label != null
+            ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(widget.label!),
+              )
+            : const SizedBox.shrink(),
+        widget.label != null
+            ? const SizedBox(height: 5)
+            : const SizedBox.shrink(),
         DropdownMenu(
           menuStyle: MenuStyle(
             backgroundColor: MaterialStateProperty.all(Colors.white),
