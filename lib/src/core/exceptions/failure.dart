@@ -5,10 +5,7 @@ abstract class Failure {
 }
 
 class ServerFailure extends Failure {
-  @override
-  final String? message;
-
-  ServerFailure({this.message});
+  ServerFailure({super.message});
 }
 
 class NotFoundFailure extends Failure {}

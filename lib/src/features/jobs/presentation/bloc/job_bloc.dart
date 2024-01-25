@@ -29,7 +29,6 @@ class JobBloc extends Bloc<JobEvent, JobState> {
         ),
         (r) {
           emit(JobLoaded(job: r));
-          homeBloc.add(const ShowMessageEvent(message: "Jobs loaded!"));
         },
       );
     });

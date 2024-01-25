@@ -1,7 +1,8 @@
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
+import 'package:equatable/equatable.dart';
 
-class Task {
+class Task implements Equatable {
   final int id;
   final String name;
   final DateTime? startDate;
@@ -27,4 +28,22 @@ class Task {
     this.attachments,
     required this.job,
   });
+
+  @override
+  List<Object?> get props => [
+        id,
+        name,
+        startDate,
+        endDate,
+        progress,
+        status,
+        stage,
+        parentTask,
+        supplier,
+        attachments,
+        job,
+      ];
+
+  @override
+  bool? get stringify => true;
 }
