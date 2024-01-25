@@ -1,5 +1,5 @@
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
-import 'package:bflow_client/src/features/jobs/domain/repositories/job_reposiroty.dart';
+import 'package:bflow_client/src/features/jobs/domain/repositories/job_repository.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/exceptions/failure.dart';

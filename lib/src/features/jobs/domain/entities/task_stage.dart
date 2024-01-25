@@ -7,10 +7,13 @@ enum TaskStage {
   pCI("PCI");
 
   final String name;
+
   const TaskStage(this.name);
 
   @override
   String toString() => name;
+
+  String toJSON() => name.toUpperCase().replaceAll(' ', '_');
 
   static TaskStage fromString(String str) {
     switch (str.toLowerCase()) {

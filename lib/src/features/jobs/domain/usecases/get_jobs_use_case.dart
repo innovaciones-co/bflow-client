@@ -3,7 +3,7 @@ import 'package:bflow_client/src/core/usecases/usecases.dart';
 import 'package:dartz/dartz.dart';
 
 import '../entities/job_entity.dart';
-import '../repositories/job_reposiroty.dart';
+import '../repositories/job_repository.dart';
 
 class GetJobsUseCase implements UseCase<List<Job>, NoParams> {
   final JobsRepository repository;

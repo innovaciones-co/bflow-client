@@ -3,7 +3,7 @@ import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.da
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:dartz/dartz.dart';
 
-import '../../domain/repositories/job_reposiroty.dart';
+import '../../domain/repositories/job_repository.dart';
 import '../sources/jobs_remote_data_source.dart';
 
 class JobsRepositoryImp implements JobsRepository {
