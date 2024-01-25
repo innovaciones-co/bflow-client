@@ -10,4 +10,10 @@ class JobsRemoteDataSource {
         await apiService.get(ApiConstants.listJobsEndpoint);
     return response.map((e) => JobModel.fromMap(e)).toList();
   }
+
+  Future<JobModel> fetchJob(int id) async {
+    Map<String, dynamic> response = await apiService
+        .get(ApiConstants.getJobEndpoint.replaceFirst(':id', id.toString()));
+    return JobModel.fromMap(response);
+  }
 }

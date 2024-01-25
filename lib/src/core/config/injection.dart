@@ -5,6 +5,8 @@ import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart'
 import 'package:bflow_client/src/features/jobs/data/sources/jobs_remote_data_source.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/job_reposiroty.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_job_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/get_job_use_case.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/users/data/implements/users_repository_imp.dart';
 import 'package:bflow_client/src/features/users/data/sources/users_remote_data_source.dart';
 import 'package:bflow_client/src/features/users/domain/repositories/users_repository.dart';
@@ -36,6 +38,9 @@ class DependencyInjection {
     sl.registerFactory<JobsBloc>(
       () => JobsBloc(sl(), sl(), sl()),
     );
+    sl.registerFactory<JobBloc>(
+      () => JobBloc(sl(), sl()),
+    );
     sl.registerFactory<UsersBloc>(
       () => UsersBloc(sl()),
     );
@@ -43,6 +48,9 @@ class DependencyInjection {
     // Use cases
     sl.registerLazySingleton(
       () => GetJobsUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => GetJobUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => CreateJobUseCase(repository: sl()),
