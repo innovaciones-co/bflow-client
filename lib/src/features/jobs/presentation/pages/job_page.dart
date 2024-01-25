@@ -146,15 +146,6 @@ class FilterTasksWidget extends StatelessWidget {
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
         ),
-        ElevatedButton.icon(
-          onPressed: () => print("Hola"),
-          icon: const Icon(Icons.add),
-          label: const Text("New Activity"),
-          // style: ElevatedButton.styleFrom(
-          //   backgroundColor: colorScheme.background,
-          //   foregroundColor: foregroundColor,
-          // ),
-        ),
       ],
     );
   }
