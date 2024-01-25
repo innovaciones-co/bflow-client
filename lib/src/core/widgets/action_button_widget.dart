@@ -37,8 +37,9 @@ class ActionButtonWidget extends StatelessWidget {
             padding: MaterialStatePropertyAll(EdgeInsets.symmetric(
                 vertical: paddingVertical == null ? 0 : paddingVertical!,
                 horizontal:
-                    paddingHorizontal == null ? 0 : paddingHorizontal!)),
-            overlayColor: MaterialStateProperty.all(Colors.transparent),
+                    paddingHorizontal == null ? 5 : paddingHorizontal!)),
+            overlayColor:
+                MaterialStateProperty.all(foregroundColor?.withOpacity(0.05)),
             backgroundColor: MaterialStateProperty.all(backgroundColor),
             foregroundColor: MaterialStateProperty.all(foregroundColor),
             shape: MaterialStatePropertyAll(
