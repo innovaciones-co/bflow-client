@@ -64,12 +64,14 @@ class JobsPage extends StatelessWidget {
     );
   }
 
-  Widget _jobsTotalCard(BuildContext context,
-      {required Color color,
-      required Color borderColor,
-      required String title,
-      required String total,
-      required String imagePath}) {
+  Widget _jobsTotalCard(
+    BuildContext context, {
+    required Color color,
+    required Color borderColor,
+    required String title,
+    required String total,
+    required String imagePath,
+  }) {
     return Expanded(
       flex: 1,
       child: Row(
