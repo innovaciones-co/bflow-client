@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,18 +24,17 @@ class JobsFilterWidget extends StatelessWidget {
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(22),
-                    borderSide: const BorderSide(color: Colors.grey, width: 1),
+                    borderSide: BorderSide(color: AppColor.grey, width: 1),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(22),
-                    borderSide:
-                        const BorderSide(color: Colors.grey, width: 1.5),
+                    borderSide: BorderSide(color: AppColor.grey, width: 1.5),
                   ),
                   contentPadding:
                       const EdgeInsets.only(top: 0, bottom: 0, right: 10),
                   isDense: true,
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: AppColor.white,
                   prefixIcon: const Icon(Icons.search),
                   hintText: "Search",
                 ),
@@ -46,14 +46,14 @@ class JobsFilterWidget extends StatelessWidget {
           //   width: 1,
           //   height: 25,
           //   margin: const EdgeInsets.symmetric(horizontal: 20),
-          //   color: Colors.grey.shade400,
+          //   color: AppColor.grey,
           // ),
           // ActionButtonWidget(
           //   onPressed: () {},
           //   type: ButtonType.textButton,
           //   title: "Filter",
           //   icon: Icons.tune,
-          //   foregroundColor: Colors.black,
+          //   foregroundColor: AppColor.black,
           // ),
           // const Chip(
           //   // THIS
@@ -64,10 +64,10 @@ class JobsFilterWidget extends StatelessWidget {
           // Container(
           //   padding: const EdgeInsets.only(left: 15, right: 8),
           //   decoration: BoxDecoration(
-          //     color: Colors.white,
+          //     color: AppColor.white,
           //     borderRadius: BorderRadius.circular(25),
           //     border: Border.all(
-          //       color: Colors.grey.shade800,
+          //       color: AppColor.darkGrey,
           //       width: 0.8,
           //     ),
           //   ),

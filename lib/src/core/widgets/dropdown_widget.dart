@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/create_job_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -29,8 +30,8 @@ class _DropdownWidgetState extends State<DropdownWidget> {
             : const SizedBox.shrink(),
         DropdownMenu(
           menuStyle: MenuStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.white),
-            surfaceTintColor: MaterialStateProperty.all(Colors.grey),
+            backgroundColor: MaterialStateProperty.all(AppColor.white),
+            surfaceTintColor: MaterialStateProperty.all(AppColor.grey),
           ),
           expandedInsets: EdgeInsets.zero,
           trailingIcon: const Icon(Icons.keyboard_arrow_down_outlined),

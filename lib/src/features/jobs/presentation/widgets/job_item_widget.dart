@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/routes/routes.dart';
@@ -19,7 +20,7 @@ class JobItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey.shade300,
+        color: AppColor.lightGrey,
       ),
       height: 120, // THIS
       margin: const EdgeInsets.symmetric(vertical: 10),
@@ -177,7 +178,7 @@ Widget _progressBar({required double percentage, required double width}) {
           width: width,
           margin: const EdgeInsets.only(top: 7),
           decoration: BoxDecoration(
-            color: Colors.grey.shade400,
+            color: AppColor.grey,
             borderRadius: BorderRadius.circular(5),
           ),
           child: FractionallySizedBox(
@@ -185,7 +186,7 @@ Widget _progressBar({required double percentage, required double width}) {
             alignment: Alignment.centerLeft,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.orange.shade700,
+                color: AppColor.orange,
                 borderRadius: BorderRadius.circular(5),
               ),
             ),
@@ -209,7 +210,7 @@ SizedBox _mobileCellJob(
       children: [
         Text(
           title,
-          style: const TextStyle(color: Colors.grey),
+          style: TextStyle(color: AppColor.grey),
         ),
         const SizedBox(height: 10),
         child,
@@ -227,7 +228,7 @@ Widget _cellJob(
       children: [
         Text(
           title,
-          style: const TextStyle(color: Colors.grey),
+          style: TextStyle(color: AppColor.grey),
         ),
         const SizedBox(height: 10),
         child,

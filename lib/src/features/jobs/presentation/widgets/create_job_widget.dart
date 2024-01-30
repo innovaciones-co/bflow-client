@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/date_picker_widget.dart';
 import 'package:bflow_client/src/core/widgets/dropdown_widget.dart';
@@ -57,8 +58,8 @@ class CreateJobWidget extends StatelessWidget {
               onPressed: () {},
               type: ButtonType.elevatedButton,
               title: "Save",
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColor.blue,
+              foregroundColor: AppColor.white,
             ),
           ],
         )

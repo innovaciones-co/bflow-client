@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/constants/constants.dart';
 import 'package:flutter/material.dart';
 
 class CustomChipWidget extends StatelessWidget {
@@ -17,15 +18,14 @@ class CustomChipWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.only(top: 0, bottom: 2, right: 8, left: 8),
       decoration: BoxDecoration(
-        color:
-            backgroundColor != null ? backgroundColor! : Colors.grey.shade400,
+        color: backgroundColor != null ? backgroundColor! : AppColor.grey,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
         label,
         style: TextStyle(
           fontSize: 12,
-          color: textColor != null ? textColor! : Colors.grey.shade600, // THIS
+          color: textColor != null ? textColor! : AppColor.darkGrey, // THIS
         ),
       ),
     );

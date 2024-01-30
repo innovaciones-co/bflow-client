@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,7 @@ class LeftDialogWidget extends StatelessWidget {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width * 0.4,
         child: Material(
-          color: Colors.white,
+          color: AppColor.white,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 30),
             child: Column(

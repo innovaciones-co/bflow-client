@@ -1,4 +1,5 @@
 import 'package:bflow_client/src/core/config/config.dart';
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
@@ -130,7 +131,7 @@ class FilterTasksWidget extends StatelessWidget {
           type: ButtonType.textButton,
           title: "Filter",
           icon: Icons.tune,
-          foregroundColor: Colors.black,
+          foregroundColor: AppColor.black,
         ),
         const Text("Water Meter call up"),
         ActionButtonWidget(
@@ -143,7 +144,7 @@ class FilterTasksWidget extends StatelessWidget {
           type: ButtonType.elevatedButton,
           title: "Send task",
           icon: Icons.mail_outline,
-          backgroundColor: Colors.blue.shade50,
+          backgroundColor: AppColor.lightBlue,
         ),
         const SizedBox(width: 12),
         ActionButtonWidget(
@@ -151,8 +152,8 @@ class FilterTasksWidget extends StatelessWidget {
           type: ButtonType.elevatedButton,
           title: "New Activity",
           icon: Icons.add,
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
+          backgroundColor: AppColor.blue,
+          foregroundColor: AppColor.white,
         ),
       ],
     );

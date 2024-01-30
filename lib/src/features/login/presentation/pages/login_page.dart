@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
@@ -60,9 +61,9 @@ class LoginPage extends StatelessWidget {
                       style: TextStyle(fontSize: 24),
                     ),
                     const SizedBox(height: 35),
-                    const Text(
+                    Text(
                       "Please enter your details",
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      style: TextStyle(fontSize: 16, color: AppColor.darkGrey),
                     ),
                     const SizedBox(height: 25),
                     const InputWidget(
@@ -78,8 +79,8 @@ class LoginPage extends StatelessWidget {
                         onPressed: () {},
                         type: ButtonType.elevatedButton,
                         title: "Log in",
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
+                        backgroundColor: AppColor.blue,
+                        foregroundColor: AppColor.white,
                         paddingVertical: 24,
                       ),
                     )

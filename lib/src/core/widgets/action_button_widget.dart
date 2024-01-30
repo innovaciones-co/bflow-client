@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 
 enum ButtonType {
@@ -15,17 +16,17 @@ class ActionButtonWidget extends StatelessWidget {
   final double? paddingHorizontal;
   final double? paddingVertical;
 
-  const ActionButtonWidget({
+  ActionButtonWidget({
     super.key,
     required this.onPressed,
     required this.type,
     required this.title,
     this.icon,
     this.backgroundColor,
-    this.foregroundColor = Colors.blue,
+    foregroundColor,
     this.paddingHorizontal,
     this.paddingVertical,
-  });
+  }) : foregroundColor = foregroundColor ?? AppColor.blue;
 
   @override
   Widget build(BuildContext context) {
