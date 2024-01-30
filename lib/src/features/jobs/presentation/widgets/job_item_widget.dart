@@ -210,7 +210,7 @@ SizedBox _mobileCellJob(
       children: [
         Text(
           title,
-          style: TextStyle(color: AppColor.grey),
+          style: TextStyle(color: AppColor.darkGrey),
         ),
         const SizedBox(height: 10),
         child,
@@ -228,7 +228,7 @@ Widget _cellJob(
       children: [
         Text(
           title,
-          style: TextStyle(color: AppColor.grey),
+          style: TextStyle(color: AppColor.darkGrey),
         ),
         const SizedBox(height: 10),
         child,
