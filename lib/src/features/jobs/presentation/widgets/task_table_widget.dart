@@ -64,7 +64,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
             children: [
               TableRow(
                 decoration: const BoxDecoration(
-                    //color: Colors.grey,
+                    //color: AppColor.grey,
                     ),
                 children: [
                   const Text('Checkbox'),
@@ -79,15 +79,9 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                     ),
                   ]),
                   const Text("01 Jan"),
-                  Text(widget.tasks[index].startDate != null
-                      ? widget.tasks[index].startDate!.toString()
-                      : ""),
-                  Text(widget.tasks[index].endDate != null
-                      ? widget.tasks[index].endDate!.toString()
-                      : ""),
-                  Text(widget.tasks[index].comments != null
-                      ? widget.tasks[index].comments!
-                      : ""),
+                  Text(widget.tasks[index].startDate?.toString() ?? ''),
+                  Text(widget.tasks[index].endDate?.toString() ?? ""),
+                  Text(widget.tasks[index].comments ?? ""),
                   Text(widget.tasks[index].progress.toString()),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
