@@ -9,8 +9,10 @@ class TaskModel extends Task {
   TaskModel({
     required super.id,
     required super.name,
+    super.callDate,
     super.startDate,
     super.endDate,
+    super.comments,
     super.progress,
     required super.status,
     required super.stage,
@@ -27,11 +29,14 @@ class TaskModel extends Task {
   factory TaskModel.fromMap(Map<String, dynamic> json) => TaskModel(
         id: json["id"],
         name: json["name"],
+        callDate:
+            json["callDate"] == null ? null : DateTime.parse(json["callDate"]),
         startDate: json["startDate"] == null
             ? null
             : DateTime.parse(json["startDate"]),
         endDate:
             json["endDate"] == null ? null : DateTime.parse(json["endDate"]),
+        comments: json["comments"],
         progress: json["progress"],
         status: TaskStatus.fromString(json["status"]),
         stage: TaskStage.fromString(json["stage"]),
@@ -46,8 +51,10 @@ class TaskModel extends Task {
   Map<String, dynamic> toMap() => {
         "id": id,
         "name": name,
+        "callDate": callDate?.toDateFormat(),
         "startDate": startDate?.toDateFormat(),
         "endDate": endDate?.toDateFormat(),
+        "comments": comments,
         "progress": progress,
         "status": status.toJSON(),
         "stage": stage.toJSON(),

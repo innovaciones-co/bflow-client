@@ -5,8 +5,10 @@ import 'package:equatable/equatable.dart';
 class Task implements Equatable {
   final int id;
   final String name;
+  final DateTime? callDate;
   final DateTime? startDate;
   final DateTime? endDate;
+  final String? comments;
   final int progress;
   final TaskStatus status;
   final TaskStage stage;
@@ -18,8 +20,10 @@ class Task implements Equatable {
   Task({
     required this.id,
     required this.name,
+    this.callDate,
     this.startDate,
     this.endDate,
+    this.comments,
     this.progress = 0,
     required this.status,
     required this.stage,
@@ -33,8 +37,10 @@ class Task implements Equatable {
   List<Object?> get props => [
         id,
         name,
+        callDate,
         startDate,
         endDate,
+        comments,
         progress,
         status,
         stage,
