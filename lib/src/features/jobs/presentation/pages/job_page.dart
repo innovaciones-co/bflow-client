@@ -27,7 +27,7 @@ class _JobPageState extends State<JobPage> {
   final List<Widget> _content = [
     const JobFilesWidget(),
     const JobTasksWidget(),
-    const JobTasksCalendarWidget(),
+    const JobTasksGanttWidget(),
   ];
 
   @override

@@ -22,7 +22,7 @@ class UsersPage extends StatelessWidget {
       },
       child: PageContainerWidget(
         title: 'Users',
-        actions: const [
+        actions: [
           ActionButtonWidget(
             onPressed: null,
             type: ButtonType.elevatedButton,
