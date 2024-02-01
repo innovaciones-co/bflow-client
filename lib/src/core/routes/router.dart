@@ -57,7 +57,7 @@ final appRouter = GoRouter(
     // LoginScreen
     GoRoute(
       path: RoutesName.login,
-      pageBuilder: (context, state) => const MaterialPage<void>(
+      pageBuilder: (context, state) => MaterialPage<void>(
         key: _pageKey,
         child: LoginPage(
           key: _scaffoldKey,

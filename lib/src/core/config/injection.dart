@@ -12,6 +12,11 @@ import 'package:bflow_client/src/features/jobs/domain/usecases/get_job_use_case.
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_bloc.dart';
+import 'package:bflow_client/src/features/login/data/implements/login_repository_impl.dart';
+import 'package:bflow_client/src/features/login/data/sources/login_remote_data_source.dart';
+import 'package:bflow_client/src/features/login/domain/repositories/repositories.dart';
+import 'package:bflow_client/src/features/login/domain/usecases/login_use_case.dart';
+import 'package:bflow_client/src/features/login/presentation/bloc/login_bloc.dart';
 import 'package:bflow_client/src/features/users/data/implements/users_repository_imp.dart';
 import 'package:bflow_client/src/features/users/data/sources/users_remote_data_source.dart';
 import 'package:bflow_client/src/features/users/domain/repositories/users_repository.dart';
@@ -40,6 +45,9 @@ class DependencyInjection {
     sl.registerSingleton<HomeBloc>(
       HomeBloc(),
     );
+    sl.registerFactory<LoginCubit>(
+      () => LoginCubit(sl()),
+    );
     sl.registerFactory<JobsBloc>(
       () => JobsBloc(sl(), sl(), sl()),
     );
@@ -54,6 +62,10 @@ class DependencyInjection {
     );
 
     // Use cases
+
+    sl.registerLazySingleton(
+      () => LoginUseCase(repository: sl()),
+    );
     sl.registerLazySingleton(
       () => GetJobsUseCase(repository: sl()),
     );
@@ -83,8 +95,14 @@ class DependencyInjection {
     sl.registerLazySingleton<UsersRepository>(
       () => UsersRepositoryImp(remoteDataSource: sl()),
     );
+    sl.registerLazySingleton<LoginRepository>(
+      () => LoginRepositoryImp(remoteDataSource: sl()),
+    );
 
     // Data sources
+    sl.registerLazySingleton<LoginRemoteDataSource>(
+      () => LoginRemoteDataSource(apiService: sl()),
+    );
     sl.registerLazySingleton<TasksRemoteDataSource>(
       () => TasksRemoteDataSource(apiService: sl()),
     );

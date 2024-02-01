@@ -1,10 +1,12 @@
- 
-    class  LoginModel {
-        // ...
-        // A model is a more generic term and can represent structured data used within an application. 
-        // ...
-        // fromJson
-        // ...
-        // toJson
-   
-    }
+import 'dart:convert';
+
+import 'package:bflow_client/src/features/login/domain/entities/auth_entity.dart';
+
+class AuthModel extends Auth {
+  AuthModel({required super.token});
+
+  factory AuthModel.fromJson(String str) => AuthModel.fromMap(json.decode(str));
+
+  factory AuthModel.fromMap(Map<String, dynamic> json) =>
+      AuthModel(token: json['accessToken']);
+}
