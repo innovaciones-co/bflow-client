@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 
 class SwitchWidget extends StatelessWidget {
   final String? title;
+  final bool value;
+  final void Function(bool) onChanged;
 
   const SwitchWidget({
     super.key,
     this.title,
+    required this.value,
+    required this.onChanged,
   });
 
   @override
@@ -22,8 +26,8 @@ class SwitchWidget extends StatelessWidget {
               activeTrackColor: AppColor.blue,
               inactiveThumbColor: AppColor.white,
               inactiveTrackColor: AppColor.grey,
-              value: false,
-              onChanged: null,
+              value: value,
+              onChanged: onChanged,
             ),
           ),
         ),
