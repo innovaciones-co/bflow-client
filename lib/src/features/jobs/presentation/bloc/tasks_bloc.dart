@@ -32,7 +32,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     GetTasksParams params = GetTasksParams(jobId: event.jobId);
     var tasks = await getTasksUseCase.execute(params);
     tasks.fold(
-      (l) => emit(TaskError(failure: l)),
+      (l) => emit(TasksError(failure: l)),
       (r) => emit(TasksLoaded(tasks: r)),
     );
   }

@@ -5,7 +5,7 @@ import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_widget.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/job_tasks_calendar_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/job_tasks_gantt_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_tasks_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -26,7 +26,7 @@ class JobTasksWidget extends StatelessWidget {
           return _buildTasks(state.tasks);
         }
 
-        if (state is TaskError) {
+        if (state is TasksError) {
           return FailureWidget(failure: state.failure);
         }
 

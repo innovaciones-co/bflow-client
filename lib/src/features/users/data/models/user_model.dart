@@ -1,7 +1,8 @@
+import 'dart:convert';
+
 import 'package:bflow_client/src/features/users/domain/entities/user_role.dart';
 
 import '../../domain/entities/user_entity.dart';
-import 'dart:convert';
 
 class UsersModel extends User {
   const UsersModel({
@@ -26,7 +27,7 @@ class UsersModel extends User {
         username: json["username"],
         password: json["password"],
         email: json["email"],
-        role: json["role"] ?? UserRole.admin,
+        role: json["role"] != null ? UserRole.fromString(json["role"]) : null,
       );
 
   Map<String, dynamic> toMap() => {
