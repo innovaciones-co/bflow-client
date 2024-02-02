@@ -23,6 +23,7 @@ class JobItemWidget extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColor.lightGrey,
+        borderRadius: BorderRadius.circular(5),
       ),
       height: 120, // THIS
       margin: const EdgeInsets.symmetric(vertical: 10),

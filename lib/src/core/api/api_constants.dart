@@ -5,4 +5,5 @@ class ApiConstants {
   static String getJobEndpoint = 'jobs/:id';
   static String listTasksEndpoint = 'tasks';
   static String listUsersEndpoint = 'users';
+  static String loginUsersEndpoint = 'users/login';
 }

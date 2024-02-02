@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bflow_client/src/core/exceptions/bad_response_exception.dart';
 import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.dart';
 import 'package:dio/dio.dart';
 
@@ -34,7 +35,7 @@ class ApiService {
       return response.data;
     } on SocketException {
       throw RemoteDataSourceException('No internet connection');
-    } on HttpException {
+    } on BadResponseException {
       throw RemoteDataSourceException('HTTP error');
     } on FormatException {
       throw RemoteDataSourceException('Invalid response format');
@@ -43,7 +44,8 @@ class ApiService {
     }
   }
 
-  Future<dynamic> post(String endpoint, Map<String, dynamic> data) async {
+  Future<dynamic> post(
+      {required String endpoint, Map<String, dynamic>? data}) async {
     try {
       final response = await _performRequest(
         Methods.post,
@@ -54,7 +56,7 @@ class ApiService {
       return response.data;
     } on SocketException {
       throw RemoteDataSourceException('No internet connection');
-    } on HttpException {
+    } on BadResponseException {
       throw RemoteDataSourceException('HTTP error');
     } on FormatException {
       throw RemoteDataSourceException('Invalid response format');
@@ -74,7 +76,7 @@ class ApiService {
       return response.data;
     } on SocketException {
       throw RemoteDataSourceException('No internet connection');
-    } on HttpException {
+    } on BadResponseException {
       throw RemoteDataSourceException('HTTP error');
     } on FormatException {
       throw RemoteDataSourceException('Invalid response format');
@@ -94,7 +96,7 @@ class ApiService {
       return response.data;
     } on SocketException {
       throw RemoteDataSourceException('No internet connection');
-    } on HttpException {
+    } on BadResponseException {
       throw RemoteDataSourceException('HTTP error');
     } on FormatException {
       throw RemoteDataSourceException('Invalid response format');
@@ -114,7 +116,7 @@ class ApiService {
       return response.data;
     } on SocketException {
       throw RemoteDataSourceException('No internet connection');
-    } on HttpException {
+    } on BadResponseException {
       throw RemoteDataSourceException('HTTP error');
     } on FormatException {
       throw RemoteDataSourceException('Invalid response format');
@@ -131,16 +133,38 @@ class ApiService {
     String? body,
   }) async {
     try {
-      final options = Options(method: method.toString());
+      final options = Options(
+        method: method.toString(),
+        validateStatus: (status) => status != null ? status < 500 : false,
+      );
       final response = await client.request(
         url,
         options: options,
         data: body,
         queryParameters: queryParams,
       );
+
+      switch (response.statusCode) {
+        case 400:
+          throw BadResponseException('Bad request');
+        case 401:
+          throw BadResponseException('Unauthorized');
+        case 403:
+          throw BadResponseException('Forbidden');
+        case 404:
+          throw BadResponseException('Not found');
+      }
+
       return response;
     } on DioException catch (e) {
-      throw RemoteDataSourceException('Unexpected error: ${e.message}');
+      switch (e.type) {
+        case DioExceptionType.badResponse:
+          throw BadResponseException(e.message);
+        default:
+          throw RemoteDataSourceException('Unexpected error: ${e.message}');
+      }
+    } on BadResponseException catch (e) {
+      throw RemoteDataSourceException(e.message ?? 'Bad response');
     }
   }
 }
