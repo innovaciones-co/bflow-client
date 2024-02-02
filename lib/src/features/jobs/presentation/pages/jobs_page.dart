@@ -22,7 +22,7 @@ class JobsPage extends StatefulWidget {
 }
 
 class _JobsPageState extends State<JobsPage> {
-  bool _calendarView = true;
+  bool _calendarView = false;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +71,10 @@ class _JobsPageState extends State<JobsPage> {
               if (state is JobsLoaded) {
                 return Column(
                   children: state.jobsFiltered
-                      .map((job) => JobItemWidget(job: job))
+                      .map((job) => JobItemWidget(
+                            job: job,
+                            viewDetailsEnabled: true,
+                          ))
                       .toList(),
                 );
               }

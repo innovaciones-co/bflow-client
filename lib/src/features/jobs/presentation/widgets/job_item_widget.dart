@@ -11,9 +11,11 @@ import '../../domain/entities/job_entity.dart';
 
 class JobItemWidget extends StatelessWidget {
   final Job job;
+  final bool viewDetailsEnabled;
   const JobItemWidget({
     super.key,
     required this.job,
+    this.viewDetailsEnabled = false,
   });
 
   @override
@@ -75,19 +77,25 @@ class JobItemWidget extends StatelessWidget {
           width: 150,
           child: _progressBar(percentage: job.progress, width: 140),
         ),
-        const SizedBox(width: 40),
-        Column(
-          //mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ActionButtonWidget(
-              onPressed: () => _goToDetails(context),
-              type: ButtonType.elevatedButton,
-              title: "View details",
-              backgroundColor: AppColor.lightBlue,
-              foregroundColor: AppColor.blue,
-            ),
-          ],
-        ),
+        viewDetailsEnabled
+            ? Container(
+                margin: const EdgeInsets.only(left: 40),
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ActionButtonWidget(
+                      onPressed: () => _goToDetails(context),
+                      type: ButtonType.elevatedButton,
+                      title: "View details",
+                      backgroundColor: AppColor.lightBlue,
+                      foregroundColor: AppColor.blue,
+                    ),
+                  ],
+                ),
+              )
+            : const SizedBox.shrink(),
       ],
     );
   }
@@ -138,25 +146,31 @@ class JobItemWidget extends StatelessWidget {
               title: "Progress",
               flex: 2,
               child: _progressBar(percentage: job.progress, width: 200)),
-          Expanded(
-            flex: 2,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ActionButtonWidget(
-                      onPressed: () => _goToDetails(context),
-                      type: ButtonType.elevatedButton,
-                      title: "View details",
-                      backgroundColor: AppColor.lightBlue,
-                      foregroundColor: AppColor.blue,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          viewDetailsEnabled
+              ? Expanded(
+                  flex: 2,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          ActionButtonWidget(
+                            onPressed: () => _goToDetails(context),
+                            type: ButtonType.elevatedButton,
+                            title: "View details",
+                            backgroundColor: AppColor.lightBlue,
+                            foregroundColor: AppColor.blue,
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink(),
         ],
       ),
     );
