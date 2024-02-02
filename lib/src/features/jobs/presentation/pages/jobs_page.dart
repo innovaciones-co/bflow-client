@@ -1,18 +1,16 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/utils/map_failure_to_error_message.dart';
-import 'package:bflow_client/src/core/widgets/left_dialog_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/core/widgets/switch_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/create_job_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/jobs_calendar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../widgets/job_item_widget.dart';
-import '../widgets/jobs_fiter_widget.dart';
+import '../widgets/jobs_action_bar_widget.dart';
 
 class JobsPage extends StatefulWidget {
   const JobsPage({super.key});
@@ -27,12 +25,6 @@ class _JobsPageState extends State<JobsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _dialogBuilder(context),
-        child: const Icon(
-          Icons.add_task_outlined,
-        ),
-      ),
       body: PageContainerWidget(
         title: "Jobs (Construction list)",
         actions: [
@@ -54,7 +46,7 @@ class _JobsPageState extends State<JobsPage> {
       child: Column(
         children: [
           _getJobCards(context),
-          const JobsFilterWidget(),
+          const JobsActionBarWidget(),
           BlocBuilder<JobsBloc, JobsState>(
             builder: (context, state) {
               if (state is JobsInitial) {
@@ -199,17 +191,5 @@ class _JobsPageState extends State<JobsPage> {
     setState(() {
       _calendarView = value;
     });
-  }
-
-  Future<void> _dialogBuilder(BuildContext context) {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return LeftDialogWidget(
-          title: "New Job",
-          child: CreateJobWidget(),
-        );
-      },
-    );
   }
 }

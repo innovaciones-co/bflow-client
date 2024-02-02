@@ -49,7 +49,9 @@ class CreateJobWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             ActionButtonWidget(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
               type: ButtonType.textButton,
               title: "Cancel",
             ),
