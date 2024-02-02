@@ -1,26 +1,20 @@
 import 'dart:convert';
 
-class FileModel {
-  final int? id;
-  final String? uuid;
-  final String? temporaryUrl;
-  final String? bucket;
-  final String? name;
-  final String? type;
-  final String? category;
-  final String? tag;
-  final int? job;
+import 'package:bflow_client/src/features/jobs/domain/entities/file_category.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/file_tag.dart';
 
+class FileModel extends File {
   FileModel({
-    this.id,
-    this.uuid,
-    this.temporaryUrl,
-    this.bucket,
-    this.name,
-    this.type,
-    this.category,
-    this.tag,
-    this.job,
+    required super.id,
+    required super.uuid,
+    required super.temporaryUrl,
+    super.bucket,
+    required super.name,
+    super.type,
+    super.category,
+    super.tag,
+    super.job,
   });
 
   factory FileModel.fromJson(String str) => FileModel.fromMap(json.decode(str));
@@ -34,8 +28,8 @@ class FileModel {
         bucket: json["bucket"],
         name: json["name"],
         type: json["type"],
-        category: json["category"],
-        tag: json["tag"],
+        category: FileCategory.fromString(json["category"]),
+        tag: FileTag.fromString(json["tag"]),
         job: json["job"],
       );
 
@@ -46,8 +40,8 @@ class FileModel {
         "bucket": bucket,
         "name": name,
         "type": type,
-        "category": category,
-        "tag": tag,
+        "category": category?.toJSON(),
+        "tag": tag?.toJSON(),
         "job": job,
       };
 }
