@@ -19,7 +19,7 @@ class JobsCalendarWidget extends StatefulWidget {
 }
 
 class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
-  final DateTime _selectedMonth = DateTime.now();
+  DateTime _selectedMonth = DateTime.now();
   DateTime _selectedDate = DateTime.now();
   final DateTime _today = DateTime.now();
 
@@ -42,35 +42,33 @@ class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 400,
-      child: Row(
-        children: [
-          Flexible(
-            flex: 2,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 30,
-                  child: GridView.count(
-                    crossAxisCount: 7,
-                    children: WeekDays.values
-                        .map(
-                          (e) => Text(e.toString()),
-                        )
-                        .toList(),
-                  ),
+    return Row(
+      children: [
+        Flexible(
+          flex: 3,
+          child: Column(
+            children: [
+              _calendarNavigator(),
+              SizedBox(
+                height: 30,
+                child: GridView.count(
+                  crossAxisCount: 7,
+                  children: WeekDays.values
+                      .map(
+                        (e) => Text(e.toString()),
+                      )
+                      .toList(),
                 ),
-                Expanded(child: _calendarBody(context))
-              ],
-            ),
+              ),
+              Expanded(child: _calendarBody(context))
+            ],
           ),
-          Flexible(
-            flex: 1,
-            child: _todayTasks(),
-          ),
-        ],
-      ),
+        ),
+        Flexible(
+          flex: 2,
+          child: _todayTasks(),
+        ),
+      ],
     );
   }
 
@@ -117,7 +115,8 @@ class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
                   if (tasks.isEmpty) {
                     return const Expanded(
                       child: Center(
-                        child: Text("No tasks for selected day"),
+                        child: Text(
+                            "Excellent, you don't have pending tasks for today!"),
                       ),
                     );
                   }
@@ -193,7 +192,7 @@ class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
                       ? AppColor.purple
                       : day.month == _selectedMonth.month
                           ? AppColor.white
-                          : AppColor.lightGrey,
+                          : AppColor.grey,
                 ),
                 padding: const EdgeInsets.all(25),
                 child: _buildDay(day, context),
@@ -210,7 +209,13 @@ class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
       color = AppColor.white;
     }
     if (date.isSameDate(_today) && !date.isSameDate(_selectedDate)) {
-      color = AppColor.red;
+      return Text(
+        date.day.toString(),
+        textAlign: TextAlign.end,
+        style: context.titleMedium?.copyWith(
+          color: color,
+        ),
+      );
     }
     return Text(
       date.day.toString(),
@@ -228,9 +233,64 @@ class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
   }
 
   bool _isTaskInSelectedDate(Task task) {
-    final bool selectedBeforeEndDate = task.endDate != null
-        ? task.endDate!.compareTo(_selectedDate) > 1
-        : true;
-    return true;
+    if (task.endDate == null || task.startDate == null) {
+      return true;
+    }
+
+    return _selectedDate.isBetweenDates(task.startDate!, task.endDate!);
+  }
+
+  _calendarNavigator() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 15),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: _selectPreviousMonth,
+            icon: const Icon(Icons.arrow_back_ios),
+          ),
+          SizedBox(
+            width: 220,
+            child: Text(
+              _selectedMonth.toMonthAndYear(),
+              style: context.headlineMedium,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          IconButton(
+            onPressed: _selectNextMonth,
+            icon: const Icon(Icons.arrow_forward_ios),
+          ),
+          const Spacer(),
+          TextButton(
+            onPressed: _selectCurrentMonth,
+            child: Text(
+              "Current month",
+              style: context.headlineMedium?.copyWith(fontSize: 15),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _selectPreviousMonth() {
+    setState(() {
+      _selectedMonth =
+          _selectedMonth.subtract(Duration(days: _selectedMonth.day));
+    });
+  }
+
+  void _selectNextMonth() {
+    setState(() {
+      _selectedMonth = DateTime(
+          _selectedMonth.year, _selectedMonth.month + 1, _selectedMonth.day);
+    });
+  }
+
+  void _selectCurrentMonth() {
+    setState(() {
+      _selectedMonth = DateTime(_today.year, _today.month, _today.day);
+    });
   }
 }

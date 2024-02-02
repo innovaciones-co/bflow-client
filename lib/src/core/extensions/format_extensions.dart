@@ -9,6 +9,8 @@ extension DateTimeExtensions on DateTime {
   toDateFormat() => DateFormat('yyyy-MM-dd').format(this);
 
   toMonthDate() => DateFormat('dd MMM').format(this);
+
+  toMonthAndYear() => DateFormat('MMMM yyyy').format(this);
 }
 
 extension DoubleFormatExtension on double {
