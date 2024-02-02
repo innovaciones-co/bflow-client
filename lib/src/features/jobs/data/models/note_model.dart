@@ -1,14 +1,12 @@
 import 'dart:convert';
 
-class NoteModel {
-  final int? id;
-  final String? body;
-  final int? job;
+import 'package:bflow_client/src/features/jobs/domain/entities/note_entity.dart';
 
+class NoteModel extends Note {
   NoteModel({
-    this.id,
-    this.body,
-    this.job,
+    super.id,
+    required super.body,
+    super.job,
   });
 
   factory NoteModel.fromJson(String str) => NoteModel.fromMap(json.decode(str));

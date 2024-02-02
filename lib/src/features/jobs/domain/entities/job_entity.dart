@@ -1,4 +1,6 @@
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/note_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:equatable/equatable.dart';
 
@@ -16,6 +18,8 @@ class Job implements Equatable {
   final User user;
   final TaskStage stage;
   final double progress;
+  final List<Note>? notes;
+  final List<File>? files;
 
   Job({
     required this.id,
@@ -29,6 +33,8 @@ class Job implements Equatable {
     required this.user,
     this.stage = TaskStage.slabDown,
     this.progress = 0,
+    this.notes,
+    this.files,
   });
 
   @override

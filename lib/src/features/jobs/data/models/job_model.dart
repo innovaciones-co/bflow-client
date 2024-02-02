@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+
 import 'dart:convert';
 
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
@@ -9,10 +10,6 @@ import 'file_model.dart';
 import 'note_model.dart';
 
 class JobModel extends Job {
-  final String? buildingType;
-  final List<NoteModel>? notes;
-  final List<FileModel>? files;
-
   JobModel({
     required super.id,
     required super.jobNumber,
@@ -21,11 +18,10 @@ class JobModel extends Job {
     required super.plannedEndDate,
     required super.address,
     required super.description,
-    this.buildingType,
     required super.user,
     super.client,
-    this.notes,
-    this.files,
+    super.notes,
+    super.files,
     super.stage,
     super.progress = 0,
   });
@@ -42,7 +38,6 @@ class JobModel extends Job {
         plannedEndDate: DateTime.parse(json["plannedEndDate"]),
         address: json["address"],
         description: json["description"],
-        buildingType: json["buildingType"],
         client: json["client"],
         user: UsersModel.fromMap(json["user"]),
         stage: TaskStage.fromString(json["stage"]),
@@ -54,7 +49,7 @@ class JobModel extends Job {
         files: json["files"] == null
             ? []
             : List<FileModel>.from(
-                json["files"]!.map((x) => FileModel.fromMap(x))),
+                json["files"]!.map((x) => NoteModel.fromMap(x))),
       );
 
   Map<String, dynamic> toMap() => {
@@ -67,14 +62,9 @@ class JobModel extends Job {
             "${plannedEndDate.year.toString().padLeft(4, '0')}-${plannedEndDate.month.toString().padLeft(2, '0')}-${plannedEndDate.day.toString().padLeft(2, '0')}",
         "address": address,
         "description": description,
-        "buildingType": buildingType,
         "client": client,
         "user": user,
-        "notes": notes == null
-            ? []
-            : List<dynamic>.from(notes!.map((x) => x.toMap())),
-        "files": files == null
-            ? []
-            : List<dynamic>.from(files!.map((x) => x.toMap())),
+        "notes": notes == null ? [] : List<int>.from(notes!.map((x) => x.id)),
+        "files": files == null ? [] : List<int>.from(files!.map((x) => x.id)),
       };
 }
