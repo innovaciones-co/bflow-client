@@ -17,10 +17,14 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
   Map<int, TableColumnWidth> columnWidths = {
     0: const FixedColumnWidth(40),
     1: const FixedColumnWidth(40),
+    //3: const MaxColumnWidth(const FixedColumnWidth(100.0), FractionColumnWidth(0.1)),
+    4: const FixedColumnWidth(110),
     5: const FixedColumnWidth(80),
     6: const FixedColumnWidth(80),
     7: const FixedColumnWidth(80),
     9: const FixedColumnWidth(80),
+    10: const FixedColumnWidth(120),
+    11: const FixedColumnWidth(40),
   };
   bool _allTaskSelected = false;
   final List<Task> _tasksSelected = [];
@@ -54,16 +58,17 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                   });
                 },
               ),
-              Text("#"),
-              Text("Task"),
-              Text("Suplier"),
-              Text("Status"),
-              Text("Call date"),
-              Text("Start date"),
-              Text("End date"),
-              Text("Comments"),
-              Text("Progress"),
-              Text("Actions"),
+              const Center(child: Text("#")),
+              const Text("Task"),
+              const Text("Suplier"),
+              const Text("Status"),
+              const Text("Call date"),
+              const Text("Start date"),
+              const Text("End date"),
+              const Text("Comments"),
+              const Text("Progress"),
+              const Text("Actions"),
+              const SizedBox.shrink(),
             ],
           ),
         ],
@@ -104,61 +109,23 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                       }
                     },
                   ),
-                  Text('${index + 1}'),
+                  Center(child: Text('${index + 1}')),
                   Text(widget.tasks[index].name),
-                  Text(widget.tasks[index].supplier.toString()),
-                  Row(children: [
-                    CustomChipWidget(
-                      label: widget.tasks[index].status.toString(),
-                      backgroundColor: AppColor.lightOrange,
-                      textColor: AppColor.orange,
-                    ),
-                  ]),
-                  const Text("01 Jan"),
-                  Text(widget.tasks[index].startDate?.toMonthDate() ?? ''),
-                  Text(widget.tasks[index].endDate?.toMonthDate() ?? ""),
-                  Text(widget.tasks[index].comments ?? ""),
-                  Text(widget.tasks[index].progress.toString()),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ActionButtonWidget(
-                        onPressed: () {},
-                        type: ButtonType.textButton,
-                        title: "",
-                        icon: Icons.edit_outlined,
-                      ),
-                      ActionButtonWidget(
-                        onPressed: () {},
-                        type: ButtonType.textButton,
-                        title: "",
-                        icon: Icons.delete_outline_outlined,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              /* TableRow(
-                // Optional subtask
-                children: [
-                  const Text('Checkbox'),
-                  const Text(""),
-                  const Text("Whater Meter Call Up"),
-                  const Text("Water Corp"),
+                  Text(widget.tasks[index].supplier?.name ?? ''),
                   Row(
                     children: [
                       CustomChipWidget(
-                        label: "Sent",
+                        label: widget.tasks[index].status.toString(),
                         backgroundColor: AppColor.lightOrange,
                         textColor: AppColor.orange,
                       ),
                     ],
                   ),
                   const Text("01 Jan"),
-                  const Text("01 Jan"),
-                  const Text("01 Jan"),
-                  const Text("We need this task for ..."),
-                  const Text("100%"),
+                  Text(widget.tasks[index].startDate?.toMonthDate() ?? ''),
+                  Text(widget.tasks[index].endDate?.toMonthDate() ?? ""),
+                  Text(widget.tasks[index].comments ?? ""),
+                  Text("${widget.tasks[index].progress.toString()}%"),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -176,8 +143,49 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                       ),
                     ],
                   ),
+                  const SizedBox.shrink(),
                 ],
-              ), */
+              ),
+              /* TableRow(
+              // TODO: Show subtasks
+              children: [
+                const Text('Checkbox'),
+                const Text(""),
+                const Text("Whater Meter Call Up"),
+                const Text("Water Corp"),
+                Row(
+                  children: [
+                    CustomChipWidget(
+                      label: "Sent",
+                      backgroundColor: AppColor.lightOrange,
+                      textColor: AppColor.orange,
+                    ),
+                  ],
+                ),
+                const Text("01 Jan"),
+                const Text("01 Jan"),
+                const Text("01 Jan"),
+                const Text("We need this task for ..."),
+                const Text("100%"),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ActionButtonWidget(
+                      onPressed: () {},
+                      type: ButtonType.textButton,
+                      title: "",
+                      icon: Icons.edit_outlined,
+                    ),
+                    ActionButtonWidget(
+                      onPressed: () {},
+                      type: ButtonType.textButton,
+                      title: "",
+                      icon: Icons.delete_outline_outlined,
+                    ),
+                  ],
+                ),
+              ],
+            ), */
             ],
           )
       ],

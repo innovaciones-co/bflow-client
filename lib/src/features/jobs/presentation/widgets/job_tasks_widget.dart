@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_bloc.dart';
@@ -23,7 +24,7 @@ class JobTasksWidget extends StatelessWidget {
         }
 
         if (state is TasksLoaded) {
-          return _buildTasks(state.tasks);
+          return _buildTasks(context, state.tasks);
         }
 
         if (state is TasksError) {
@@ -35,7 +36,7 @@ class JobTasksWidget extends StatelessWidget {
     );
   }
 
-  _buildTasks(List<Task> tasks) {
+  _buildTasks(BuildContext context, List<Task> tasks) {
     return Expanded(
       child: DefaultTabController(
         length: 6,
@@ -55,9 +56,19 @@ class JobTasksWidget extends StatelessWidget {
             Expanded(
               child: TabBarView(
                 children: [
-                  TaskTableWidget(
-                    tasks: tasks,
-                  ),
+                  context.isDesktop
+                      ? TaskTableWidget(
+                          tasks: tasks,
+                        )
+                      : SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SizedBox(
+                            width: 1500, // TODO: Implement a valid width
+                            child: TaskTableWidget(
+                              tasks: tasks,
+                            ),
+                          ),
+                        ),
                   const Text("Plate Height"),
                   const Text("Roof Cover"),
                   const Text("Lock UP"),
