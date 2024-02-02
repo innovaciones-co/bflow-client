@@ -9,7 +9,7 @@ sealed class TasksEvent extends Equatable {
 }
 
 class GetTasksEvent extends TasksEvent {
-  final int jobId;
+  final int? jobId;
 
-  const GetTasksEvent({required this.jobId});
+  const GetTasksEvent({this.jobId});
 }

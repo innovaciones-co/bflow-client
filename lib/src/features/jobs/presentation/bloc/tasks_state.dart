@@ -20,9 +20,9 @@ class TasksLoaded extends TasksState {
   List<Object> get props => [tasks];
 }
 
-class TaskError extends TasksState {
+class TasksError extends TasksState {
   final Failure failure;
-  const TaskError({
+  const TasksError({
     required this.failure,
   });
 

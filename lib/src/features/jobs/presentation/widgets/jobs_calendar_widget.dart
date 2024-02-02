@@ -2,7 +2,14 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/domain/entities/weekdays.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/date_utils_extension.dart';
+import 'package:bflow_client/src/core/extensions/format_extensions.dart';
+import 'package:bflow_client/src/core/widgets/failure_widget.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../core/config/config.dart';
 
 class JobsCalendarWidget extends StatefulWidget {
   const JobsCalendarWidget({super.key});
@@ -60,16 +67,102 @@ class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
           ),
           Flexible(
             flex: 1,
-            child: Container(
-              color: AppColor.orange,
-              height: double.maxFinite,
-              width: double.maxFinite,
-              margin: const EdgeInsets.only(left: 15),
-              padding: const EdgeInsets.all(15),
-              child: const Text("The tasks here"),
-            ),
+            child: _todayTasks(),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _todayTasks() {
+    return Container(
+      height: double.maxFinite,
+      width: double.maxFinite,
+      margin: const EdgeInsets.only(left: 15),
+      padding: const EdgeInsets.all(25),
+      decoration: BoxDecoration(
+        color: AppColor.white,
+        boxShadow: [
+          BoxShadow(
+            color: AppColor.grey,
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(2, 2), // changes position of shadow
+          ),
+        ],
+      ),
+      child: BlocProvider<TasksBloc>(
+        create: (context) =>
+            DependencyInjection.sl()..add(const GetTasksEvent()),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("To do list", style: context.headlineMedium),
+            const SizedBox(
+              height: 25,
+            ),
+            BlocBuilder<TasksBloc, TasksState>(
+              builder: (context, state) {
+                if (state is TasksLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                if (state is TasksLoaded) {
+                  final tasks = state.tasks
+                      .where((task) => _isTaskInSelectedDate(task))
+                      .toList();
+
+                  if (tasks.isEmpty) {
+                    return const Expanded(
+                      child: Center(
+                        child: Text("No tasks for selected day"),
+                      ),
+                    );
+                  }
+
+                  return Expanded(
+                    child: ListView.builder(
+                      itemCount: tasks.length,
+                      itemBuilder: (_, i) {
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            color: AppColor.getRandomColor(),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                tasks[i].name,
+                                style: context.titleMedium,
+                              ),
+                              Text(tasks[i].supplier?.name ?? ''),
+                              Text(
+                                "${tasks[i].startDate?.toDateFormat()} - ${tasks[i].endDate?.toDateFormat()}",
+                                style: context.labelSmall,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                }
+
+                if (state is TasksError) {
+                  FailureWidget(failure: state.failure);
+                }
+
+                return const SizedBox();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -111,7 +204,7 @@ class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
     );
   }
 
-  Text _buildDay(DateTime date, BuildContext context) {
+  Widget _buildDay(DateTime date, BuildContext context) {
     Color color = AppColor.black;
     if (date.isSameDate(_selectedDate)) {
       color = AppColor.white;
@@ -132,5 +225,12 @@ class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
     setState(() {
       _selectedDate = date;
     });
+  }
+
+  bool _isTaskInSelectedDate(Task task) {
+    final bool selectedBeforeEndDate = task.endDate != null
+        ? task.endDate!.compareTo(_selectedDate) > 1
+        : true;
+    return true;
   }
 }

@@ -13,12 +13,15 @@ class GetTasksUseCase implements UseCase<List<t.Task>, GetTasksParams> {
 
   @override
   Future<Either<Failure, List<t.Task>>> execute(params) {
-    return repository.getTasksByJob(params.jobId);
+    if (params.jobId != null) {
+      return repository.getTasksByJob(params.jobId!);
+    }
+    return repository.getTasks();
   }
 }
 
 class GetTasksParams {
-  final int jobId;
+  final int? jobId;
 
-  GetTasksParams({required this.jobId});
+  GetTasksParams({this.jobId});
 }
