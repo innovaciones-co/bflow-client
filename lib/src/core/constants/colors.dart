@@ -12,7 +12,7 @@ class AppColor {
   static Color lightBlue = const Color(0xffF3F6FC);
   static Color darkGrey = const Color(0xff737373);
   static Color grey = const Color(0xffD9D9D9);
-  static Color lightGrey = const Color(0xffF5F5F5);
+  static Color lightGrey = const Color(0xffF3F6FC);
 
   // Other Colors
   static Color purple = const Color(0xffab86ff);
@@ -22,7 +22,6 @@ class AppColor {
   static Color orange = const Color(0xffFF7733);
   static Color lightOrange = const Color(0xfffff1eb);
   static Color red = const Color(0xfff23d4f);
-  static Color secondaryLightBlue = const Color(0xffF3F6FC);
 
   // To do list Colors
   static List<Color> todoColors = [
