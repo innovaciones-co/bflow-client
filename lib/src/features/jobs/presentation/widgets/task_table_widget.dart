@@ -23,7 +23,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     6: const FixedColumnWidth(100),
     7: const FixedColumnWidth(100),
     9: const FixedColumnWidth(80),
-    10: const FixedColumnWidth(120),
+    10: const FixedColumnWidth(110),
     11: const FixedColumnWidth(40),
   };
   bool _allTaskSelected = false;
@@ -155,19 +155,23 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                   ),
                   _tableCell(
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        ActionButtonWidget(
+                        IconButton(
                           onPressed: () {},
-                          type: ButtonType.textButton,
-                          title: "",
-                          icon: Icons.edit_outlined,
+                          color: AppColor.blue,
+                          icon: const Icon(
+                            Icons.edit_outlined,
+                            size: 20,
+                          ),
                         ),
-                        ActionButtonWidget(
+                        IconButton(
                           onPressed: () {},
-                          type: ButtonType.textButton,
-                          title: "",
-                          icon: Icons.delete_outline_outlined,
+                          color: AppColor.blue,
+                          icon: const Icon(
+                            Icons.delete_outline_outlined,
+                            size: 20,
+                          ),
                         ),
                       ],
                     ),
