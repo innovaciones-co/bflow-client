@@ -4,12 +4,14 @@ class DatePickerWidget extends StatefulWidget {
   final Function(DateTime?)? onChange;
   final String label;
   final String? Function(String?)? validator;
+  final DateTime? initialValue;
 
   const DatePickerWidget({
     super.key,
     this.onChange,
     required this.label,
     this.validator,
+    this.initialValue,
   });
 
   @override
@@ -22,6 +24,9 @@ class _DatePickerWidgetState extends State<DatePickerWidget> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialValue != null) {
+      _dateController.text = widget.initialValue.toString().split(" ")[0];
+    }
   }
 
   @override

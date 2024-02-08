@@ -7,6 +7,7 @@ class DropdownWidget<T> extends StatefulWidget {
   final ValueChanged<T>? onChanged;
   final String Function(T) getLabel;
   final String? Function(String?)? validator;
+  final T? initialValue;
 
   const DropdownWidget({
     super.key,
@@ -15,6 +16,7 @@ class DropdownWidget<T> extends StatefulWidget {
     this.onChanged,
     required this.getLabel,
     this.validator,
+    this.initialValue,
   });
 
   @override
@@ -29,7 +31,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
     super.initState();
     setState(() {
       if (widget.items.isNotEmpty) {
-        dropdownValue = widget.items.first;
+        dropdownValue = widget.initialValue ?? widget.items.first;
         if (widget.onChanged != null && dropdownValue != null) {
           widget.onChanged!(dropdownValue as T);
         }
@@ -61,7 +63,6 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
           selectedTrailingIcon: const Icon(Icons.keyboard_arrow_up_outlined),
           initialSelection: dropdownValue,
           onSelected: (T? value) {
-            debugPrint("New value $value");
             if (widget.onChanged != null && value != null) {
               widget.onChanged!(value);
             }
