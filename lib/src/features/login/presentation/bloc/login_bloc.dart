@@ -1,7 +1,8 @@
+import 'package:bflow_client/src/core/domain/entities/form_status.dart';
 import 'package:bflow_client/src/features/login/domain/usecases/login_use_case.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
 
 part 'login_state.dart';
 

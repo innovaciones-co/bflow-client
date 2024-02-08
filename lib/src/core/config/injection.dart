@@ -10,6 +10,7 @@ import 'package:bflow_client/src/features/jobs/domain/repositories/task_reposito
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/create_job_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_bloc.dart';
 import 'package:bflow_client/src/features/login/data/implements/login_repository_impl.dart';
@@ -49,7 +50,10 @@ class DependencyInjection {
       () => LoginCubit(sl()),
     );
     sl.registerFactory<JobsBloc>(
-      () => JobsBloc(sl(), sl(), sl()),
+      () => JobsBloc(sl(), sl()),
+    );
+    sl.registerFactory<CreateJobCubit>(
+      () => CreateJobCubit(sl(), sl(), sl(), sl(), sl()),
     );
     sl.registerFactory<JobBloc>(
       () => JobBloc(sl(), sl()),

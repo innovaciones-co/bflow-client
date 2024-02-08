@@ -53,4 +53,46 @@ mixin Validator {
     }
     return null;
   }
+
+  // Validate Job number
+  String? validateJobNumber(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Job Number is required';
+    }
+    return null;
+  }
+
+  String? validateStartDate(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Start Date is required';
+    }
+    return null;
+  }
+
+  String? validateEndDate(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'End Date is required';
+    }
+    return null;
+  }
+
+  String? validateStartAndEndDates(DateTime? startDate, DateTime? endDate) {
+    if (startDate == null || endDate == null) {
+      return null;
+    }
+
+    if (startDate.compareTo(endDate) > 0) {
+      return "Start Date must be before End Date";
+    }
+
+    return null;
+  }
+
+  String? validateSupervisor(String? supervisor) {
+    if (supervisor == null || supervisor.isEmpty) {
+      return 'Supervisor is required';
+    }
+
+    return null;
+  }
 }

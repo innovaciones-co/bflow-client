@@ -1,6 +1,6 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
-import 'package:bflow_client/src/core/widgets/left_dialog_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/create_job_widget.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +46,8 @@ class JobsActionBarWidget extends StatelessWidget {
             ),
           ),
           ActionButtonWidget(
-            onPressed: () => _dialogBuilder(context),
+            onPressed: () =>
+                context.showLeftDialog('New Job', CreateJobWidget()),
             icon: Icons.add,
             type: ButtonType.elevatedButton,
             title: 'New Job',
@@ -64,17 +65,5 @@ class JobsActionBarWidget extends StatelessWidget {
     } else {
       context.read<JobsBloc>().add(GetJobsEvent());
     }
-  }
-
-  Future<void> _dialogBuilder(BuildContext context) {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return LeftDialogWidget(
-          title: "New Job",
-          child: CreateJobWidget(),
-        );
-      },
-    );
   }
 }

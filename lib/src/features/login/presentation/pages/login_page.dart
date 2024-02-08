@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/domain/entities/form_status.dart';
+
 class LoginPage extends StatelessWidget with Validator {
   LoginPage({super.key});
 
