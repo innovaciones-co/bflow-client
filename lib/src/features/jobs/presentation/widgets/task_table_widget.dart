@@ -19,11 +19,11 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     1: const FixedColumnWidth(40),
     //3: const MaxColumnWidth(const FixedColumnWidth(100.0), FractionColumnWidth(0.1)),
     4: const FixedColumnWidth(110),
-    5: const FixedColumnWidth(80),
-    6: const FixedColumnWidth(80),
-    7: const FixedColumnWidth(80),
+    5: const FixedColumnWidth(100),
+    6: const FixedColumnWidth(100),
+    7: const FixedColumnWidth(100),
     9: const FixedColumnWidth(80),
-    10: const FixedColumnWidth(120),
+    10: const FixedColumnWidth(110),
     11: const FixedColumnWidth(40),
   };
   bool _allTaskSelected = false;
@@ -46,7 +46,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
               color: AppColor.grey,
             ),
             children: [
-              Checkbox(
+              _tableCell(Checkbox(
                 value: _allTaskSelected,
                 onChanged: (bool? value) {
                   setState(() {
@@ -57,17 +57,22 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                         : _tasksSelected.removeWhere((element) => true);
                   });
                 },
+                //shape: RoundedRectangleBorder(                    borderRadius: BorderRadius.circular(3)),
+              )),
+              _tableCell(
+                const Center(
+                  child: Text("#"),
+                ),
               ),
-              const Center(child: Text("#")),
-              const Text("Task"),
-              const Text("Suplier"),
-              const Text("Status"),
-              const Text("Call date"),
-              const Text("Start date"),
-              const Text("End date"),
-              const Text("Comments"),
-              const Text("Progress"),
-              const Text("Actions"),
+              _tableCell(const Text("Task")),
+              _tableCell(const Text("Supplier")),
+              _tableCell(const Text("Status")),
+              _tableCell(const Text("Call date")),
+              _tableCell(const Text("Booking date")),
+              _tableCell(const Text("Completion date")),
+              _tableCell(const Text("Comments")),
+              _tableCell(const Text("Progress")),
+              _tableCell(const Text("Actions")),
               const SizedBox.shrink(),
             ],
           ),
@@ -95,53 +100,81 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                     //color: AppColor.grey,
                     ),
                 children: [
-                  Checkbox(
-                    value: _tasksSelected.contains(widget.tasks[index]),
-                    onChanged: (bool? value) {
-                      if (value == true) {
-                        setState(() {
-                          _tasksSelected.add(widget.tasks[index]);
-                        });
-                      } else {
-                        setState(() {
-                          _tasksSelected.remove(widget.tasks[index]);
-                        });
-                      }
-                    },
+                  _tableCell(
+                    Checkbox(
+                      value: _tasksSelected.contains(widget.tasks[index]),
+                      onChanged: (bool? value) {
+                        if (value == true) {
+                          setState(() {
+                            _tasksSelected.add(widget.tasks[index]);
+                          });
+                        } else {
+                          setState(() {
+                            _tasksSelected.remove(widget.tasks[index]);
+                          });
+                        }
+                      },
+                    ),
                   ),
-                  Center(child: Text('${index + 1}')),
-                  Text(widget.tasks[index].name),
-                  Text(widget.tasks[index].supplier?.name ?? ''),
-                  Row(
-                    children: [
-                      CustomChipWidget(
-                        label: widget.tasks[index].status.toString(),
-                        backgroundColor: AppColor.lightOrange,
-                        textColor: AppColor.orange,
-                      ),
-                    ],
+                  _tableCell(
+                    Center(
+                      child: Text('${index + 1}'),
+                    ),
                   ),
-                  const Text("01 Jan"),
-                  Text(widget.tasks[index].startDate?.toMonthDate() ?? ''),
-                  Text(widget.tasks[index].endDate?.toMonthDate() ?? ""),
-                  Text(widget.tasks[index].comments ?? ""),
-                  Text("${widget.tasks[index].progress.toString()}%"),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ActionButtonWidget(
-                        onPressed: () {},
-                        type: ButtonType.textButton,
-                        title: "",
-                        icon: Icons.edit_outlined,
-                      ),
-                      ActionButtonWidget(
-                        onPressed: () {},
-                        type: ButtonType.textButton,
-                        title: "",
-                        icon: Icons.delete_outline_outlined,
-                      ),
-                    ],
+                  _tableCell(
+                    Text(widget.tasks[index].name),
+                  ),
+                  _tableCell(
+                    Text(widget.tasks[index].supplier?.name ?? ''),
+                  ),
+                  _tableCell(
+                    Row(
+                      children: [
+                        CustomChipWidget(
+                          label: widget.tasks[index].status.toString(),
+                          backgroundColor: AppColor.lightOrange,
+                          textColor: AppColor.orange,
+                        ),
+                      ],
+                    ),
+                  ),
+                  _tableCell(
+                    const Text("01 Jan"),
+                  ),
+                  _tableCell(
+                    Text(widget.tasks[index].startDate?.toMonthDate() ?? ''),
+                  ),
+                  _tableCell(
+                    Text(widget.tasks[index].endDate?.toMonthDate() ?? ""),
+                  ),
+                  _tableCell(
+                    Text(widget.tasks[index].comments ?? ""),
+                  ),
+                  _tableCell(
+                    Text("${widget.tasks[index].progress.toString()}%"),
+                  ),
+                  _tableCell(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          color: AppColor.blue,
+                          icon: const Icon(
+                            Icons.edit_outlined,
+                            size: 20,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          color: AppColor.blue,
+                          icon: const Icon(
+                            Icons.delete_outline_outlined,
+                            size: 20,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox.shrink(),
                 ],
@@ -198,6 +231,16 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
           widget.tasks.insert(newIndex, item);
         });
       },
+    );
+  }
+
+  _tableCell(Widget widget) {
+    return TableCell(
+      verticalAlignment: TableCellVerticalAlignment.middle,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: widget,
+      ),
     );
   }
 }
