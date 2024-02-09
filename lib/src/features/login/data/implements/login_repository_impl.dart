@@ -19,7 +19,7 @@ class LoginRepositoryImp implements LoginRepository {
   ) async {
     try {
       return Right(await remoteDataSource.loginUser(username, password));
-    } on RemoteDataSourceException catch (e) {
+    } on RemoteDataSourceException {
       return Left(ServerFailure(message: "Invalid credentials"));
     }
   }
