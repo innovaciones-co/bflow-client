@@ -1,6 +1,5 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
-import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/custom_chip_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +25,23 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     10: const FixedColumnWidth(110),
     11: const FixedColumnWidth(40),
   };
+
   bool _allTaskSelected = false;
-  final List<Task> _tasksSelected = [];
+  final List<Task?> _tasksSelected = [];
+
+  final List<Task> parentTasks = [];
+  late final Map<int, List<Task>> childrenTasksMap;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.tasks.forEach((task) {
+      if (task.parentTask == null) {
+        parentTasks.add(task);
+      }
+    });
+    childrenTasksMap = _tasksToChildrenMap(widget.tasks);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +94,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
       ),
       children: [
         for (int index = 0;
-            index < widget.tasks.length;
+            index < parentTasks.length;
             index += 1) // Num of items
           Table(
             key: Key('$index'),
@@ -102,15 +116,15 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                 children: [
                   _tableCell(
                     Checkbox(
-                      value: _tasksSelected.contains(widget.tasks[index]),
+                      value: _tasksSelected.contains(parentTasks[index]),
                       onChanged: (bool? value) {
                         if (value == true) {
                           setState(() {
-                            _tasksSelected.add(widget.tasks[index]);
+                            _tasksSelected.add(parentTasks[index]);
                           });
                         } else {
                           setState(() {
-                            _tasksSelected.remove(widget.tasks[index]);
+                            _tasksSelected.remove(parentTasks[index]);
                           });
                         }
                       },
@@ -122,16 +136,16 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                     ),
                   ),
                   _tableCell(
-                    Text(widget.tasks[index].name),
+                    Text(parentTasks[index].name),
                   ),
                   _tableCell(
-                    Text(widget.tasks[index].supplier?.name ?? ''),
+                    Text(parentTasks[index].supplier?.name ?? ''),
                   ),
                   _tableCell(
                     Row(
                       children: [
                         CustomChipWidget(
-                          label: widget.tasks[index].status.toString(),
+                          label: parentTasks[index].status.toString(),
                           backgroundColor: AppColor.lightOrange,
                           textColor: AppColor.orange,
                         ),
@@ -142,16 +156,17 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                     const Text("01 Jan"),
                   ),
                   _tableCell(
-                    Text(widget.tasks[index].startDate?.toMonthDate() ?? ''),
+                    Text(parentTasks[index].startDate?.toMonthDate() ?? ""),
                   ),
                   _tableCell(
-                    Text(widget.tasks[index].endDate?.toMonthDate() ?? ""),
+                    Text(parentTasks[index].endDate?.toMonthDate() ?? ""),
                   ),
                   _tableCell(
-                    Text(widget.tasks[index].comments ?? ""),
+                    Text(
+                        "Id: ${parentTasks[index].id.toString()} -- ${childrenTasksMap[parentTasks[index].id]}"), //Text(parentsTasks[index].comments ?? ""),
                   ),
                   _tableCell(
-                    Text("${widget.tasks[index].progress.toString()}%"),
+                    Text("${parentTasks[index].progress.toString()}%"),
                   ),
                   _tableCell(
                     Row(
@@ -179,46 +194,99 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                   const SizedBox.shrink(),
                 ],
               ),
-              /* TableRow(
               // TODO: Show subtasks
-              children: [
-                const Text('Checkbox'),
-                const Text(""),
-                const Text("Whater Meter Call Up"),
-                const Text("Water Corp"),
-                Row(
+              for (int index2 = 0;
+                  index2 <
+                      (childrenTasksMap[parentTasks[index].id] ?? []).length;
+                  index2 += 1)
+                TableRow(
+                  decoration: const BoxDecoration(
+                      //color: AppColor.grey,
+                      ),
                   children: [
-                    CustomChipWidget(
-                      label: "Sent",
-                      backgroundColor: AppColor.lightOrange,
-                      textColor: AppColor.orange,
+                    _tableCell(
+                      const Center(
+                        child: Text('X'),
+                      ),
                     ),
+                    _tableCell(
+                      const Center(
+                        child: Text('X'),
+                      ),
+                    ),
+                    _tableCell(
+                      Text(childrenTasksMap[parentTasks[index].id]![index2]
+                          .name),
+                    ),
+                    _tableCell(
+                      Text(childrenTasksMap[parentTasks[index].id]![index2]
+                              .supplier
+                              ?.name ??
+                          ""),
+                    ),
+                    _tableCell(
+                      Row(
+                        children: [
+                          CustomChipWidget(
+                            label:
+                                childrenTasksMap[parentTasks[index].id]![index2]
+                                    .status
+                                    .toString(),
+                            backgroundColor: AppColor.lightOrange,
+                            textColor: AppColor.orange,
+                          ),
+                        ],
+                      ),
+                    ),
+                    _tableCell(
+                      const Text("01 Jan"),
+                    ),
+                    _tableCell(
+                      Text(childrenTasksMap[parentTasks[index].id]![index2]
+                              .startDate
+                              ?.toMonthDate() ??
+                          ""),
+                    ),
+                    _tableCell(
+                      Text(childrenTasksMap[parentTasks[index].id]![index2]
+                              .endDate
+                              ?.toMonthDate() ??
+                          ""),
+                    ),
+                    _tableCell(
+                      Text(
+                          "Papa:${childrenTasksMap[parentTasks[index].id]![index2].parentTask.toString()}"), //Text(taskChildrenMap[parentsTasks[index].id]![index2].comments ?? ""),
+                    ),
+                    _tableCell(
+                      Text(
+                          "${childrenTasksMap[parentTasks[index].id]![index2].progress.toString()}%"),
+                    ),
+                    _tableCell(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          IconButton(
+                            onPressed: () {},
+                            color: AppColor.blue,
+                            icon: const Icon(
+                              Icons.edit_outlined,
+                              size: 20,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            color: AppColor.blue,
+                            icon: const Icon(
+                              Icons.delete_outline_outlined,
+                              size: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox.shrink(),
                   ],
                 ),
-                const Text("01 Jan"),
-                const Text("01 Jan"),
-                const Text("01 Jan"),
-                const Text("We need this task for ..."),
-                const Text("100%"),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ActionButtonWidget(
-                      onPressed: () {},
-                      type: ButtonType.textButton,
-                      title: "",
-                      icon: Icons.edit_outlined,
-                    ),
-                    ActionButtonWidget(
-                      onPressed: () {},
-                      type: ButtonType.textButton,
-                      title: "",
-                      icon: Icons.delete_outline_outlined,
-                    ),
-                  ],
-                ),
-              ],
-            ), */
             ],
           )
       ],
@@ -227,8 +295,8 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
           if (oldIndex < newIndex) {
             newIndex -= 1;
           }
-          final Task item = widget.tasks.removeAt(oldIndex);
-          widget.tasks.insert(newIndex, item);
+          final Task item = parentTasks.removeAt(oldIndex);
+          parentTasks.insert(newIndex, item);
         });
       },
     );
@@ -242,5 +310,31 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
         child: widget,
       ),
     );
+  }
+
+  _tasksToChildrenMap(List<Task> tasks) {
+    Map<int, List<Task>> childrenTasksMap = {};
+
+    // Vincular tareas con sus tareas padre
+    tasks.forEach((task) {
+      if (task.parentTask != null) {
+        if (childrenTasksMap.containsKey(task.parentTask)) {
+          // Si la clave existe, agregamos el nuevo Task a la lista correspondiente
+          childrenTasksMap[task.parentTask]!.add(task);
+        } else {
+          // Si la clave no existe, creamos una nueva lista y agregamos el Task a esa lista
+          childrenTasksMap[task.parentTask!] = [task];
+        }
+      }
+    });
+
+    /* taskMap.forEach((key, value) {
+    print('Parent: $key');
+    value.forEach((value2) {
+      print('\t\tChildren: ${value2.id} - ${value2.name}');
+    });
+  }); */
+
+    return childrenTasksMap;
   }
 }
