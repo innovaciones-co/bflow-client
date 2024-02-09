@@ -30,8 +30,10 @@ class ApiService {
   Future<dynamic> get(
       {required String endpoint, Map<String, String>? params}) async {
     final response = await _performRequest(
-        Methods.get, '${ApiConstants.baseUrl}/$endpoint',
-        queryParams: params);
+      Methods.get,
+      '${ApiConstants.baseUrl}/$endpoint',
+      queryParams: params,
+    );
     return response.data;
   }
 
@@ -46,7 +48,8 @@ class ApiService {
     return response.data;
   }
 
-  Future<dynamic> put(String endpoint, Map<String, dynamic> data) async {
+  Future<dynamic> put(
+      {required String endpoint, Map<String, dynamic>? data}) async {
     final response = await _performRequest(
       Methods.put,
       '${ApiConstants.baseUrl}/$endpoint',
@@ -66,10 +69,14 @@ class ApiService {
     return response.data;
   }
 
-  Future<dynamic> delete(String endpoint, Map<String, dynamic> data) async {
+  Future<dynamic> delete(
+      {required String endpoint,
+      Map<String, String>? params,
+      Map<String, dynamic>? data}) async {
     final response = await _performRequest(
       Methods.delete,
       '${ApiConstants.baseUrl}/$endpoint',
+      queryParams: params,
       body: jsonEncode(data),
       headers: {'Content-Type': 'application/json'},
     );

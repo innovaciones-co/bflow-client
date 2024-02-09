@@ -32,9 +32,12 @@ class JobsRepositoryImp implements JobsRepository {
   }
 
   @override
-  Future<Either<Failure, void>> delete(int id) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<Either<Failure, void>> delete(int id) async {
+    try {
+      return Right(await remoteDataSource.deleteJob(id));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
   }
 
   @override
@@ -53,8 +56,13 @@ class JobsRepositoryImp implements JobsRepository {
   }
 
   @override
-  Future<Either<Failure, Job>> update(Job job) {
-    // TODO: implement update
-    throw UnimplementedError();
+  Future<Either<Failure, Job>> update(Job job) async {
+    try {
+      return Right(await remoteDataSource.updateJob(job));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(ClientFailure(message: e.toString()));
+    }
   }
 }

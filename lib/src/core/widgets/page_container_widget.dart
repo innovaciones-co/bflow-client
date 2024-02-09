@@ -23,7 +23,7 @@ class PageContainerWidget extends StatelessWidget {
             child: Image.asset(
               'assets/img/background.png',
               height: _getHeight(context),
-              fit: BoxFit.fitWidth,
+              fit: BoxFit.fill,
             ),
           ),
           Padding(
