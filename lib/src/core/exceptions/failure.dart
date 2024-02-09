@@ -10,4 +10,6 @@ class ServerFailure extends Failure {
 
 class NotFoundFailure extends Failure {}
 
-class ClientFailure extends Failure {}
+class ClientFailure extends Failure {
+  ClientFailure({super.message});
+}

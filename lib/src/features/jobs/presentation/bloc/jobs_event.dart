@@ -15,12 +15,3 @@ class FilterJobsEvent extends JobsEvent {
   @override
   List<Object> get props => [filter];
 }
-
-class CreateJobEvent extends JobsEvent {
-  final Job job;
-
-  const CreateJobEvent({required this.job});
-
-  @override
-  List<Object> get props => [job];
-}

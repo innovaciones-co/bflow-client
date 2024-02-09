@@ -1,6 +1,5 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
-import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/custom_chip_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:flutter/material.dart';
@@ -19,15 +18,30 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     1: const FixedColumnWidth(40),
     //3: const MaxColumnWidth(const FixedColumnWidth(100.0), FractionColumnWidth(0.1)),
     4: const FixedColumnWidth(110),
-    5: const FixedColumnWidth(80),
-    6: const FixedColumnWidth(80),
-    7: const FixedColumnWidth(80),
+    5: const FixedColumnWidth(100),
+    6: const FixedColumnWidth(100),
+    7: const FixedColumnWidth(100),
     9: const FixedColumnWidth(80),
-    10: const FixedColumnWidth(120),
+    10: const FixedColumnWidth(110),
     11: const FixedColumnWidth(40),
   };
+
   bool _allTaskSelected = false;
-  final List<Task> _tasksSelected = [];
+  final List<Task?> _tasksSelected = [];
+
+  final List<Task> parentTasks = [];
+  late final Map<int, List<Task>> childrenTasksMap;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.tasks.forEach((task) {
+      if (task.parentTask == null) {
+        parentTasks.add(task);
+      }
+    });
+    childrenTasksMap = _tasksToChildrenMap(widget.tasks);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +60,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
               color: AppColor.grey,
             ),
             children: [
-              Checkbox(
+              _tableCell(Checkbox(
                 value: _allTaskSelected,
                 onChanged: (bool? value) {
                   setState(() {
@@ -57,17 +71,22 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                         : _tasksSelected.removeWhere((element) => true);
                   });
                 },
+                //shape: RoundedRectangleBorder(                    borderRadius: BorderRadius.circular(3)),
+              )),
+              _tableCell(
+                const Center(
+                  child: Text("#"),
+                ),
               ),
-              const Center(child: Text("#")),
-              const Text("Task"),
-              const Text("Suplier"),
-              const Text("Status"),
-              const Text("Call date"),
-              const Text("Start date"),
-              const Text("End date"),
-              const Text("Comments"),
-              const Text("Progress"),
-              const Text("Actions"),
+              _tableCell(const Text("Task")),
+              _tableCell(const Text("Supplier")),
+              _tableCell(const Text("Status")),
+              _tableCell(const Text("Call date")),
+              _tableCell(const Text("Booking date")),
+              _tableCell(const Text("Completion date")),
+              _tableCell(const Text("Comments")),
+              _tableCell(const Text("Progress")),
+              _tableCell(const Text("Actions")),
               const SizedBox.shrink(),
             ],
           ),
@@ -75,7 +94,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
       ),
       children: [
         for (int index = 0;
-            index < widget.tasks.length;
+            index < parentTasks.length;
             index += 1) // Num of items
           Table(
             key: Key('$index'),
@@ -95,97 +114,179 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                     //color: AppColor.grey,
                     ),
                 children: [
-                  Checkbox(
-                    value: _tasksSelected.contains(widget.tasks[index]),
-                    onChanged: (bool? value) {
-                      if (value == true) {
-                        setState(() {
-                          _tasksSelected.add(widget.tasks[index]);
-                        });
-                      } else {
-                        setState(() {
-                          _tasksSelected.remove(widget.tasks[index]);
-                        });
-                      }
-                    },
+                  _tableCell(
+                    Checkbox(
+                      value: _tasksSelected.contains(parentTasks[index]),
+                      onChanged: (bool? value) {
+                        if (value == true) {
+                          setState(() {
+                            _tasksSelected.add(parentTasks[index]);
+                          });
+                        } else {
+                          setState(() {
+                            _tasksSelected.remove(parentTasks[index]);
+                          });
+                        }
+                      },
+                    ),
                   ),
-                  Center(child: Text('${index + 1}')),
-                  Text(widget.tasks[index].name),
-                  Text(widget.tasks[index].supplier?.name ?? ''),
-                  Row(
-                    children: [
-                      CustomChipWidget(
-                        label: widget.tasks[index].status.toString(),
-                        backgroundColor: AppColor.lightOrange,
-                        textColor: AppColor.orange,
-                      ),
-                    ],
+                  _tableCell(
+                    Center(
+                      child: Text('${index + 1}'),
+                    ),
                   ),
-                  const Text("01 Jan"),
-                  Text(widget.tasks[index].startDate?.toMonthDate() ?? ''),
-                  Text(widget.tasks[index].endDate?.toMonthDate() ?? ""),
-                  Text(widget.tasks[index].comments ?? ""),
-                  Text("${widget.tasks[index].progress.toString()}%"),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ActionButtonWidget(
-                        onPressed: () {},
-                        type: ButtonType.textButton,
-                        title: "",
-                        icon: Icons.edit_outlined,
-                      ),
-                      ActionButtonWidget(
-                        onPressed: () {},
-                        type: ButtonType.textButton,
-                        title: "",
-                        icon: Icons.delete_outline_outlined,
-                      ),
-                    ],
+                  _tableCell(
+                    Text(parentTasks[index].name),
+                  ),
+                  _tableCell(
+                    Text(parentTasks[index].supplier?.name ?? ''),
+                  ),
+                  _tableCell(
+                    Row(
+                      children: [
+                        CustomChipWidget(
+                          label: parentTasks[index].status.toString(),
+                          backgroundColor: AppColor.lightOrange,
+                          textColor: AppColor.orange,
+                        ),
+                      ],
+                    ),
+                  ),
+                  _tableCell(
+                    const Text("01 Jan"),
+                  ),
+                  _tableCell(
+                    Text(parentTasks[index].startDate?.toMonthDate() ?? ""),
+                  ),
+                  _tableCell(
+                    Text(parentTasks[index].endDate?.toMonthDate() ?? ""),
+                  ),
+                  _tableCell(
+                    Text(
+                        "Id: ${parentTasks[index].id.toString()} -- ${childrenTasksMap[parentTasks[index].id]}"), //Text(parentsTasks[index].comments ?? ""),
+                  ),
+                  _tableCell(
+                    Text("${parentTasks[index].progress.toString()}%"),
+                  ),
+                  _tableCell(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          color: AppColor.blue,
+                          icon: const Icon(
+                            Icons.edit_outlined,
+                            size: 20,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          color: AppColor.blue,
+                          icon: const Icon(
+                            Icons.delete_outline_outlined,
+                            size: 20,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox.shrink(),
                 ],
               ),
-              /* TableRow(
               // TODO: Show subtasks
-              children: [
-                const Text('Checkbox'),
-                const Text(""),
-                const Text("Whater Meter Call Up"),
-                const Text("Water Corp"),
-                Row(
+              for (int index2 = 0;
+                  index2 <
+                      (childrenTasksMap[parentTasks[index].id] ?? []).length;
+                  index2 += 1)
+                TableRow(
+                  decoration: const BoxDecoration(
+                      //color: AppColor.grey,
+                      ),
                   children: [
-                    CustomChipWidget(
-                      label: "Sent",
-                      backgroundColor: AppColor.lightOrange,
-                      textColor: AppColor.orange,
+                    _tableCell(
+                      const Center(
+                        child: Text('X'),
+                      ),
                     ),
+                    _tableCell(
+                      const Center(
+                        child: Text('X'),
+                      ),
+                    ),
+                    _tableCell(
+                      Text(childrenTasksMap[parentTasks[index].id]![index2]
+                          .name),
+                    ),
+                    _tableCell(
+                      Text(childrenTasksMap[parentTasks[index].id]![index2]
+                              .supplier
+                              ?.name ??
+                          ""),
+                    ),
+                    _tableCell(
+                      Row(
+                        children: [
+                          CustomChipWidget(
+                            label:
+                                childrenTasksMap[parentTasks[index].id]![index2]
+                                    .status
+                                    .toString(),
+                            backgroundColor: AppColor.lightOrange,
+                            textColor: AppColor.orange,
+                          ),
+                        ],
+                      ),
+                    ),
+                    _tableCell(
+                      const Text("01 Jan"),
+                    ),
+                    _tableCell(
+                      Text(childrenTasksMap[parentTasks[index].id]![index2]
+                              .startDate
+                              ?.toMonthDate() ??
+                          ""),
+                    ),
+                    _tableCell(
+                      Text(childrenTasksMap[parentTasks[index].id]![index2]
+                              .endDate
+                              ?.toMonthDate() ??
+                          ""),
+                    ),
+                    _tableCell(
+                      Text(
+                          "Papa:${childrenTasksMap[parentTasks[index].id]![index2].parentTask.toString()}"), //Text(taskChildrenMap[parentsTasks[index].id]![index2].comments ?? ""),
+                    ),
+                    _tableCell(
+                      Text(
+                          "${childrenTasksMap[parentTasks[index].id]![index2].progress.toString()}%"),
+                    ),
+                    _tableCell(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          IconButton(
+                            onPressed: () {},
+                            color: AppColor.blue,
+                            icon: const Icon(
+                              Icons.edit_outlined,
+                              size: 20,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            color: AppColor.blue,
+                            icon: const Icon(
+                              Icons.delete_outline_outlined,
+                              size: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox.shrink(),
                   ],
                 ),
-                const Text("01 Jan"),
-                const Text("01 Jan"),
-                const Text("01 Jan"),
-                const Text("We need this task for ..."),
-                const Text("100%"),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ActionButtonWidget(
-                      onPressed: () {},
-                      type: ButtonType.textButton,
-                      title: "",
-                      icon: Icons.edit_outlined,
-                    ),
-                    ActionButtonWidget(
-                      onPressed: () {},
-                      type: ButtonType.textButton,
-                      title: "",
-                      icon: Icons.delete_outline_outlined,
-                    ),
-                  ],
-                ),
-              ],
-            ), */
             ],
           )
       ],
@@ -194,10 +295,46 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
           if (oldIndex < newIndex) {
             newIndex -= 1;
           }
-          final Task item = widget.tasks.removeAt(oldIndex);
-          widget.tasks.insert(newIndex, item);
+          final Task item = parentTasks.removeAt(oldIndex);
+          parentTasks.insert(newIndex, item);
         });
       },
     );
+  }
+
+  _tableCell(Widget widget) {
+    return TableCell(
+      verticalAlignment: TableCellVerticalAlignment.middle,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: widget,
+      ),
+    );
+  }
+
+  _tasksToChildrenMap(List<Task> tasks) {
+    Map<int, List<Task>> childrenTasksMap = {};
+
+    // Vincular tareas con sus tareas padre
+    tasks.forEach((task) {
+      if (task.parentTask != null) {
+        if (childrenTasksMap.containsKey(task.parentTask)) {
+          // Si la clave existe, agregamos el nuevo Task a la lista correspondiente
+          childrenTasksMap[task.parentTask]!.add(task);
+        } else {
+          // Si la clave no existe, creamos una nueva lista y agregamos el Task a esa lista
+          childrenTasksMap[task.parentTask!] = [task];
+        }
+      }
+    });
+
+    /* taskMap.forEach((key, value) {
+    print('Parent: $key');
+    value.forEach((value2) {
+      print('\t\tChildren: ${value2.id} - ${value2.name}');
+    });
+  }); */
+
+    return childrenTasksMap;
   }
 }

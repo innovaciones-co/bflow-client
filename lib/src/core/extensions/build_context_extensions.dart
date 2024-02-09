@@ -2,6 +2,8 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/left_dialog_widget.dart';
+
 extension BuildContextEntension<T> on BuildContext {
   bool get isMobile => MediaQuery.of(this).size.width <= 500.0;
 
@@ -147,4 +149,16 @@ extension BuildContextEntension<T> on BuildContext {
   //     textColor: onPrimary,
   //   );
   // }
+
+  Future<void> showLeftDialog(String title, Widget child) {
+    return showDialog<void>(
+      context: this,
+      builder: (BuildContext context) {
+        return LeftDialogWidget(
+          title: title,
+          child: child,
+        );
+      },
+    );
+  }
 }

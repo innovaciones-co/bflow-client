@@ -44,5 +44,3 @@ class LoginFormState extends LoginState {
         status,
       ];
 }
-
-enum FormStatus { initialized, inProgress, failed, success }

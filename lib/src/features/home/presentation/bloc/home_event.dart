@@ -9,9 +9,11 @@ abstract class HomeEvent extends Equatable {
 class ShowMessageEvent extends HomeEvent {
   final String message;
   final AlertType type;
+  final DateTime timestamp;
 
-  const ShowMessageEvent({required this.message, this.type = AlertType.info});
+  ShowMessageEvent({required this.message, this.type = AlertType.info})
+      : timestamp = DateTime.now();
 
   @override
-  List<Object> get props => [message, type];
+  List<Object> get props => [message, type, timestamp];
 }
