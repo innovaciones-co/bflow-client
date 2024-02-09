@@ -71,8 +71,11 @@ class _JobsPageState extends State<JobsPage> {
                 );
               }
 
-              return const Center(
-                child: CircularProgressIndicator(),
+              return const SizedBox(
+                height: 100,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
               );
             },
           )
