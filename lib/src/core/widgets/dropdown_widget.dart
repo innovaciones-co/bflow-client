@@ -6,7 +6,7 @@ class DropdownWidget<T> extends StatefulWidget {
   final List<T> items;
   final ValueChanged<T>? onChanged;
   final String Function(T) getLabel;
-  final String? Function(String?)? validator;
+  final String? Function(T?)? validator;
   final T? initialValue;
 
   const DropdownWidget({
@@ -80,8 +80,8 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
               label: label,
             );
           }).toList(),
-          errorText: dropdownValue != null && widget.validator != null
-              ? widget.validator!(widget.getLabel(dropdownValue as T))
+          errorText: widget.validator != null
+              ? widget.validator!(dropdownValue)
               : null,
         ),
       ],

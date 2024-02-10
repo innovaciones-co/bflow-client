@@ -1,3 +1,5 @@
+import 'package:bflow_client/src/features/users/domain/entities/user_entity.dart';
+
 mixin Validator {
   // Email validation
   String? validateEmail(String? value) {
@@ -88,9 +90,17 @@ mixin Validator {
     return null;
   }
 
-  String? validateSupervisor(String? supervisor) {
-    if (supervisor == null || supervisor.isEmpty) {
+  String? validateSupervisor(User? supervisor) {
+    if (supervisor == null) {
       return 'Supervisor is required';
+    }
+
+    return null;
+  }
+
+  String? validateOwner(User? owner) {
+    if (owner == null) {
+      return 'Owner is required';
     }
 
     return null;

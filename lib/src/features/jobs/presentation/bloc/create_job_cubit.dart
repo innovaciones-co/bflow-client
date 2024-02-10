@@ -6,6 +6,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/contact_entity.da
 import 'package:bflow_client/src/features/jobs/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_job_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/update_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/create_job_state.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
 import 'package:bflow_client/src/features/users/domain/entities/user_entity.dart';
@@ -18,16 +19,32 @@ class CreateJobCubit extends Cubit<CreateJobState> {
   final GetSupervisorsUseCase getSupervisorsUseCase;
   final GetUsersUseCase getUsersUseCase;
   final CreateJobUseCase createJobUseCase;
+  final UpdateJobUseCase updateJobUseCase;
   final HomeBloc homeBloc;
   final JobsBloc jobsBloc;
+  final Job? job;
 
-  CreateJobCubit(
-    this.getSupervisorsUseCase,
-    this.getUsersUseCase,
-    this.createJobUseCase,
-    this.jobsBloc,
-    this.homeBloc,
-  ) : super(const CreateJobValidator());
+  CreateJobCubit({
+    required this.getSupervisorsUseCase,
+    required this.getUsersUseCase,
+    required this.createJobUseCase,
+    required this.updateJobUseCase,
+    required this.jobsBloc,
+    required this.homeBloc,
+    this.job,
+  }) : super(
+          CreateJobValidator(
+            jobNumber: job?.jobNumber ?? '',
+            name: job?.name ?? '',
+            address: job?.address ?? '',
+            supervisor: job?.supervisor,
+            owner: job?.user,
+            supervisors: job?.supervisor != null ? [job!.supervisor] : [],
+            owners: job?.user != null ? [job!.user] : [],
+            startDate: job?.plannedStartDate,
+            endDate: job?.plannedEndDate,
+          ),
+        );
 
   void initForm() {
     emit(state.copyWith(formStatus: FormStatus.inProgress));
@@ -125,6 +142,46 @@ class CreateJobCubit extends Cubit<CreateJobState> {
         jobsBloc.add(GetJobsEvent());
         homeBloc.add(ShowMessageEvent(
           message: "Job added!",
+          type: AlertType.success,
+        ));
+      },
+    );
+  }
+
+  void updateJob(Job job) async {
+    emit(state.copyWith(
+      formStatus: FormStatus.inProgress,
+    ));
+
+    final params = UpdateJobParams(
+      job: Job(
+        id: job.id,
+        jobNumber: state.jobNumber,
+        name: state.jobNumber,
+        plannedStartDate: state.startDate ?? DateTime.now(),
+        plannedEndDate:
+            state.endDate ?? DateTime.now().add(const Duration(days: 30)),
+        address: state.address,
+        user: state.owner!,
+        //TODO: Use client
+        client: Contact(
+            id: 10000,
+            name: "Jhon Dow",
+            email: "test",
+            type: ContactType.client),
+        supervisor: state.supervisor!,
+      ),
+    );
+    final updateJob = await updateJobUseCase.execute(params);
+    updateJob.fold(
+      (l) {
+        emit(state.copyWith(formStatus: FormStatus.failed, failure: l));
+      },
+      (r) {
+        emit(state.copyWith(formStatus: FormStatus.success));
+        jobsBloc.add(GetJobsEvent(timestamp: DateTime.now()));
+        homeBloc.add(ShowMessageEvent(
+          message: "Job updated!",
           type: AlertType.success,
         ));
       },

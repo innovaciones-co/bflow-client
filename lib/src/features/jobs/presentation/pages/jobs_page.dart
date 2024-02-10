@@ -26,7 +26,7 @@ class _JobsPageState extends State<JobsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageContainerWidget(
-        title: "Jobs (Construction list)",
+        title: "Jobs",
         actions: [
           SwitchWidget(
             value: _calendarView,
