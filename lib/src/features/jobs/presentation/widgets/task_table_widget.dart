@@ -71,7 +71,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                         : _tasksSelected.removeWhere((element) => true);
                   });
                 },
-                //shape: RoundedRectangleBorder(                    borderRadius: BorderRadius.circular(3)),
+                side: BorderSide(color: AppColor.darkGrey, width: 2),
               )),
               _tableCell(
                 const Center(
@@ -93,9 +93,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
         ],
       ),
       children: [
-        for (int index = 0;
-            index < parentTasks.length;
-            index += 1) // Num of items
+        for (int index = 0; index < parentTasks.length; index += 1)
           Table(
             key: Key('$index'),
             columnWidths: columnWidths,
@@ -109,184 +107,15 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
               verticalInside: BorderSide(width: 1.0, color: AppColor.lightGrey),
             ),
             children: [
-              TableRow(
-                decoration: const BoxDecoration(
-                    //color: AppColor.grey,
-                    ),
-                children: [
-                  _tableCell(
-                    Checkbox(
-                      value: _tasksSelected.contains(parentTasks[index]),
-                      onChanged: (bool? value) {
-                        if (value == true) {
-                          setState(() {
-                            _tasksSelected.add(parentTasks[index]);
-                          });
-                        } else {
-                          setState(() {
-                            _tasksSelected.remove(parentTasks[index]);
-                          });
-                        }
-                      },
-                    ),
-                  ),
-                  _tableCell(
-                    Center(
-                      child: Text('${index + 1}'),
-                    ),
-                  ),
-                  _tableCell(
-                    Text(parentTasks[index].name),
-                  ),
-                  _tableCell(
-                    Text(parentTasks[index].supplier?.name ?? ''),
-                  ),
-                  _tableCell(
-                    Row(
-                      children: [
-                        CustomChipWidget(
-                          label: parentTasks[index].status.toString(),
-                          backgroundColor: AppColor.lightOrange,
-                          textColor: AppColor.orange,
-                        ),
-                      ],
-                    ),
-                  ),
-                  _tableCell(
-                    const Text("01 Jan"),
-                  ),
-                  _tableCell(
-                    Text(parentTasks[index].startDate?.toMonthDate() ?? ""),
-                  ),
-                  _tableCell(
-                    Text(parentTasks[index].endDate?.toMonthDate() ?? ""),
-                  ),
-                  _tableCell(
-                    Text(
-                        "Id: ${parentTasks[index].id.toString()} -- ${childrenTasksMap[parentTasks[index].id]}"), //Text(parentsTasks[index].comments ?? ""),
-                  ),
-                  _tableCell(
-                    Text("${parentTasks[index].progress.toString()}%"),
-                  ),
-                  _tableCell(
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        IconButton(
-                          onPressed: () {},
-                          color: AppColor.blue,
-                          icon: const Icon(
-                            Icons.edit_outlined,
-                            size: 20,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          color: AppColor.blue,
-                          icon: const Icon(
-                            Icons.delete_outline_outlined,
-                            size: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox.shrink(),
-                ],
-              ),
-              // TODO: Show subtasks
+              _tableRow(task: parentTasks[index], index: index, parent: true),
               for (int index2 = 0;
                   index2 <
                       (childrenTasksMap[parentTasks[index].id] ?? []).length;
                   index2 += 1)
-                TableRow(
-                  decoration: const BoxDecoration(
-                      //color: AppColor.grey,
-                      ),
-                  children: [
-                    _tableCell(
-                      const Center(
-                        child: Text('X'),
-                      ),
-                    ),
-                    _tableCell(
-                      const Center(
-                        child: Text('X'),
-                      ),
-                    ),
-                    _tableCell(
-                      Text(childrenTasksMap[parentTasks[index].id]![index2]
-                          .name),
-                    ),
-                    _tableCell(
-                      Text(childrenTasksMap[parentTasks[index].id]![index2]
-                              .supplier
-                              ?.name ??
-                          ""),
-                    ),
-                    _tableCell(
-                      Row(
-                        children: [
-                          CustomChipWidget(
-                            label:
-                                childrenTasksMap[parentTasks[index].id]![index2]
-                                    .status
-                                    .toString(),
-                            backgroundColor: AppColor.lightOrange,
-                            textColor: AppColor.orange,
-                          ),
-                        ],
-                      ),
-                    ),
-                    _tableCell(
-                      const Text("01 Jan"),
-                    ),
-                    _tableCell(
-                      Text(childrenTasksMap[parentTasks[index].id]![index2]
-                              .startDate
-                              ?.toMonthDate() ??
-                          ""),
-                    ),
-                    _tableCell(
-                      Text(childrenTasksMap[parentTasks[index].id]![index2]
-                              .endDate
-                              ?.toMonthDate() ??
-                          ""),
-                    ),
-                    _tableCell(
-                      Text(
-                          "Papa:${childrenTasksMap[parentTasks[index].id]![index2].parentTask.toString()}"), //Text(taskChildrenMap[parentsTasks[index].id]![index2].comments ?? ""),
-                    ),
-                    _tableCell(
-                      Text(
-                          "${childrenTasksMap[parentTasks[index].id]![index2].progress.toString()}%"),
-                    ),
-                    _tableCell(
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          IconButton(
-                            onPressed: () {},
-                            color: AppColor.blue,
-                            icon: const Icon(
-                              Icons.edit_outlined,
-                              size: 20,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            color: AppColor.blue,
-                            icon: const Icon(
-                              Icons.delete_outline_outlined,
-                              size: 20,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox.shrink(),
-                  ],
-                ),
+                _tableRow(
+                    task: childrenTasksMap[parentTasks[index].id]![index2],
+                    index: index2,
+                    parent: false),
             ],
           )
       ],
@@ -302,11 +131,136 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     );
   }
 
-  _tableCell(Widget widget) {
+  TableRow _tableRow(
+      {required Task task, required int index, required bool parent}) {
+    return TableRow(
+      decoration: const BoxDecoration(
+          //color: AppColor.grey,
+          ),
+      children: [
+        _tableCell(
+          parent
+              ? Checkbox(
+                  value: _tasksSelected.contains(task),
+                  onChanged: (bool? value) {
+                    if (value == true) {
+                      setState(() {
+                        _tasksSelected.add(task);
+                      });
+                    } else {
+                      setState(() {
+                        _tasksSelected.remove(task);
+                      });
+                    }
+                  },
+                  side: BorderSide(color: AppColor.darkGrey, width: 2),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(3)),
+                )
+              : const SizedBox.shrink(),
+        ),
+        _tableCell(
+          parent
+              ? Center(
+                  child: Text('${index + 1}'),
+                )
+              : const SizedBox.shrink(),
+        ),
+        _tableCell(
+          Row(
+            children: [
+              // TODO: show arrow only when parent has children
+              parent
+                  ? const Icon(
+                      Icons.arrow_drop_down_rounded,
+                      size: 20,
+                    )
+                  : const SizedBox(width: 30),
+              Expanded(
+                child: Text(
+                  task.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          paddingLeft: 0,
+        ),
+        _tableCell(
+          Text(
+            task.supplier?.name ?? '',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        _tableCell(
+          Row(
+            children: [
+              CustomChipWidget(
+                label: task.status.toString(),
+                backgroundColor: AppColor.lightOrange,
+                textColor: AppColor.orange,
+              ),
+            ],
+          ),
+        ),
+        _tableCell(
+          const Text("01 Jan"),
+        ),
+        _tableCell(
+          Text(task.startDate?.toMonthDate() ?? ""),
+        ),
+        _tableCell(
+          Text(task.endDate?.toMonthDate() ?? ""),
+        ),
+        _tableCell(
+          Text(
+            task.comments ?? "",
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        _tableCell(
+          Text("${task.progress.toString()}%"),
+        ),
+        _tableCell(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                onPressed: () {},
+                color: AppColor.blue,
+                icon: const Icon(
+                  Icons.edit_outlined,
+                  size: 20,
+                ),
+              ),
+              IconButton(
+                onPressed: () {},
+                color: AppColor.blue,
+                icon: const Icon(
+                  Icons.delete_outline_outlined,
+                  size: 20,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox.shrink(),
+      ],
+    );
+  }
+
+  _tableCell(Widget widget, {double? paddingRight, double? paddingLeft}) {
     return TableCell(
       verticalAlignment: TableCellVerticalAlignment.middle,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: EdgeInsets.only(
+            right: paddingRight ?? 10,
+            left: paddingLeft ?? 10,
+            top: 5,
+            bottom: 5),
         child: widget,
       ),
     );
@@ -315,25 +269,15 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
   _tasksToChildrenMap(List<Task> tasks) {
     Map<int, List<Task>> childrenTasksMap = {};
 
-    // Vincular tareas con sus tareas padre
     tasks.forEach((task) {
       if (task.parentTask != null) {
         if (childrenTasksMap.containsKey(task.parentTask)) {
-          // Si la clave existe, agregamos el nuevo Task a la lista correspondiente
           childrenTasksMap[task.parentTask]!.add(task);
         } else {
-          // Si la clave no existe, creamos una nueva lista y agregamos el Task a esa lista
           childrenTasksMap[task.parentTask!] = [task];
         }
       }
     });
-
-    /* taskMap.forEach((key, value) {
-    print('Parent: $key');
-    value.forEach((value2) {
-      print('\t\tChildren: ${value2.id} - ${value2.name}');
-    });
-  }); */
 
     return childrenTasksMap;
   }
