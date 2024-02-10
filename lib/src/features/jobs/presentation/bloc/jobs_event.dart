@@ -6,7 +6,14 @@ abstract class JobsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetJobsEvent extends JobsEvent {}
+class GetJobsEvent extends JobsEvent {
+  final DateTime timestamp;
+
+  GetJobsEvent({DateTime? timestamp}) : timestamp = timestamp ?? DateTime.now();
+
+  @override
+  List<Object> get props => [timestamp];
+}
 
 class FilterJobsEvent extends JobsEvent {
   final String filter;

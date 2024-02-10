@@ -3,6 +3,7 @@ import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/create_job_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -169,7 +170,18 @@ class JobItemWidget extends StatelessWidget {
                           ),
                           const SizedBox(
                             width: 10,
-                          )
+                          ),
+                          ActionButtonWidget(
+                            onPressed: () => context.showLeftDialog(
+                              'Update Job',
+                              CreateJobWidget(
+                                job: job,
+                              ),
+                            ),
+                            icon: Icons.edit_outlined,
+                            type: ButtonType.elevatedButton,
+                            title: 'Edit',
+                          ),
                         ],
                       ),
                     ],

@@ -22,7 +22,6 @@ class BflowApp extends StatelessWidget {
         BlocProvider<JobsBloc>(
             create: (_) => DependencyInjection.sl()..add(GetJobsEvent())),
         BlocProvider<LoginCubit>(create: (_) => DependencyInjection.sl()),
-        BlocProvider<CreateJobCubit>(create: (_) => DependencyInjection.sl()),
       ],
       child: MaterialApp.router(
         theme: MaterialTheme(textTheme(context)).light(),

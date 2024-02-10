@@ -32,7 +32,8 @@ class JobsRemoteDataSource extends RemoteDataSource {
   Future<JobModel> updateJob(Job job) async {
     final jobModel = JobModel.fromEntity(job);
     int jobId = await apiService.put(
-      endpoint: ApiConstants.listJobsEndpoint,
+      endpoint:
+          ApiConstants.getJobEndpoint.replaceAll(':id', job.id!.toString()),
       data: jobModel.toMap(),
     );
 

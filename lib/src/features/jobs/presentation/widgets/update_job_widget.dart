@@ -1,4 +1,4 @@
-import 'package:bflow_client/src/core/config/injection.dart';
+/* import 'package:bflow_client/src/core/config/injection.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/domain/entities/form_status.dart';
@@ -10,19 +10,18 @@ import 'package:bflow_client/src/core/widgets/date_picker_widget.dart';
 import 'package:bflow_client/src/core/widgets/dropdown_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
-import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/create_job_cubit.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
 import 'package:bflow_client/src/features/users/domain/entities/user_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/create_job_state.dart';
 
-class CreateJobWidget extends StatelessWidget with Validator {
-  final Job? job;
-  CreateJobWidget({super.key, this.job});
+class UpdateJobWidget extends StatelessWidget with Validator {
+  final Job job;
+
+  UpdateJobWidget({super.key, required this.job});
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController starDateController = TextEditingController();
@@ -34,10 +33,10 @@ class CreateJobWidget extends StatelessWidget with Validator {
       create: (_) => CreateJobCubit(
         getSupervisorsUseCase: DependencyInjection.sl(),
         getUsersUseCase: DependencyInjection.sl(),
+        jobsBloc: DependencyInjection.sl(),
         createJobUseCase: DependencyInjection.sl(),
         updateJobUseCase: DependencyInjection.sl(),
-        jobsBloc: context.read<JobsBloc>(),
-        homeBloc: context.read<HomeBloc>(),
+        homeBloc: DependencyInjection.sl(),
         job: job,
       ),
       child: BlocListener<CreateJobCubit, CreateJobState>(
@@ -167,8 +166,14 @@ class CreateJobWidget extends StatelessWidget with Validator {
                             ),
                             const SizedBox(width: 20),
                             ActionButtonWidget(
-                              onPressed: () =>
-                                  _createOrUpdateJob(createJobBloc),
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  createJobBloc.updateJob(job.id!);
+                                } else {
+                                  createJobBloc.updateAutovalidateMode(
+                                      AutovalidateMode.always);
+                                }
+                              },
                               type: ButtonType.elevatedButton,
                               title: "Save",
                               backgroundColor: AppColor.blue,
@@ -187,17 +192,5 @@ class CreateJobWidget extends StatelessWidget with Validator {
       ),
     );
   }
-
-  _createOrUpdateJob(CreateJobCubit createJobBloc) {
-    var validate = _formKey.currentState!.validate();
-    if (validate) {
-      if (job == null) {
-        createJobBloc.createJob();
-      } else {
-        createJobBloc.updateJob(job!);
-      }
-    } else {
-      createJobBloc.updateAutovalidateMode(AutovalidateMode.always);
-    }
-  }
 }
+ */

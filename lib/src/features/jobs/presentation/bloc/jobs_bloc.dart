@@ -34,10 +34,12 @@ class JobsBloc extends Bloc<JobsEvent, JobsState> {
     emit(JobsLoading());
     var jobs = await getJobsUseCase.execute(NoParams());
     jobs.fold(
-        (l) => emit(
-              JobsError(l),
-            ), (r) {
-      emit(JobsLoaded(jobs: r));
-    });
+      (l) => emit(
+        JobsError(l),
+      ),
+      (r) {
+        emit(JobsLoaded(jobs: r));
+      },
+    );
   }
 }
