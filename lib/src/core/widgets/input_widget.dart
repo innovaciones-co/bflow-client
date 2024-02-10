@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class InputWidget extends StatelessWidget {
   final String label;
@@ -8,12 +9,14 @@ class InputWidget extends StatelessWidget {
   final String? Function(String?)? validator;
   final String? initialValue;
   final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
 
   const InputWidget({
     super.key,
     required this.label,
     this.initialValue,
     this.keyboardType,
+    this.inputFormatters,
     this.obscureText = false,
     this.hintText = "",
     this.onChanged,
@@ -38,6 +41,7 @@ class InputWidget extends StatelessWidget {
           enableSuggestions: obscureText ? false : true,
           autocorrect: obscureText ? false : true,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
           decoration: InputDecoration(
             hintText: hintText,
           ),

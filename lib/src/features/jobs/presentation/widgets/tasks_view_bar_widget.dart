@@ -1,7 +1,7 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/create_activity_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/write_activity_widget.dart';
 import 'package:flutter/material.dart';
 
 class TasksViewBarWidget extends StatelessWidget {
@@ -53,8 +53,8 @@ class TasksViewBarWidget extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             ActionButtonWidget(
-              onPressed: () => context.showLeftDialog(
-                  'New Activity', CreateActivityWidget()),
+              onPressed: () =>
+                  context.showLeftDialog('New Activity', WriteActivityWidget()),
               type: ButtonType.elevatedButton,
               title: "New Activity",
               icon: Icons.add,

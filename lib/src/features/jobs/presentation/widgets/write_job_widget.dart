@@ -20,9 +20,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/create_job_state.dart';
 
-class CreateJobWidget extends StatelessWidget with Validator {
+class WriteJobWidget extends StatelessWidget with Validator {
   final Job? job;
-  CreateJobWidget({super.key, this.job});
+  WriteJobWidget({super.key, this.job});
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController starDateController = TextEditingController();

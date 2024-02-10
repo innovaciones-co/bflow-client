@@ -1,15 +1,18 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/utils/input_formatters/range_input_formatter.dart';
+import 'package:bflow_client/src/core/utils/mixins/validator.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/date_picker_widget.dart';
 import 'package:bflow_client/src/core/widgets/dropdown_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 const List<String> list = ['One', 'Two', 'Three', 'Four']; // Dropdown list
 
-class CreateActivityWidget extends StatelessWidget {
-  CreateActivityWidget({super.key});
+class WriteActivityWidget extends StatelessWidget with Validator {
+  WriteActivityWidget({super.key});
 
   final TextEditingController starDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
@@ -58,10 +61,15 @@ class CreateActivityWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 15),
-            const Expanded(
+            Expanded(
               child: InputWidget(
                 label: "Progress",
                 keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  RangeInputFormatter()
+                ],
+                validator: validateProgress,
               ),
             ),
           ],

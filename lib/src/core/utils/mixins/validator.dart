@@ -105,4 +105,20 @@ mixin Validator {
 
     return null;
   }
+
+  String? validateProgress(String? value) {
+    if (value == null) {
+      return null;
+    }
+    var intValue = int.tryParse(value);
+    if (intValue == null) {
+      return "Progress should be a numeric value";
+    }
+
+    if (intValue < 0 || intValue > 100) {
+      return "Progress should be between 0 and 100";
+    }
+
+    return null;
+  }
 }
