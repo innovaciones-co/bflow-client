@@ -7,11 +7,13 @@ class InputWidget extends StatelessWidget {
   final Function(String)? onChanged;
   final String? Function(String?)? validator;
   final String? initialValue;
+  final TextInputType? keyboardType;
 
   const InputWidget({
     super.key,
     required this.label,
     this.initialValue,
+    this.keyboardType,
     this.obscureText = false,
     this.hintText = "",
     this.onChanged,
@@ -35,6 +37,7 @@ class InputWidget extends StatelessWidget {
           initialValue: initialValue,
           enableSuggestions: obscureText ? false : true,
           autocorrect: obscureText ? false : true,
+          keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hintText,
           ),

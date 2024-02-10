@@ -59,7 +59,10 @@ class CreateActivityWidget extends StatelessWidget {
             ),
             const SizedBox(width: 15),
             const Expanded(
-              child: InputWidget(label: "Progress"),
+              child: InputWidget(
+                label: "Progress",
+                keyboardType: TextInputType.number,
+              ),
             ),
           ],
         ),
