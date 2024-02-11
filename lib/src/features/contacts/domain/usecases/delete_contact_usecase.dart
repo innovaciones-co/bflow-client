@@ -4,10 +4,10 @@ import 'package:dartz/dartz.dart';
 
 import '../repositories/contacts_repository.dart';
 
-class DeleteContactsUseCase implements UseCase<void, DeleteContactParams> {
+class DeleteContactUseCase implements UseCase<void, DeleteContactParams> {
   final ContactsRepository repository;
 
-  DeleteContactsUseCase({required this.repository});
+  DeleteContactUseCase({required this.repository});
 
   @override
   Future<Either<Failure, void>> execute(DeleteContactParams params) {

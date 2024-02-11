@@ -1,6 +1,14 @@
 library dependency_injection;
 
 import 'package:bflow_client/src/core/api/api_service.dart';
+import 'package:bflow_client/src/features/contacts/data/implements/contacts_repository_imp.dart';
+import 'package:bflow_client/src/features/contacts/data/sources/sources.dart';
+import 'package:bflow_client/src/features/contacts/domain/repositories/contacts_repository.dart';
+import 'package:bflow_client/src/features/contacts/domain/usecases/delete_contact_usecase.dart';
+import 'package:bflow_client/src/features/contacts/domain/usecases/get_contact_usecase.dart';
+import 'package:bflow_client/src/features/contacts/domain/usecases/get_contacts_usecase.dart';
+import 'package:bflow_client/src/features/contacts/domain/usecases/update_contact_usecase.dart';
+import 'package:bflow_client/src/features/contacts/presentation/cubit/contacts_cubit.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/data/implements/tasks_repository_imp.dart';
 import 'package:bflow_client/src/features/jobs/data/sources/jobs_remote_data_source.dart';
@@ -61,6 +69,9 @@ class DependencyInjection {
     sl.registerFactory<UsersBloc>(
       () => UsersBloc(sl()),
     );
+    sl.registerFactory<ContactsCubit>(
+      () => ContactsCubit(sl()),
+    );
 
     // Use cases
 
@@ -88,6 +99,18 @@ class DependencyInjection {
     sl.registerLazySingleton(
       () => GetSupervisorsUseCase(repository: sl()),
     );
+    sl.registerLazySingleton(
+      () => GetContactUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => GetContactsUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => UpdateContactUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => DeleteContactUseCase(repository: sl()),
+    );
 
     // Repository
     sl.registerLazySingleton<TasksRepository>(
@@ -102,6 +125,9 @@ class DependencyInjection {
     sl.registerLazySingleton<LoginRepository>(
       () => LoginRepositoryImp(remoteDataSource: sl()),
     );
+    sl.registerLazySingleton<ContactsRepository>(
+      () => ContactsRepositoryImp(remoteDataSource: sl()),
+    );
 
     // Data sources
     sl.registerLazySingleton<LoginRemoteDataSource>(
@@ -115,6 +141,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton<UsersRemoteDataSource>(
       () => UsersRemoteDataSource(apiService: sl()),
+    );
+    sl.registerLazySingleton<ContactsRemoteDataSource>(
+      () => ContactsRemoteDataSource(apiService: sl()),
     );
   }
 }
