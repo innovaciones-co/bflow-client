@@ -1,9 +1,9 @@
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/domain/entities/form_status.dart';
 import 'package:bflow_client/src/core/usecases/usecases.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
-import 'package:bflow_client/src/features/jobs/domain/entities/contact_entity.dart';
-import 'package:bflow_client/src/features/jobs/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_job_use_case.dart';

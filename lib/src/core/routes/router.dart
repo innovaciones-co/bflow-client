@@ -1,4 +1,5 @@
 import 'package:bflow_client/src/core/routes/routes.dart';
+import 'package:bflow_client/src/features/contacts/presentation/pages/contacts_page.dart';
 import 'package:bflow_client/src/features/home/presentation/pages/home_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/job_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/jobs_page.dart';
@@ -22,6 +23,12 @@ const List<CustomNavigationDestination> homeDestinations = [
     icon: Icon(Icons.people_outlined),
     route: RoutesName.users,
     child: UsersPage(),
+  ),
+  CustomNavigationDestination(
+    label: 'Contacts',
+    icon: Icon(Icons.contact_page_outlined),
+    route: RoutesName.contacts,
+    child: ContactsPage(),
   ),
 ];
 

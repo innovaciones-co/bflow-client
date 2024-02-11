@@ -1,6 +1,6 @@
 import 'package:bflow_client/src/core/domain/entities/form_status.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
-import 'package:bflow_client/src/features/jobs/domain/entities/contact_entity.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:equatable/equatable.dart';

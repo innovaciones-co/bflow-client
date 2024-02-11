@@ -1,5 +1,5 @@
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
-import 'package:bflow_client/src/features/jobs/domain/entities/contact_entity.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/note_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';

@@ -1,15 +1,15 @@
-import 'package:bflow_client/src/features/jobs/domain/entities/contact_type.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:equatable/equatable.dart';
 
 class Contact implements Equatable {
-  final int id;
+  final int? id;
   final String name;
   final String? address;
   final String email;
   final ContactType type;
 
   Contact({
-    required this.id,
+    this.id,
     required this.name,
     this.address,
     required this.email,

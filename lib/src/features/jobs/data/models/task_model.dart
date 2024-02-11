@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
-import 'package:bflow_client/src/features/jobs/data/models/contact_model.dart';
+import 'package:bflow_client/src/features/contacts/data/models/contact_model.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
