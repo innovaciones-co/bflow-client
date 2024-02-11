@@ -25,6 +25,9 @@ class ContactsPage extends StatelessWidget {
                 context.showLeftDialog("Add Contact", const SizedBox.shrink()),
             type: ButtonType.elevatedButton,
             title: "New contact",
+            backgroundColor: AppColor.blue,
+            foregroundColor: AppColor.white,
+            icon: Icons.add,
           ),
         ],
         child: BlocBuilder<ContactsCubit, ContactsState>(
@@ -76,36 +79,38 @@ class ContactsPage extends StatelessWidget {
   }
 
   Widget _contactsTable(BuildContext context, List<Contact> contacts) {
-    return Table(
-      border: TableBorder.all(
-        color: AppColor.grey,
-      ),
-      children: [
-        TableRow(
-          decoration: BoxDecoration(
-            color: AppColor.grey,
-          ),
-          children: [
-            _tableHeader(context, "Name"),
-            _tableHeader(context, "Email"),
-            _tableHeader(context, "Address"),
-            _tableHeader(context, "Actions"),
-          ],
+    return SingleChildScrollView(
+      child: Table(
+        border: TableBorder.all(
+          color: AppColor.grey,
         ),
-        ...contacts.map(
-          (e) => TableRow(
+        children: [
+          TableRow(
             decoration: BoxDecoration(
-              color: AppColor.white,
+              color: AppColor.grey,
             ),
             children: [
-              _tableData(context, e.name),
-              _tableData(context, e.email),
-              _tableData(context, e.address ?? ''),
-              _tableActions(context),
+              _tableHeader(context, "Name"),
+              _tableHeader(context, "Email"),
+              _tableHeader(context, "Address"),
+              _tableHeader(context, "Actions"),
             ],
           ),
-        )
-      ],
+          ...contacts.map(
+            (e) => TableRow(
+              decoration: BoxDecoration(
+                color: AppColor.white,
+              ),
+              children: [
+                _tableData(context, e.name),
+                _tableData(context, e.email),
+                _tableData(context, e.address ?? ''),
+                _tableActions(context),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 
