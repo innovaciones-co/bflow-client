@@ -47,23 +47,28 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
     return BlocBuilder<TasksBloc, TasksState>(
       builder: (context, state) {
         if (state is TasksLoaded) {
-          return Row(
-            children: [
-              _buildFirstColumn(state),
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Expanded(
-                    child: Column(
-                      children: [
-                        _buildRowHeader(days),
-                        ..._buildRows(context, days, state.tasks)
-                      ],
+          return Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Row(
+                children: [
+                  _buildFirstColumn(state),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Expanded(
+                        child: Column(
+                          children: [
+                            _buildRowHeader(days),
+                            ..._buildRows(context, days, state.tasks)
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           );
         }
 
@@ -155,36 +160,36 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
                   ),
                 ],
               ),
-              Positioned(
-                top: 0,
-                bottom: 0,
-                left: (task.startDate?.difference(firtsDay).inDays.toDouble() ??
-                        0) *
-                    columnWidth,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: AppColor.getRandomColor(),
-                  ),
-                  width: (task.endDate
-                              ?.difference(task.startDate!)
-                              .inDays
-                              .toDouble() ??
-                          0) *
-                      columnWidth,
-                  child: Center(
-                    child: Text(
-                      task.name,
-                      style:
-                          context.bodyMedium?.copyWith(color: AppColor.black),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              )
+              _buildProgressBar(task, firtsDay, context)
             ],
           ),
         )
         .toList();
+  }
+
+  Positioned _buildProgressBar(
+      Task task, DateTime firtsDay, BuildContext context) {
+    return Positioned(
+      top: 0,
+      bottom: 0,
+      left: (task.startDate?.difference(firtsDay).inDays.toDouble() ?? 0) *
+          columnWidth,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: AppColor.getRandomColor(),
+        ),
+        width:
+            (task.endDate?.difference(task.startDate!).inDays.toDouble() ?? 0) *
+                columnWidth,
+        child: Center(
+          child: Text(
+            task.name,
+            style: context.bodyMedium?.copyWith(color: AppColor.black),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
   }
 }
