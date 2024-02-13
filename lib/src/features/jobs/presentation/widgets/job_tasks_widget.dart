@@ -12,10 +12,7 @@ class JobTasksWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<TasksBloc, TasksState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
+    return BlocBuilder<TasksBloc, TasksState>(
       builder: (context, state) {
         if (state is TasksLoading) {
           return const Center(

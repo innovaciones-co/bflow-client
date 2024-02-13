@@ -7,6 +7,7 @@ import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/contacts/presentation/cubit/contacts_cubit.dart';
+import 'package:bflow_client/src/features/shared/presentation/widgets/table_header_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -89,11 +90,11 @@ class ContactsPage extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColor.grey,
             ),
-            children: [
-              _tableHeader(context, "Name"),
-              _tableHeader(context, "Email"),
-              _tableHeader(context, "Address"),
-              _tableHeader(context, "Actions"),
+            children: const [
+              TableHeaderWidget(label: "Name"),
+              TableHeaderWidget(label: "Email"),
+              TableHeaderWidget(label: "Address"),
+              TableHeaderWidget(label: "Actions"),
             ],
           ),
           ...contacts.map(
@@ -110,18 +111,6 @@ class ContactsPage extends StatelessWidget {
             ),
           )
         ],
-      ),
-    );
-  }
-
-  _tableHeader(BuildContext context, String label) {
-    return TableCell(
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        child: Text(
-          label,
-          style: context.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-        ),
       ),
     );
   }

@@ -35,11 +35,11 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
   @override
   void initState() {
     super.initState();
-    widget.tasks.forEach((task) {
+    for (var task in widget.tasks) {
       if (task.parentTask == null) {
         parentTasks.add(task);
       }
-    });
+    }
     childrenTasksMap = _tasksToChildrenMap(widget.tasks);
   }
 
@@ -269,7 +269,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
   _tasksToChildrenMap(List<Task> tasks) {
     Map<int, List<Task>> childrenTasksMap = {};
 
-    tasks.forEach((task) {
+    for (var task in tasks) {
       if (task.parentTask != null) {
         if (childrenTasksMap.containsKey(task.parentTask)) {
           childrenTasksMap[task.parentTask]!.add(task);
@@ -277,7 +277,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
           childrenTasksMap[task.parentTask!] = [task];
         }
       }
-    });
+    }
 
     return childrenTasksMap;
   }
