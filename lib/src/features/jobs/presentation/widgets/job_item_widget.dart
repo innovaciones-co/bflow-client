@@ -73,9 +73,9 @@ class JobItemWidget extends StatelessWidget {
           ),
         ),
         _mobileCellJob(
-            title: "Days in construction",
+            title: "Weeks in construction",
             width: 160,
-            child: Text(job.daysOfConstruction.toString())),
+            child: Text(job.weeksOfConstruction.toString())),
         _mobileCellJob(
           title: "Progress",
           width: 150,
@@ -142,10 +142,10 @@ class JobItemWidget extends StatelessWidget {
             ),
           ),
           _cellJob(
-            title: "Days in construction",
+            title: "Weeks in construction",
             flex: 2,
             child: Text(
-              job.daysOfConstruction.toString(),
+              job.weeksOfConstruction.toString(),
             ),
           ),
           _cellJob(

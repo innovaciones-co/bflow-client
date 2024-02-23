@@ -1,4 +1,4 @@
-import 'package:bflow_client/src/core/extensions/format_extensions.dart';
+import 'package:bflow_client/src/core/extensions/date_utils_extension.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/note_entity.dart';
@@ -58,4 +58,8 @@ class Job implements Equatable {
   int get daysOfConstruction => progress == 1
       ? plannedStartDate.daysDifference(plannedEndDate)
       : plannedStartDate.daysDifference(DateTime.now());
+
+  int get weeksOfConstruction => progress == 1
+      ? plannedStartDate.weeksBetween(plannedEndDate)
+      : plannedStartDate.weeksBetween(DateTime.now());
 }
