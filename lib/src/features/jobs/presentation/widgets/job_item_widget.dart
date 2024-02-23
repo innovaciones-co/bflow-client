@@ -40,7 +40,15 @@ class JobItemWidget extends StatelessWidget {
       padding: const EdgeInsets.only(left: 15, right: 8, top: 15, bottom: 15),
       children: [
         _mobileCellJob(
-            title: "Job Number", width: 110, child: Text(job.jobNumber)),
+          title: "Job Number",
+          width: 110,
+          child: ActionButtonWidget(
+            onPressed: () => _editJob(context),
+            type: ButtonType.textButton,
+            title: job.jobNumber,
+            icon: Icons.edit_outlined,
+          ),
+        ),
         _mobileCellJob(
           title: "Address",
           width: 160,
@@ -48,10 +56,10 @@ class JobItemWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(job.address),
-              TextButton(
+              ActionButtonWidget(
                 onPressed: () {},
-                style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
-                child: const Text("Open in Goole maps"),
+                type: ButtonType.textButton,
+                title: "Open in Goole maps",
               ), // THIS ?link
             ],
           ),
@@ -84,7 +92,6 @@ class JobItemWidget extends StatelessWidget {
         viewDetailsEnabled
             ? Container(
                 margin: const EdgeInsets.only(left: 40),
-                width: double.infinity,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -109,7 +116,20 @@ class JobItemWidget extends StatelessWidget {
       padding: const EdgeInsets.only(left: 15, right: 8, top: 15, bottom: 15),
       child: Row(
         children: [
-          _cellJob(title: "Job Number", flex: 1, child: Text(job.jobNumber)),
+          _cellJob(
+            title: "Job Number",
+            flex: 2,
+            child: Row(
+              children: [
+                ActionButtonWidget(
+                  onPressed: () => _editJob(context),
+                  type: ButtonType.textButton,
+                  title: job.jobNumber,
+                  icon: Icons.edit_outlined,
+                ),
+              ],
+            ),
+          ),
           _cellJob(
               title: "Address",
               flex: 2,
@@ -155,40 +175,30 @@ class JobItemWidget extends StatelessWidget {
           viewDetailsEnabled
               ? Expanded(
                   flex: 2,
-                  child: Column(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          ActionButtonWidget(
-                            onPressed: () => _goToDetails(context),
-                            type: ButtonType.elevatedButton,
-                            title: "View details",
-                            backgroundColor: AppColor.lightBlue,
-                            foregroundColor: AppColor.blue,
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          ActionButtonWidget(
-                            onPressed: () => context.showLeftDialog(
-                              'Update Job',
-                              WriteJobWidget(
-                                job: job,
-                              ),
-                            ),
-                            icon: Icons.edit_outlined,
-                            type: ButtonType.elevatedButton,
-                            title: 'Edit',
-                          ),
-                        ],
+                      ActionButtonWidget(
+                        onPressed: () => _goToDetails(context),
+                        type: ButtonType.elevatedButton,
+                        title: "View details",
+                        backgroundColor: AppColor.lightBlue,
+                        foregroundColor: AppColor.blue,
                       ),
                     ],
                   ),
                 )
               : const SizedBox.shrink(),
         ],
+      ),
+    );
+  }
+
+  Future<void> _editJob(BuildContext context) {
+    return context.showLeftDialog(
+      'Update Job',
+      WriteJobWidget(
+        job: job,
       ),
     );
   }

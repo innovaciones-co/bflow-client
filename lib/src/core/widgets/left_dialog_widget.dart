@@ -15,7 +15,9 @@ class LeftDialogWidget extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: SizedBox(
         height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width * 0.4,
+        width: context.isDesktop
+            ? MediaQuery.of(context).size.width * 0.4
+            : MediaQuery.of(context).size.width * 0.9,
         child: Material(
           color: AppColor.white,
           child: Padding(
