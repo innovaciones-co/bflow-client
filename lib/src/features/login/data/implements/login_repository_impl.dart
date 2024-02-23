@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/exceptions/bad_response_exception.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.dart';
 import 'package:bflow_client/src/features/login/domain/entities/auth_entity.dart';
@@ -18,6 +19,8 @@ class LoginRepositoryImp implements LoginRepository {
   ) async {
     try {
       return Right(await remoteDataSource.loginUser(username, password));
+    } on BadResponseException {
+      return Left(ServerFailure(message: "Invalid credentials"));
     } on RemoteDataSourceException {
       return Left(ServerFailure(message: "Invalid credentials"));
     }
