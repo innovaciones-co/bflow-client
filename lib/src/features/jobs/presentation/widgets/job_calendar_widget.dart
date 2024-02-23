@@ -5,6 +5,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/tasks_view_bar_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/table_header_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +19,8 @@ class JobCalendarWidget extends StatefulWidget {
 
 class _JobCalendarWidgetState extends State<JobCalendarWidget> {
   final double columnWidth = 110;
+  final double headerHeight = 48;
+  final double rowsHeight = 35;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,13 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
         if (state is JobLoaded) {
           Job job = state.job;
 
-          return _buildTable(job.plannedStartDate, job.plannedEndDate);
+          return Column(
+            children: [
+              const TasksViewBarWidget(),
+              const SizedBox(height: 15),
+              _buildTable(job.plannedStartDate, job.plannedEndDate),
+            ],
+          );
         }
 
         return const SizedBox.shrink();
@@ -47,27 +56,27 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
     return BlocBuilder<TasksBloc, TasksState>(
       builder: (context, state) {
         if (state is TasksLoaded) {
-          return Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Row(
-                children: [
-                  _buildFirstColumn(state),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Expanded(
-                        child: Column(
-                          children: [
-                            _buildRowHeader(days),
-                            ..._buildRows(context, days, state.tasks)
-                          ],
-                        ),
+          return SingleChildScrollView(
+            // TODO: Fix vertica scroll
+            scrollDirection: Axis.vertical,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildFirstColumn(state),
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Expanded(
+                      child: Column(
+                        children: [
+                          _buildRowHeader(days),
+                          ..._buildRows(context, days, state.tasks)
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         }
@@ -80,18 +89,29 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
   Table _buildRowHeader(List<DateTime> days) {
     return Table(
       border: TableBorder.all(
-        color: AppColor.grey,
+        color: Colors.transparent,
       ),
       columnWidths: {
         for (var e in days) days.indexOf(e): FixedColumnWidth(columnWidth)
       },
       children: [
         TableRow(
-          decoration: BoxDecoration(
-            color: AppColor.grey,
-          ),
           children: days
-              .map((e) => TableHeaderWidget(label: e.toDateFormat()))
+              .map((e) => _tableCell(SizedBox(
+                    height: headerHeight,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          e.toDay(),
+                          style: TextStyle(
+                            color: AppColor.darkGrey,
+                          ),
+                        ),
+                        Text(e.toMonthDate()),
+                      ],
+                    ),
+                  )))
               .toList(),
         ),
       ],
@@ -99,33 +119,62 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
   }
 
   Table _buildFirstColumn(TasksLoaded state) {
+    bool isSelected = false;
+
     return Table(
       border: TableBorder.all(
-        color: AppColor.grey,
+        color: AppColor.lightGrey,
       ),
-      columnWidths: const {0: FixedColumnWidth(400)},
+      columnWidths: const {
+        0: FixedColumnWidth(40),
+        1: FixedColumnWidth(40),
+        2: FixedColumnWidth(250),
+      },
       children: [
         TableRow(
           decoration: BoxDecoration(
             color: AppColor.grey,
           ),
-          children: const [
-            TableHeaderWidget(label: "Tasks"),
+          children: [
+            _tableCell(Checkbox(
+              // Fix Checkbox
+              value: isSelected,
+              onChanged: (bool? value) {
+                isSelected;
+              },
+              side: BorderSide(color: AppColor.darkGrey, width: 2),
+            )),
+            _tableCell(Container(
+              height: headerHeight,
+              alignment: Alignment.center,
+              child: const Center(child: Text("#")),
+            )),
+            _tableCell(const Text("Tasks")),
           ],
         ),
-        ...state.tasks.map(
-          (e) => TableRow(
-            children: [
-              SizedBox(
-                height: 30,
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Text(e.name),
-                ),
-              )
-            ],
-          ),
-        )
+        ...state.tasks.asMap().entries.map(
+              (e) => TableRow(
+                children: [
+                  _tableCell(Checkbox(
+                    value: isSelected,
+                    onChanged: (bool? value) {
+                      isSelected;
+                    },
+                    side: BorderSide(color: AppColor.darkGrey, width: 2),
+                  )),
+                  _tableCell(Container(
+                    height: rowsHeight,
+                    alignment: Alignment.center,
+                    child: Text('${int.parse(e.key.toString()) + 1}'),
+                  )),
+                  _tableCell(Text(
+                    e.value.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  )),
+                ],
+              ),
+            )
       ],
     );
   }
@@ -140,9 +189,8 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
             children: [
               Table(
                 border: TableBorder.symmetric(
-                  inside: BorderSide(
-                    color: AppColor.grey,
-                  ),
+                  inside: BorderSide(color: AppColor.lightGrey),
+                  outside: BorderSide(width: 0.5, color: AppColor.lightGrey),
                 ),
                 columnWidths: {
                   for (var e in days)
@@ -152,9 +200,9 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
                   TableRow(
                     children: days
                         .map(
-                          (e) => const SizedBox(
-                            height: 30,
-                          ),
+                          (e) => _tableCell(SizedBox(
+                            height: rowsHeight,
+                          )),
                         )
                         .toList(),
                   ),
@@ -170,8 +218,8 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
   Positioned _buildProgressBar(
       Task task, DateTime firtsDay, BuildContext context) {
     return Positioned(
-      top: 0,
-      bottom: 0,
+      top: 8,
+      bottom: 8,
       left: (task.startDate?.difference(firtsDay).inDays.toDouble() ?? 0) *
           columnWidth,
       child: Container(
@@ -185,10 +233,29 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
         child: Center(
           child: Text(
             task.name,
-            style: context.bodyMedium?.copyWith(color: AppColor.black),
+            style: context.bodyMedium
+                ?.copyWith(color: AppColor.black.withOpacity(0.4)),
             textAlign: TextAlign.center,
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _tableCell(Widget widget, // TODO: Move to TableHeaderWidget
+      {double? paddingRight,
+      double? paddingLeft,
+      double? paddingTop,
+      double? paddingBottom}) {
+    return TableCell(
+      verticalAlignment: TableCellVerticalAlignment.middle,
+      child: Padding(
+        padding: EdgeInsets.only(
+            right: paddingRight ?? 10,
+            left: paddingLeft ?? 10,
+            top: paddingTop ?? 5,
+            bottom: paddingBottom ?? 5),
+        child: widget,
       ),
     );
   }
