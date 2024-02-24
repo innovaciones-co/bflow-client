@@ -135,9 +135,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
   TableRow _tableRow(
       {required Task task, required int index, required bool parent}) {
     return TableRow(
-      decoration: const BoxDecoration(
-          //color: AppColor.grey,
-          ),
+      decoration: BoxDecoration(color: task.backgroundStatusColor),
       children: [
         _tableCell(
           parent

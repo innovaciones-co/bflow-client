@@ -41,4 +41,13 @@ extension TaskUIExtension on Task {
         return AppColor.blue;
     }
   }
+
+  Color get backgroundStatusColor {
+    switch (status) {
+      case TaskStatus.completed:
+        return AppColor.lightGreen.withOpacity(0.4);
+      default:
+        return AppColor.white;
+    }
+  }
 }
