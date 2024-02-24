@@ -1,5 +1,6 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
+import 'package:bflow_client/src/core/extensions/ui_extensions.dart';
 import 'package:bflow_client/src/core/widgets/custom_chip_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:flutter/material.dart';
@@ -199,14 +200,14 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
             children: [
               CustomChipWidget(
                 label: task.status.toString(),
-                backgroundColor: AppColor.lightOrange,
-                textColor: AppColor.orange,
+                backgroundColor: task.statusColor,
+                textColor: task.labelStatusColor,
               ),
             ],
           ),
         ),
         _tableCell(
-          const Text("01 Jan"),
+          Text(task.callDate?.toMonthDate() ?? ""),
         ),
         _tableCell(
           Text(task.startDate?.toMonthDate() ?? ""),
