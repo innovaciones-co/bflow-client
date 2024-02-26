@@ -4,6 +4,7 @@ import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_activity_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class TasksViewBarWidget extends StatefulWidget {
   final Function(Set<TaskStatus>)? onStatusChanged;
@@ -17,7 +18,14 @@ class TasksViewBarWidget extends StatefulWidget {
 }
 
 class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
-  Set<TaskStatus> selection = TaskStatus.values.toSet();
+  late Set<TaskStatus> selection;
+
+  @override
+  void initState() {
+    super.initState();
+    selection = TaskStatus.values.toSet();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -72,6 +80,7 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
 
   DropdownButton<TaskStatus> _buildDropdown(BuildContext context) {
     return DropdownButton<TaskStatus>(
+      focusColor: Colors.transparent,
       items: TaskStatus.values
           .map(
             (e) => DropdownMenuItem<TaskStatus>(
@@ -80,7 +89,8 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
                 children: <Widget>[
                   Checkbox(
                     onChanged: (bool? value) {
-                      _toggleStatus(value);
+                      _toggleStatus(e);
+                      context.pop();
                     },
                     value: selection.contains(e),
                   ),
@@ -104,7 +114,7 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
             width: 5,
           ),
           Text(
-            'Filter',
+            'Task Status',
             style: context.bodyMedium,
           ),
         ],
@@ -112,7 +122,7 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
     );
   }
 
-  void _toggleStatus(value) {
+  void _toggleStatus(TaskStatus? value) {
     if (selection.contains(value)) {
       setState(() {
         selection.remove(value);
