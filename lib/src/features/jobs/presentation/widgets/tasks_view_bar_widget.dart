@@ -1,13 +1,30 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_activity_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-class TasksViewBarWidget extends StatelessWidget {
+class TasksViewBarWidget extends StatefulWidget {
+  final Function(Set<TaskStatus>)? onStatusChanged;
   const TasksViewBarWidget({
     super.key,
+    this.onStatusChanged,
   });
+
+  @override
+  State<TasksViewBarWidget> createState() => _TasksViewBarWidgetState();
+}
+
+class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
+  late Set<TaskStatus> selection;
+
+  @override
+  void initState() {
+    super.initState();
+    selection = TaskStatus.values.toSet();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +40,8 @@ class TasksViewBarWidget extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 10),
               color: AppColor.grey,
             ),
-            ActionButtonWidget(
-              onPressed: () {},
-              type: ButtonType.textButton,
-              title: "Filter",
-              icon: Icons.tune,
-              foregroundColor: AppColor.black,
-            ),
-            const Text("Water Meter call up"),
+            _buildDropdown(context),
+            _showSelectedStatus()
           ],
         ),
         Row(
@@ -64,6 +75,97 @@ class TasksViewBarWidget extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+
+  DropdownButton<TaskStatus> _buildDropdown(BuildContext context) {
+    return DropdownButton<TaskStatus>(
+      focusColor: Colors.transparent,
+      items: TaskStatus.values
+          .map(
+            (e) => DropdownMenuItem<TaskStatus>(
+              value: e,
+              child: Row(
+                children: <Widget>[
+                  Checkbox(
+                    onChanged: (bool? value) {
+                      _toggleStatus(e);
+                      context.pop();
+                    },
+                    value: selection.contains(e),
+                  ),
+                  Text(e.toString()),
+                ],
+              ),
+            ),
+          )
+          .toList(),
+      onChanged: _toggleStatus,
+      hint: Row(
+        children: [
+          const SizedBox(
+            width: 5,
+          ),
+          const Icon(
+            Icons.tune_outlined,
+            size: 14,
+          ),
+          const SizedBox(
+            width: 5,
+          ),
+          Text(
+            'Task Status',
+            style: context.bodyMedium,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _toggleStatus(TaskStatus? value) {
+    if (selection.contains(value)) {
+      setState(() {
+        selection.remove(value);
+      });
+    } else {
+      setState(() {
+        selection.add(value!);
+      });
+    }
+    if (widget.onStatusChanged != null) {
+      widget.onStatusChanged!(selection);
+    }
+  }
+
+  _showSelectedStatus() {
+    if (!context.isDesktop) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10),
+      constraints: const BoxConstraints(maxWidth: 650),
+      child: Wrap(
+        children: selection
+            .map(
+              (e) => Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Chip(
+                  label: Text(
+                    e.toString(),
+                    style: context.bodySmall,
+                  ),
+                  deleteIcon: const Icon(
+                    Icons.close_outlined,
+                    size: 12,
+                  ),
+                  deleteButtonTooltipMessage: "Remove",
+                  onDeleted: () => _toggleStatus(e),
+                ),
+              ),
+            )
+            .toList(),
+      ),
     );
   }
 }
