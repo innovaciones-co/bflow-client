@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
@@ -54,6 +55,10 @@ class JobTasksWidget extends StatelessWidget {
                     tabs: TaskStage.values
                         .map((e) => Tab(text: e.toString()))
                         .toList(),
+                    labelColor: AppColor.blue,
+                    indicatorColor: AppColor.blue,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicatorWeight: 3,
                   ),
                   Expanded(
                     child: TabBarView(
