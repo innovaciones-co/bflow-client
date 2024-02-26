@@ -93,7 +93,7 @@ class _JobPageState extends State<JobPage> {
         ActionButtonWidget(
             onPressed: () => _selectView(1),
             type: ButtonType.textButton,
-            title: "View all task",
+            title: "View all tasks",
             icon: Icons.task_outlined),
         ActionButtonWidget(
             onPressed: () => _selectView(2),
