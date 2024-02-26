@@ -3,7 +3,8 @@ import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/tasks_filter_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_calendar_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_tasks_widget.dart';
@@ -21,6 +22,7 @@ class JobPage extends StatefulWidget {
 }
 
 class _JobPageState extends State<JobPage> {
+  bool _viewJobInfo = false;
   late Widget _body;
 
   final List<Widget> _content = [
@@ -47,25 +49,33 @@ class _JobPageState extends State<JobPage> {
         BlocProvider<TasksBloc>(
             create: (context) =>
                 TasksBloc(context.read<JobBloc>(), DependencyInjection.sl())),
+        BlocProvider<TasksFilterBloc>(
+          create: (context) => TasksFilterBloc(
+            context.read<TasksBloc>(),
+          ),
+        ),
       ],
       child: Scaffold(
         body: PageContainerWidget(
           title: "Call forward",
-          child: BlocBuilder<JobBloc, JobState>(builder: (context, state) {
-            if (state is JobLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+          child: BlocBuilder<JobBloc, JobState>(
+            builder: (context, state) {
+              if (state is JobLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-            if (state is JobLoaded) {
-              return _jobLoaded(state);
-            }
+              if (state is JobLoaded) {
+                return _jobLoaded(state);
+              }
 
-            if (state is JobError) {
-              return FailureWidget(failure: state.failure);
-            }
+              if (state is JobError) {
+                return FailureWidget(failure: state.failure);
+              }
 
-            return const SizedBox.shrink();
-          }),
+              return const SizedBox.shrink();
+            },
+            buildWhen: (_, a) => true,
+          ),
         ),
       ),
     );
@@ -74,7 +84,7 @@ class _JobPageState extends State<JobPage> {
   Widget _jobLoaded(JobLoaded state) {
     return Column(
       children: [
-        JobItemWidget(job: state.job),
+        _viewJobInfo ? JobItemWidget(job: state.job) : const SizedBox.shrink(),
         _jobViewSelection(),
         const SizedBox(height: 5),
         _body
@@ -91,15 +101,28 @@ class _JobPageState extends State<JobPage> {
             title: "View jobs documents",
             icon: Icons.all_inbox_sharp),
         ActionButtonWidget(
-            onPressed: () => _selectView(1),
-            type: ButtonType.textButton,
-            title: "View all task",
-            icon: Icons.task_outlined),
+          onPressed: () => _selectView(1),
+          type: ButtonType.textButton,
+          title: "View all task",
+          icon: Icons.task_outlined,
+        ),
         ActionButtonWidget(
-            onPressed: () => _selectView(2),
-            type: ButtonType.textButton,
-            title: "View Calendar",
-            icon: Icons.task_outlined),
+          onPressed: () => _selectView(2),
+          type: ButtonType.textButton,
+          title: "View Calendar",
+          icon: Icons.task_outlined,
+        ),
+        const Spacer(),
+        ActionButtonWidget(
+          onPressed: () {
+            setState(() {
+              _viewJobInfo = !_viewJobInfo;
+            });
+          },
+          type: ButtonType.textButton,
+          title: _viewJobInfo ? "Hide Job Details" : "View Job Details",
+          icon: _viewJobInfo ? Icons.arrow_circle_down : Icons.arrow_circle_up,
+        ),
       ],
     );
   }

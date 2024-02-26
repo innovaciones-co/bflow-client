@@ -20,7 +20,7 @@ import 'package:bflow_client/src/features/jobs/domain/usecases/get_job_use_case.
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/login/data/implements/login_repository_impl.dart';
 import 'package:bflow_client/src/features/login/data/sources/login_remote_data_source.dart';
 import 'package:bflow_client/src/features/login/domain/repositories/repositories.dart';

@@ -72,7 +72,7 @@ class PageContainerWidget extends StatelessWidget {
 
   EdgeInsets _getPadding(BuildContext context) {
     if (context.isDesktop) {
-      return const EdgeInsets.symmetric(horizontal: 60, vertical: 40.0);
+      return const EdgeInsets.only(left: 60, right: 60, top: 30.0, bottom: 0);
     }
 
     if (context.isTablet) {
