@@ -51,6 +51,10 @@ class ContactsPage extends StatelessWidget {
                       tabs: ContactType.values
                           .map((e) => Tab(text: e.name))
                           .toList(),
+                      labelColor: AppColor.blue,
+                      indicatorColor: AppColor.blue,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      indicatorWeight: 3,
                     ),
                     const SizedBox(
                       height: 5,

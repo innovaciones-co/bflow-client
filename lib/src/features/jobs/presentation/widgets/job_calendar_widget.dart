@@ -5,6 +5,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/no_tasks_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/tasks_view_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,11 +35,19 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
                 const TasksViewBarWidget(),
                 const SizedBox(height: 15),
                 Expanded(
-                  child: ListView(
-                    children: [
-                      _buildTable(job.plannedStartDate, job.plannedEndDate),
-                    ],
-                  ),
+                  child: BlocBuilder<TasksBloc, TasksState>(
+                      builder: (context, state) {
+                    if (state is TasksLoaded) {
+                      if (state.tasks.isEmpty) {
+                        return const NoTasksWidget();
+                      }
+                    }
+                    return ListView(
+                      children: [
+                        _buildTable(job.plannedStartDate, job.plannedEndDate),
+                      ],
+                    );
+                  }),
                 ),
               ],
             ),
@@ -64,24 +73,27 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
       builder: (context, state) {
         if (state is TasksLoaded) {
           return SingleChildScrollView(
-            // TODO: Fix vertica scroll
             scrollDirection: Axis.vertical,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
               children: [
-                _buildFirstColumn(state),
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Expanded(
-                      child: Column(
-                        children: [
-                          _buildRowHeader(days),
-                          ..._buildRows(context, days, state.tasks)
-                        ],
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildFirstColumn(state),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Expanded(
+                          child: Column(
+                            children: [
+                              _buildRowHeader(days),
+                              ..._buildRows(context, days, state.tasks)
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),

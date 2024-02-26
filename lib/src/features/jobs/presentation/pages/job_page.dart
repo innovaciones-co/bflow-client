@@ -101,11 +101,10 @@ class _JobPageState extends State<JobPage> {
             title: "View jobs documents",
             icon: Icons.all_inbox_sharp),
         ActionButtonWidget(
-          onPressed: () => _selectView(1),
-          type: ButtonType.textButton,
-          title: "View all task",
-          icon: Icons.task_outlined,
-        ),
+            onPressed: () => _selectView(1),
+            type: ButtonType.textButton,
+            title: "View all tasks",
+            icon: Icons.task_outlined),
         ActionButtonWidget(
           onPressed: () => _selectView(2),
           type: ButtonType.textButton,
