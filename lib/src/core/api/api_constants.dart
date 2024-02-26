@@ -3,10 +3,16 @@ class ApiConstants {
 
   static String listJobsEndpoint = 'jobs';
   static String getJobEndpoint = 'jobs/:id';
+
+  static String taskEndpoint = 'tasks/:id';
+
   static String listTasksEndpoint = 'tasks';
   static String listUsersEndpoint = 'users';
   static String loginUsersEndpoint = 'users/login';
 
   static String contactsEndpoint = 'contacts';
   static String contactEndpoint = 'contacts/:id';
+
+  static String templatesEndpoint = 'templates';
+  static String createTaskFromTemplateEndpoint = 'templates/:id/tasks';
 }

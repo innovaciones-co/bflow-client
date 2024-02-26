@@ -37,12 +37,16 @@ class ApiService {
     return response.data;
   }
 
-  Future<dynamic> post(
-      {required String endpoint, Map<String, dynamic>? data}) async {
+  Future<dynamic> post({
+    required String endpoint,
+    Map<String, dynamic>? data,
+    Map<String, dynamic>? queryParams,
+  }) async {
     final response = await _performRequest(
       Methods.post,
       '${ApiConstants.baseUrl}/$endpoint',
       body: jsonEncode(data),
+      queryParams: queryParams,
       headers: {'Content-Type': 'application/json'},
     );
     return response.data;

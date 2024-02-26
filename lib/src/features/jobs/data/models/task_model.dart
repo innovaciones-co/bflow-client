@@ -23,6 +23,22 @@ class TaskModel extends Task {
     required super.job,
   });
 
+  factory TaskModel.fromEntity(Task task) => TaskModel(
+        id: task.id,
+        name: task.name,
+        callDate: task.callDate,
+        startDate: task.startDate,
+        endDate: task.endDate,
+        comments: task.comments,
+        progress: task.progress,
+        status: task.status,
+        stage: task.stage,
+        parentTask: task.parentTask,
+        supplier: task.supplier,
+        attachments: task.attachments,
+        job: task.job,
+      );
+
   factory TaskModel.fromJson(String str) => TaskModel.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
