@@ -1,62 +1,54 @@
+import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/domain/entities/form_status.dart';
+import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/utils/input_formatters/range_input_formatter.dart';
 import 'package:bflow_client/src/core/utils/mixins/validator.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/date_picker_widget.dart';
 import 'package:bflow_client/src/core/widgets/dropdown_widget.dart';
+import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
-import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/write_task_cubit.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/write_task/write_task_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WriteActivityWidget extends StatelessWidget with Validator {
   final _formKey = GlobalKey<FormState>();
+  final int? jobId;
 
-  WriteActivityWidget({super.key});
+  WriteActivityWidget({super.key, this.jobId});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<WriteTaskCubit>(
-      create: (context) => WriteTaskCubit(tasks: [
-        null,
-        Task(
-            id: 1000,
-            name: "Name",
-            status: TaskStatus.created,
-            stage: TaskStage.slabDown,
-            job: 10001),
-        Task(
-            id: 1001,
-            name: "Name",
-            status: TaskStatus.created,
-            stage: TaskStage.slabDown,
-            job: 10001),
-        Task(
-            id: 1002,
-            name: "Name",
-            status: TaskStatus.created,
-            stage: TaskStage.slabDown,
-            job: 10001),
-        Task(
-            id: 1003,
-            name: "Name",
-            status: TaskStatus.created,
-            stage: TaskStage.slabDown,
-            job: 10001),
-      ], suppliers: [
-        Contact(id: 1, name: "Test", email: "test", type: ContactType.supplier),
-        Contact(id: 1, name: "Test", email: "test", type: ContactType.supplier),
-        Contact(id: 1, name: "Test", email: "test", type: ContactType.supplier),
-      ]),
+      create: (context) => WriteTaskCubit(
+        getContactsUseCase: DependencyInjection.sl(),
+        getTasksUseCase: DependencyInjection.sl(),
+      )..initForm(jobId),
       child: BlocBuilder<WriteTaskCubit, WriteTaskState>(
         builder: (context, state) {
           final writeTaskBloc = context.read<WriteTaskCubit>();
+          if (state.formStatus == FormStatus.initialized ||
+              state.formStatus == FormStatus.inProgress) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (state.formStatus == FormStatus.failed) {
+            return Center(
+              child: FailureWidget(
+                failure: ServerFailure(message: "Unable to load forma"),
+              ),
+            );
+          }
+
           return Form(
             key: _formKey,
             child: Column(
@@ -71,11 +63,11 @@ class WriteActivityWidget extends StatelessWidget with Validator {
                 const SizedBox(height: 20),
                 DropdownWidget<Task?>(
                   label: "Parent Task",
-                  items: writeTaskBloc.tasks,
+                  items: state.parentTasks,
                   getLabel: (a) => a?.name ?? '(No parent)',
                   onChanged: writeTaskBloc.updateParentTask,
                   initialValue: state.parentTask != null
-                      ? writeTaskBloc.tasks
+                      ? state.parentTasks
                           .where((element) => element?.id == state.parentTask)
                           .first
                       : null,
@@ -84,10 +76,10 @@ class WriteActivityWidget extends StatelessWidget with Validator {
                 Row(
                   children: [
                     Expanded(
-                      child: DropdownWidget<Contact>(
+                      child: DropdownWidget<Contact?>(
                         label: "Supplier",
-                        items: writeTaskBloc.suppliers,
-                        getLabel: (r) => r.name,
+                        items: state.suppliers,
+                        getLabel: (r) => r?.name ?? "(No contact)",
                         onChanged: null,
                         initialValue: state.supplier,
                       ),

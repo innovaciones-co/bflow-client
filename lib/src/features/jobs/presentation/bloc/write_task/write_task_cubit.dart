@@ -1,8 +1,11 @@
 import 'package:bflow_client/src/core/domain/entities/form_status.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
+import 'package:bflow_client/src/features/contacts/domain/usecases/get_contacts_usecase.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,17 +13,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 part 'write_task_state.dart';
 
 class WriteTaskCubit extends Cubit<WriteTaskState> {
-  final List<Contact> suppliers;
-  final List<Task?> tasks;
   final Task? task;
+  final GetContactsUseCase getContactsUseCase;
+  final GetTasksUseCase getTasksUseCase;
 
   WriteTaskCubit({
-    required this.tasks,
-    required this.suppliers,
+    required this.getContactsUseCase,
+    required this.getTasksUseCase,
     this.task,
   }) : super(WriteTaskCubitInitial(
-          parentTasks: tasks,
-          suppliers: suppliers,
           name: task?.name ?? '',
           parentTask: task?.parentTask,
           taskStage: task?.stage ?? TaskStage.slabDown,
@@ -30,6 +31,28 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
           progress: task?.progress ?? 0,
           description: task?.comments,
         ));
+
+  void initForm(int? jobId) async {
+    GetContactsParams getContactParams =
+        GetContactsParams(contactType: ContactType.supplier);
+    GetTasksParams tasksParams = GetTasksParams(jobId: jobId);
+    final suppliers = await getContactsUseCase.execute(getContactParams);
+    final parentTasks = await getTasksUseCase.execute(tasksParams);
+
+    if (suppliers.isRight() && parentTasks.isRight()) {
+      List<Contact?> suppliersList = [null, ...suppliers.getOrElse(() => [])];
+      List<Task?> parentTasksList = [null, ...parentTasks.getOrElse(() => [])];
+      emit(
+        state.copyWith(
+          suppliers: suppliersList,
+          parentTasks: parentTasksList,
+          formStatus: FormStatus.loaded,
+        ),
+      );
+    } else {
+      emit(state.copyWith(formStatus: FormStatus.failed));
+    }
+  }
 
   void updateName(String? name) {
     emit(state.copyWith(name: name));
@@ -63,4 +86,6 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
   void updateEndDate(DateTime? endDate) {
     emit(state.copyWith(endDate: endDate));
   }
+
+  void createTask() {}
 }

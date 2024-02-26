@@ -28,12 +28,20 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
         if (state is JobLoaded) {
           Job job = state.job;
 
-          return Column(
-            children: [
-              const TasksViewBarWidget(),
-              const SizedBox(height: 15),
-              _buildTable(job.plannedStartDate, job.plannedEndDate),
-            ],
+          return Expanded(
+            child: Column(
+              children: [
+                const TasksViewBarWidget(),
+                const SizedBox(height: 15),
+                Expanded(
+                  child: ListView(
+                    children: [
+                      _buildTable(job.plannedStartDate, job.plannedEndDate),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           );
         }
 

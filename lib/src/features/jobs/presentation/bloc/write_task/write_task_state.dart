@@ -7,7 +7,7 @@ sealed class WriteTaskState extends Equatable {
   final Failure? failure;
   final FormStatus formStatus;
   final int progress;
-  final List<Contact> suppliers;
+  final List<Contact?> suppliers;
   final Contact? supplier;
   final List<Task?> parentTasks;
   final String? description;
@@ -16,9 +16,9 @@ sealed class WriteTaskState extends Equatable {
   final TaskStage taskStage;
 
   WriteTaskState({
-    required this.parentTasks,
+    this.parentTasks = const [],
     DateTime? startDate,
-    required this.suppliers,
+    this.suppliers = const [],
     this.autovalidateMode = AutovalidateMode.disabled,
     this.description,
     this.endDate,
@@ -32,6 +32,8 @@ sealed class WriteTaskState extends Equatable {
   }) : startDate = startDate ?? DateTime.now();
 
   WriteTaskState copyWith({
+    List<Contact?>? suppliers,
+    List<Task?>? parentTasks,
     AutovalidateMode? autovalidateMode,
     DateTime? endDate,
     DateTime? startDate,
@@ -48,26 +50,26 @@ sealed class WriteTaskState extends Equatable {
   @override
   List<Object> get props => [
         autovalidateMode,
+        description ?? '',
         endDate ?? '',
-        startDate,
         failure ?? '',
         formStatus,
-        progress,
-        suppliers,
-        supplier ?? '',
-        parentTasks,
-        description ?? '',
         name,
         parentTask ?? '',
+        parentTasks,
+        progress,
+        startDate,
+        supplier ?? '',
+        suppliers,
         taskStage,
       ];
 }
 
 final class WriteTaskCubitInitial extends WriteTaskState {
   WriteTaskCubitInitial({
-    required super.parentTasks,
+    super.parentTasks,
     super.startDate,
-    required super.suppliers,
+    super.suppliers,
     super.autovalidateMode,
     super.description,
     super.endDate,
@@ -82,6 +84,8 @@ final class WriteTaskCubitInitial extends WriteTaskState {
 
   @override
   WriteTaskState copyWith({
+    List<Contact?>? suppliers,
+    List<Task?>? parentTasks,
     AutovalidateMode? autovalidateMode,
     DateTime? endDate,
     DateTime? startDate,
@@ -95,9 +99,9 @@ final class WriteTaskCubitInitial extends WriteTaskState {
     TaskStage? taskStage,
   }) {
     return WriteTaskCubitInitial(
-      parentTasks: parentTasks,
+      parentTasks: parentTasks ?? this.parentTasks,
       startDate: startDate ?? this.startDate,
-      suppliers: suppliers,
+      suppliers: suppliers ?? this.suppliers,
       autovalidateMode: autovalidateMode ?? this.autovalidateMode,
       description: description ?? this.description,
       endDate: endDate ?? this.endDate,

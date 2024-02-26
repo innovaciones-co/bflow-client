@@ -2,8 +2,10 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_activity_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class TasksViewBarWidget extends StatefulWidget {
@@ -63,14 +65,28 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
               backgroundColor: AppColor.lightBlue,
             ),
             const SizedBox(width: 12),
-            ActionButtonWidget(
-              onPressed: () =>
-                  context.showLeftDialog('New Activity', WriteActivityWidget()),
-              type: ButtonType.elevatedButton,
-              title: "New Activity",
-              icon: Icons.add,
-              backgroundColor: AppColor.blue,
-              foregroundColor: AppColor.white,
+            BlocBuilder<JobBloc, JobState>(
+              builder: (context, state) {
+                if (state is! JobLoaded) {
+                  return const Center(child: Text("No active job"));
+                }
+
+                int? jobId = (state).job.id;
+
+                return ActionButtonWidget(
+                  onPressed: () => context.showLeftDialog(
+                    'New Activity',
+                    WriteActivityWidget(
+                      jobId: jobId,
+                    ),
+                  ),
+                  type: ButtonType.elevatedButton,
+                  title: "New Activity",
+                  icon: Icons.add,
+                  backgroundColor: AppColor.blue,
+                  foregroundColor: AppColor.white,
+                );
+              },
             ),
           ],
         ),
