@@ -5,6 +5,7 @@ import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/tasks_filter_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/templates/templates_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_calendar_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_tasks_widget.dart';
@@ -47,12 +48,22 @@ class _JobPageState extends State<JobPage> {
               DependencyInjection.sl()..add(GetJobEvent(id: widget.jobId)),
         ),
         BlocProvider<TasksBloc>(
-            create: (context) =>
-                TasksBloc(context.read<JobBloc>(), DependencyInjection.sl())),
+          create: (context) => TasksBloc(
+            context.read<JobBloc>(),
+            DependencyInjection.sl(),
+          ),
+        ),
         BlocProvider<TasksFilterBloc>(
           create: (context) => TasksFilterBloc(
             context.read<TasksBloc>(),
           ),
+        ),
+        BlocProvider<TemplatesCubit>(
+          create: (context) => TemplatesCubit(
+            createTasksFromTemplateUseCase: DependencyInjection.sl(),
+            templatesUseCase: DependencyInjection.sl(),
+            tasksBloc: context.read<TasksBloc>(),
+          )..loadTemplates(),
         ),
       ],
       child: Scaffold(

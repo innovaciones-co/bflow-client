@@ -12,9 +12,13 @@ class TemplatesRepositoryImp implements TemplateRepository {
 
   @override
   Future<Either<Failure, void>> createTasksFromTemplate(
-      int templateId, int jobId) {
-    // TODO: implement createTasksFromTemplate
-    throw UnimplementedError();
+      int templateId, int jobId) async {
+    try {
+      return Right(await templateRemoteDataSource.createTasksFromTemplate(
+          templateId, jobId));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
   }
 
   @override

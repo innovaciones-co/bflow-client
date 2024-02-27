@@ -3,8 +3,10 @@ import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/extensions/ui_extensions.dart';
 import 'package:bflow_client/src/core/widgets/custom_chip_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/no_tasks_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TaskTableWidget extends StatefulWidget {
   final List<Task> tasks;
@@ -48,7 +50,17 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
   @override
   Widget build(BuildContext context) {
     if (widget.tasks.isEmpty) {
-      return const NoTasksWidget();
+      return BlocBuilder<JobBloc, JobState>(
+        builder: (context, state) {
+          if (state is! JobLoaded) {
+            return const SizedBox.shrink();
+          }
+          return NoTasksWidget(
+            jobId: state.job.id!,
+            tasksBloc: context.read(),
+          );
+        },
+      );
     } else {
       return ReorderableListView(
         header: Table(

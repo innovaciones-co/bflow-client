@@ -8,8 +8,13 @@ sealed class TasksEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class LoadingTasksEvent extends TasksEvent {}
+
 class GetTasksEvent extends TasksEvent {
   final int? jobId;
 
   const GetTasksEvent({this.jobId});
+
+  @override
+  List<Object> get props => [jobId ?? 0];
 }

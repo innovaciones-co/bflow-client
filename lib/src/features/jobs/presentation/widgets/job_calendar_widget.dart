@@ -38,9 +38,17 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
                   child: BlocBuilder<TasksBloc, TasksState>(
                       builder: (context, state) {
                     if (state is TasksLoaded) {
-                      if (state.tasks.isEmpty) {
-                        return const NoTasksWidget();
-                      }
+                      return BlocBuilder<JobBloc, JobState>(
+                        builder: (context, state) {
+                          if (state is! JobLoaded) {
+                            return const SizedBox.shrink();
+                          }
+                          return NoTasksWidget(
+                            jobId: state.job.id!,
+                            tasksBloc: context.read(),
+                          );
+                        },
+                      );
                     }
                     return ListView(
                       children: [

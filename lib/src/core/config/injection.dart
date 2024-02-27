@@ -11,16 +11,22 @@ import 'package:bflow_client/src/features/contacts/domain/usecases/update_contac
 import 'package:bflow_client/src/features/contacts/presentation/cubit/contacts_cubit.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/data/implements/tasks_repository_imp.dart';
+import 'package:bflow_client/src/features/jobs/data/implements/templates_repository_imp.dart';
 import 'package:bflow_client/src/features/jobs/data/sources/jobs_remote_data_source.dart';
 import 'package:bflow_client/src/features/jobs/data/sources/tasks_remote_data_source.dart';
+import 'package:bflow_client/src/features/jobs/data/sources/template_remote_data_source.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/job_repository.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/task_repository.dart';
+import 'package:bflow_client/src/features/jobs/domain/repositories/template_repository.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_job_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/create_tasks_from_template_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/get_templates_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/templates/templates_cubit.dart';
 import 'package:bflow_client/src/features/login/data/implements/login_repository_impl.dart';
 import 'package:bflow_client/src/features/login/data/sources/login_remote_data_source.dart';
 import 'package:bflow_client/src/features/login/domain/repositories/repositories.dart';
@@ -72,6 +78,13 @@ class DependencyInjection {
     sl.registerFactory<ContactsCubit>(
       () => ContactsCubit(sl()),
     );
+    sl.registerFactory<TemplatesCubit>(
+      () => TemplatesCubit(
+        templatesUseCase: sl(),
+        createTasksFromTemplateUseCase: sl(),
+        tasksBloc: sl(),
+      ),
+    );
 
     // Use cases
 
@@ -111,8 +124,17 @@ class DependencyInjection {
     sl.registerLazySingleton(
       () => DeleteContactUseCase(repository: sl()),
     );
+    sl.registerLazySingleton(
+      () => GetTemplatesUseCase(templateRepository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => CreateTasksFromTemplateUseCase(templateRepository: sl()),
+    );
 
     // Repository
+    sl.registerLazySingleton<TemplateRepository>(
+      () => TemplatesRepositoryImp(templateRemoteDataSource: sl()),
+    );
     sl.registerLazySingleton<TasksRepository>(
       () => TasksRepositoryImp(remoteDataSource: sl()),
     );
@@ -144,6 +166,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton<ContactsRemoteDataSource>(
       () => ContactsRemoteDataSource(apiService: sl()),
+    );
+    sl.registerLazySingleton(
+      () => TemplateRemoteDataSource(apiService: sl()),
     );
   }
 }
