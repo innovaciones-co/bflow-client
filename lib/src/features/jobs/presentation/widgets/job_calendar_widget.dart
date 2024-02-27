@@ -37,7 +37,7 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
                 Expanded(
                   child: BlocBuilder<TasksBloc, TasksState>(
                       builder: (context, state) {
-                    if (state is TasksLoaded) {
+                    if (state is TasksLoaded && state.tasks.isEmpty) {
                       return BlocBuilder<JobBloc, JobState>(
                         builder: (context, state) {
                           if (state is! JobLoaded) {
@@ -80,31 +80,22 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
     return BlocBuilder<TasksBloc, TasksState>(
       builder: (context, state) {
         if (state is TasksLoaded) {
-          return SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildFirstColumn(state),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Expanded(
-                          child: Column(
-                            children: [
-                              _buildRowHeader(days),
-                              ..._buildRows(context, days, state.tasks)
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildFirstColumn(state),
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    children: [
+                      _buildRowHeader(days),
+                      ..._buildRows(context, days, state.tasks)
+                    ],
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           );
         }
 

@@ -4,6 +4,7 @@ import 'package:bflow_client/src/core/extensions/ui_extensions.dart';
 import 'package:bflow_client/src/core/widgets/custom_chip_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/no_tasks_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,105 +50,112 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.tasks.isEmpty) {
-      return BlocBuilder<JobBloc, JobState>(
-        builder: (context, state) {
-          if (state is! JobLoaded) {
-            return const SizedBox.shrink();
-          }
-          return NoTasksWidget(
-            jobId: state.job.id!,
-            tasksBloc: context.read(),
+    return BlocBuilder<TasksBloc, TasksState>(
+      builder: (context, state) {
+        // As the tasks from the widget are filtered, we should use the tasks bloc
+        if (state is TasksLoaded && state.tasks.isEmpty) {
+          return BlocBuilder<JobBloc, JobState>(
+            builder: (context, state) {
+              if (state is! JobLoaded) {
+                return const SizedBox.shrink();
+              }
+              return NoTasksWidget(
+                jobId: state.job.id!,
+                tasksBloc: context.read(),
+              );
+            },
           );
-        },
-      );
-    } else {
-      return ReorderableListView(
-        header: Table(
-          columnWidths: columnWidths,
-          border: TableBorder(
-            right: BorderSide(width: 1.0, color: AppColor.lightGrey),
-            bottom: BorderSide(width: 0.2, color: AppColor.darkGrey),
-            left: BorderSide(width: 1.0, color: AppColor.lightGrey),
-            verticalInside: BorderSide(width: 1.0, color: AppColor.lightGrey),
+        }
+
+        return ReorderableListView(
+          header: Table(
+            columnWidths: columnWidths,
+            border: TableBorder(
+              right: BorderSide(width: 1.0, color: AppColor.lightGrey),
+              bottom: BorderSide(width: 0.2, color: AppColor.darkGrey),
+              left: BorderSide(width: 1.0, color: AppColor.lightGrey),
+              verticalInside: BorderSide(width: 1.0, color: AppColor.lightGrey),
+            ),
+            children: [
+              TableRow(
+                decoration: BoxDecoration(
+                  color: AppColor.grey,
+                ),
+                children: [
+                  _tableCell(Checkbox(
+                    value: _allTaskSelected,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _allTaskSelected = value ?? false;
+
+                        _allTaskSelected
+                            ? _tasksSelected.addAll(widget.tasks)
+                            : _tasksSelected.removeWhere((element) => true);
+                      });
+                    },
+                    side: BorderSide(color: AppColor.darkGrey, width: 2),
+                  )),
+                  _tableCell(
+                    const Center(
+                      child: Text("#"),
+                    ),
+                  ),
+                  _tableCell(const Text("Task")),
+                  _tableCell(const Text("Supplier")),
+                  _tableCell(const Text("Status")),
+                  _tableCell(const Text("Call date")),
+                  _tableCell(const Text("Booking date")),
+                  _tableCell(const Text("Completion date")),
+                  _tableCell(const Text("Comments")),
+                  _tableCell(const Text("Progress")),
+                  _tableCell(const Text("Actions")),
+                  const SizedBox.shrink(),
+                ],
+              ),
+            ],
           ),
           children: [
-            TableRow(
-              decoration: BoxDecoration(
-                color: AppColor.grey,
-              ),
-              children: [
-                _tableCell(Checkbox(
-                  value: _allTaskSelected,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      _allTaskSelected = value ?? false;
-
-                      _allTaskSelected
-                          ? _tasksSelected.addAll(widget.tasks)
-                          : _tasksSelected.removeWhere((element) => true);
-                    });
-                  },
-                  side: BorderSide(color: AppColor.darkGrey, width: 2),
-                )),
-                _tableCell(
-                  const Center(
-                    child: Text("#"),
-                  ),
+            for (int index = 0; index < parentTasks.length; index += 1)
+              Table(
+                key: Key('$index'),
+                columnWidths: columnWidths,
+                border: TableBorder(
+                  top: BorderSide(width: 0.5, color: AppColor.lightGrey),
+                  right: BorderSide(width: 1.0, color: AppColor.lightGrey),
+                  bottom: BorderSide(width: 0.5, color: AppColor.lightGrey),
+                  left: BorderSide(width: 1.0, color: AppColor.lightGrey),
+                  horizontalInside:
+                      BorderSide(width: 1.0, color: AppColor.lightGrey),
+                  verticalInside:
+                      BorderSide(width: 1.0, color: AppColor.lightGrey),
                 ),
-                _tableCell(const Text("Task")),
-                _tableCell(const Text("Supplier")),
-                _tableCell(const Text("Status")),
-                _tableCell(const Text("Call date")),
-                _tableCell(const Text("Booking date")),
-                _tableCell(const Text("Completion date")),
-                _tableCell(const Text("Comments")),
-                _tableCell(const Text("Progress")),
-                _tableCell(const Text("Actions")),
-                const SizedBox.shrink(),
-              ],
-            ),
-          ],
-        ),
-        children: [
-          for (int index = 0; index < parentTasks.length; index += 1)
-            Table(
-              key: Key('$index'),
-              columnWidths: columnWidths,
-              border: TableBorder(
-                top: BorderSide(width: 0.5, color: AppColor.lightGrey),
-                right: BorderSide(width: 1.0, color: AppColor.lightGrey),
-                bottom: BorderSide(width: 0.5, color: AppColor.lightGrey),
-                left: BorderSide(width: 1.0, color: AppColor.lightGrey),
-                horizontalInside:
-                    BorderSide(width: 1.0, color: AppColor.lightGrey),
-                verticalInside:
-                    BorderSide(width: 1.0, color: AppColor.lightGrey),
-              ),
-              children: [
-                _tableRow(task: parentTasks[index], index: index, parent: true),
-                for (int index2 = 0;
-                    index2 <
-                        (childrenTasksMap[parentTasks[index].id] ?? []).length;
-                    index2 += 1)
+                children: [
                   _tableRow(
-                      task: childrenTasksMap[parentTasks[index].id]![index2],
-                      index: index2,
-                      parent: false),
-              ],
-            )
-        ],
-        onReorder: (int oldIndex, int newIndex) {
-          setState(() {
-            if (oldIndex < newIndex) {
-              newIndex -= 1;
-            }
-            final Task item = parentTasks.removeAt(oldIndex);
-            parentTasks.insert(newIndex, item);
-          });
-        },
-      );
-    }
+                      task: parentTasks[index], index: index, parent: true),
+                  for (int index2 = 0;
+                      index2 <
+                          (childrenTasksMap[parentTasks[index].id] ?? [])
+                              .length;
+                      index2 += 1)
+                    _tableRow(
+                        task: childrenTasksMap[parentTasks[index].id]![index2],
+                        index: index2,
+                        parent: false),
+                ],
+              )
+          ],
+          onReorder: (int oldIndex, int newIndex) {
+            setState(() {
+              if (oldIndex < newIndex) {
+                newIndex -= 1;
+              }
+              final Task item = parentTasks.removeAt(oldIndex);
+              parentTasks.insert(newIndex, item);
+            });
+          },
+        );
+      },
+    );
   }
 
   TableRow _tableRow(
