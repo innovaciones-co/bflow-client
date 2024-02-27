@@ -39,12 +39,7 @@ class JobTasksWidget extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          TasksViewBarWidget(
-            onStatusChanged: (selection) {
-              var filterBloc = context.read<TasksFilterBloc>();
-              filterBloc.add(UpdateTasks(status: selection));
-            },
-          ),
+          const TasksViewBarWidget(),
           Expanded(
             child: DefaultTabController(
               key: GlobalKey(),

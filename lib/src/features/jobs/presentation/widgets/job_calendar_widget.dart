@@ -5,6 +5,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/tasks_filter_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/no_tasks_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/tasks_view_bar_widget.dart';
 import 'package:flutter/material.dart';
@@ -77,13 +78,13 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
       iteratorDate = iteratorDate.add(const Duration(days: 1));
     }
 
-    return BlocBuilder<TasksBloc, TasksState>(
+    return BlocBuilder<TasksFilterBloc, TasksFilterState>(
       builder: (context, state) {
-        if (state is TasksLoaded) {
+        if (state is TasksFilterLoaded) {
           return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildFirstColumn(state),
+              _buildFirstColumn(state.tasks),
               Expanded(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -136,7 +137,7 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
     );
   }
 
-  Table _buildFirstColumn(TasksLoaded state) {
+  Table _buildFirstColumn(List<Task> tasks) {
     bool isSelected = false;
 
     return Table(
@@ -170,7 +171,7 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
             _tableCell(const Text("Tasks")),
           ],
         ),
-        ...state.tasks.asMap().entries.map(
+        ...tasks.asMap().entries.map(
               (e) => TableRow(
                 children: [
                   _tableCell(Checkbox(
@@ -185,11 +186,13 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
                     alignment: Alignment.center,
                     child: Text('${int.parse(e.key.toString()) + 1}'),
                   )),
-                  _tableCell(Text(
-                    e.value.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  )),
+                  _tableCell(
+                    Text(
+                      e.value.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ],
               ),
             )

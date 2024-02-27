@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class DropdownWidget<T> extends StatefulWidget {
   final String? label;
+  final EdgeInsets labelPadding;
   final List<T> items;
   final ValueChanged<T>? onChanged;
   final String Function(T) getLabel;
@@ -17,6 +18,7 @@ class DropdownWidget<T> extends StatefulWidget {
     required this.getLabel,
     this.validator,
     this.initialValue,
+    this.labelPadding = const EdgeInsets.symmetric(horizontal: 8),
   });
 
   @override
@@ -46,7 +48,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
       children: [
         widget.label != null
             ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: widget.labelPadding,
                 child: Text(widget.label!),
               )
             : const SizedBox.shrink(),
