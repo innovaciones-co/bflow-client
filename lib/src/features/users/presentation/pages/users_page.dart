@@ -4,6 +4,7 @@ import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/write_user_widget.dart';
 import 'package:bflow_client/src/features/users/domain/entities/user_entity.dart';
 import 'package:bflow_client/src/features/users/presentation/bloc/users_bloc.dart';
 import 'package:flutter/material.dart';
@@ -24,9 +25,13 @@ class UsersPage extends StatelessWidget {
         title: 'Users',
         actions: [
           ActionButtonWidget(
-            onPressed: null,
+            onPressed: () =>
+                context.showLeftDialog('New User', WriteUserWidget()),
+            icon: Icons.add,
             type: ButtonType.elevatedButton,
             title: "New user",
+            backgroundColor: AppColor.blue,
+            foregroundColor: AppColor.white,
           ),
         ],
         child: BlocBuilder<UsersBloc, UsersState>(
