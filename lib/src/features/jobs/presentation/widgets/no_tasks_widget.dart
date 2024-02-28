@@ -2,6 +2,7 @@ import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/core/widgets/dialog_widget.dart';
 import 'package:bflow_client/src/core/widgets/dropdown_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/template_entity.dart';
@@ -65,95 +66,70 @@ class NoTasksWidget extends StatelessWidget {
             templatesUseCase: DependencyInjection.sl(),
             tasksBloc: tasksBloc,
           )..loadTemplates(),
-          child: Dialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: context.isDesktop
-                    ? context.width * 0.3
-                    : context.width * 0.8,
+          child: DialogWidget(
+            title: "Add new activities",
+            children: [
+              BlocBuilder<TemplatesCubit, TemplatesState>(
+                builder: (context, state) {
+                  TemplatesCubit templateCubit = context.read<TemplatesCubit>();
+
+                  if (state is TemplatesError) {
+                    return FailureWidget(failure: state.failure);
+                  }
+
+                  if (state is TemplatesLoaded) {
+                    return DropdownWidget<TemplateEntity>(
+                      label:
+                          "Choose the template you want to use to create the activities:",
+                      labelPadding: const EdgeInsets.all(0),
+                      items: state.templates,
+                      getLabel: (template) => template.name,
+                      onChanged: templateCubit.changeSelectedTemplate,
+                      initialValue: state.templates.first,
+                    );
+                  }
+
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
               ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: AppColor.white,
-              ),
-              padding: const EdgeInsets.all(30),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
-                    "Add new activities",
-                    style: context.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ActionButtonWidget(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    type: ButtonType.textButton,
+                    title: "Cancel",
+                    paddingHorizontal: 15,
+                    paddingVertical: 18,
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(width: 12),
                   BlocBuilder<TemplatesCubit, TemplatesState>(
                     builder: (context, state) {
                       TemplatesCubit templateCubit =
                           context.read<TemplatesCubit>();
 
-                      if (state is TemplatesError) {
-                        return FailureWidget(failure: state.failure);
-                      }
-
-                      if (state is TemplatesLoaded) {
-                        return DropdownWidget<TemplateEntity>(
-                          label:
-                              "Choose the template you want to use to create the activities:",
-                          labelPadding: const EdgeInsets.all(0),
-                          items: state.templates,
-                          getLabel: (template) => template.name,
-                          onChanged: templateCubit.changeSelectedTemplate,
-                          initialValue: state.templates.first,
-                        );
-                      }
-
-                      return const Center(
-                        child: CircularProgressIndicator(),
+                      return ActionButtonWidget(
+                        onPressed: state is TemplatesLoaded
+                            ? () {
+                                templateCubit.createTasksFromTemplate(jobId);
+                                context.pop();
+                              }
+                            : null,
+                        type: ButtonType.elevatedButton,
+                        title: "Create",
+                        backgroundColor: AppColor.blue,
+                        foregroundColor: AppColor.white,
                       );
                     },
                   ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ActionButtonWidget(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        type: ButtonType.textButton,
-                        title: "Cancel",
-                        paddingHorizontal: 15,
-                        paddingVertical: 18,
-                      ),
-                      const SizedBox(width: 12),
-                      BlocBuilder<TemplatesCubit, TemplatesState>(
-                        builder: (context, state) {
-                          TemplatesCubit templateCubit =
-                              context.read<TemplatesCubit>();
-
-                          return ActionButtonWidget(
-                            onPressed: state is TemplatesLoaded
-                                ? () {
-                                    templateCubit
-                                        .createTasksFromTemplate(jobId);
-                                    context.pop();
-                                  }
-                                : null,
-                            type: ButtonType.elevatedButton,
-                            title: "Create",
-                            backgroundColor: AppColor.blue,
-                            foregroundColor: AppColor.white,
-                          );
-                        },
-                      ),
-                    ],
-                  ),
                 ],
               ),
-            ),
+            ],
           ),
         );
       },

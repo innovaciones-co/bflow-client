@@ -131,7 +131,7 @@ class _JobPageState extends State<JobPage> {
           },
           type: ButtonType.textButton,
           title: _viewJobInfo ? "Hide Job Details" : "View Job Details",
-          icon: _viewJobInfo ? Icons.arrow_circle_down : Icons.arrow_circle_up,
+          icon: _viewJobInfo ? Icons.arrow_circle_up : Icons.arrow_circle_down,
         ),
       ],
     );
