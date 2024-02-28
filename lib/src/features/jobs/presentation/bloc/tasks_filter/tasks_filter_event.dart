@@ -12,8 +12,8 @@ class UpdateFilter extends TasksFilterEvent {}
 class UpdateTasks extends TasksFilterEvent {
   final Set<TaskStatus> statusFilter;
 
-  UpdateTasks({Set<TaskStatus>? status})
-      : statusFilter = status ?? TaskStatus.values.toSet();
+  UpdateTasks({Set<TaskStatus>? statusFilter})
+      : statusFilter = statusFilter ?? TaskStatus.values.toSet();
 
   @override
   List<Object> get props => [statusFilter];

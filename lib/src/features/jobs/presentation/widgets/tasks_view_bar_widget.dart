@@ -19,12 +19,9 @@ class TasksViewBarWidget extends StatefulWidget {
 }
 
 class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
-  late Set<TaskStatus> selection;
-
   @override
   void initState() {
     super.initState();
-    selection = TaskStatus.values.toSet();
   }
 
   @override
@@ -93,63 +90,73 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
     );
   }
 
-  DropdownButton<TaskStatus> _buildDropdown(BuildContext context) {
-    return DropdownButton<TaskStatus>(
-      focusColor: Colors.transparent,
-      items: TaskStatus.values
-          .map(
-            (e) => DropdownMenuItem<TaskStatus>(
-              value: e,
-              child: Row(
-                children: <Widget>[
-                  Checkbox(
-                    onChanged: (bool? value) {
-                      _toggleStatus(e);
-                      context.pop();
-                    },
-                    value: selection.contains(e),
+  Widget _buildDropdown(BuildContext context) {
+    return BlocBuilder<TasksFilterBloc, TasksFilterState>(
+      builder: (context, state) {
+        if (state is! TasksFilterLoaded) {
+          return const SizedBox.shrink();
+        }
+
+        return DropdownButton<TaskStatus>(
+          focusColor: Colors.transparent,
+          items: TaskStatus.values
+              .map(
+                (e) => DropdownMenuItem<TaskStatus>(
+                  value: e,
+                  child: Row(
+                    children: <Widget>[
+                      Checkbox(
+                        onChanged: (bool? value) {
+                          _toggleStatus(e);
+                          context.pop();
+                        },
+                        value: state.statusFilter.contains(e),
+                      ),
+                      Text(e.toString()),
+                    ],
                   ),
-                  Text(e.toString()),
-                ],
+                ),
+              )
+              .toList(),
+          onChanged: _toggleStatus,
+          hint: Row(
+            children: [
+              const SizedBox(
+                width: 5,
               ),
-            ),
-          )
-          .toList(),
-      onChanged: _toggleStatus,
-      hint: Row(
-        children: [
-          const SizedBox(
-            width: 5,
+              const Icon(
+                Icons.tune_outlined,
+                size: 14,
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+              Text(
+                'Task Status',
+                style: context.bodyMedium,
+              ),
+            ],
           ),
-          const Icon(
-            Icons.tune_outlined,
-            size: 14,
-          ),
-          const SizedBox(
-            width: 5,
-          ),
-          Text(
-            'Task Status',
-            style: context.bodyMedium,
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   void _toggleStatus(TaskStatus? value) {
-    if (selection.contains(value)) {
-      setState(() {
-        selection.remove(value);
-      });
-    } else {
-      setState(() {
-        selection.add(value!);
-      });
+    var filterBloc = context.read<TasksFilterBloc>();
+    if (filterBloc.state is! TasksFilterLoaded) {
+      return;
     }
 
-    var filterBloc = context.read<TasksFilterBloc>();
-    filterBloc.add(UpdateTasks(status: selection));
+    var selection = (filterBloc.state as TasksFilterLoaded).statusFilter;
+    if (selection.contains(value)) {
+      selection.remove(value);
+    } else {
+      selection.add(value!);
+    }
+    filterBloc.add(UpdateFilter());
+
+    filterBloc.add(UpdateTasks(statusFilter: selection));
   }
 
   _showSelectedStatus() {
@@ -157,30 +164,38 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
       return const SizedBox.shrink();
     }
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10),
-      constraints: const BoxConstraints(maxWidth: 650),
-      child: Wrap(
-        children: selection
-            .map(
-              (e) => Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Chip(
-                  label: Text(
-                    e.toString(),
-                    style: context.bodySmall,
+    return BlocBuilder<TasksFilterBloc, TasksFilterState>(
+      builder: (context, state) {
+        if (state is! TasksFilterLoaded) {
+          return const SizedBox.shrink();
+        }
+
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          constraints: const BoxConstraints(maxWidth: 650),
+          child: Wrap(
+            children: state.statusFilter
+                .map(
+                  (e) => Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Chip(
+                      label: Text(
+                        e.toString(),
+                        style: context.bodySmall,
+                      ),
+                      deleteIcon: const Icon(
+                        Icons.close_outlined,
+                        size: 12,
+                      ),
+                      deleteButtonTooltipMessage: "Remove",
+                      onDeleted: () => _toggleStatus(e),
+                    ),
                   ),
-                  deleteIcon: const Icon(
-                    Icons.close_outlined,
-                    size: 12,
-                  ),
-                  deleteButtonTooltipMessage: "Remove",
-                  onDeleted: () => _toggleStatus(e),
-                ),
-              ),
-            )
-            .toList(),
-      ),
+                )
+                .toList(),
+          ),
+        );
+      },
     );
   }
 }

@@ -35,7 +35,7 @@ class TasksFilterBloc extends Bloc<TasksFilterEvent, TasksFilterState> {
           .where((task) => event.statusFilter.contains(task.status))
           .toList();
 
-      emit(TasksFilterLoaded(tasks: filteredTasks));
+      emit(TasksFilterLoaded(tasks: filteredTasks, status: event.statusFilter));
     }
   }
 
@@ -43,7 +43,7 @@ class TasksFilterBloc extends Bloc<TasksFilterEvent, TasksFilterState> {
       UpdateFilter event, Emitter<TasksFilterState> emit) {
     final state = this.state;
     if (state is TasksFilterLoaded) {
-      add(UpdateTasks(status: state.statusFilter));
+      add(UpdateTasks(statusFilter: state.statusFilter));
     }
   }
 }
