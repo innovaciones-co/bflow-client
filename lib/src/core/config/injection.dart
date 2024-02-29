@@ -19,11 +19,13 @@ import 'package:bflow_client/src/features/jobs/domain/repositories/job_repositor
 import 'package:bflow_client/src/features/jobs/domain/repositories/task_repository.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/template_repository.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_job_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/create_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_tasks_from_template_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_templates_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_job_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/update_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/templates/templates_cubit.dart';
@@ -130,7 +132,12 @@ class DependencyInjection {
     sl.registerLazySingleton(
       () => CreateTasksFromTemplateUseCase(templateRepository: sl()),
     );
-
+    sl.registerLazySingleton(
+      () => CreateTaskUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => UpdateTaskUseCase(repository: sl()),
+    );
     // Repository
     sl.registerLazySingleton<TemplateRepository>(
       () => TemplatesRepositoryImp(templateRemoteDataSource: sl()),

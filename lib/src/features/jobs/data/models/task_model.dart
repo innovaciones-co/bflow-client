@@ -78,7 +78,7 @@ class TaskModel extends Task {
         "status": status.toJSON(),
         "stage": stage.toJSON(),
         "parentTask": parentTask,
-        "supplier": supplier,
+        "supplier": supplier?.id,
         "attachments": attachments == null
             ? []
             : List<dynamic>.from(attachments!.map((x) => x)),

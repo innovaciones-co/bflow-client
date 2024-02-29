@@ -4,7 +4,7 @@ import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/tasks_filter_bloc.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/write_activity_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/write_task_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -72,8 +72,9 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
                 return ActionButtonWidget(
                   onPressed: () => context.showLeftDialog(
                     'New Activity',
-                    WriteActivityWidget(
-                      jobId: jobId,
+                    WriteTaskWidget(
+                      jobId: jobId!,
+                      tasksBloc: context.read(),
                     ),
                   ),
                   type: ButtonType.elevatedButton,

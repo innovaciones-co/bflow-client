@@ -121,4 +121,11 @@ mixin Validator {
 
     return null;
   }
+
+  String? validateRequired<T>(T? object) {
+    if (object == null) {
+      return "Required";
+    }
+    return null;
+  }
 }

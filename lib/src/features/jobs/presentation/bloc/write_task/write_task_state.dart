@@ -9,11 +9,12 @@ sealed class WriteTaskState extends Equatable {
   final int progress;
   final List<Contact?> suppliers;
   final Contact? supplier;
-  final List<Task?> parentTasks;
+  final List<t.Task?> parentTasks;
   final String? description;
   final String name;
   final int? parentTask;
   final TaskStage taskStage;
+  final TaskStatus taskStatus;
 
   WriteTaskState({
     this.parentTasks = const [],
@@ -29,11 +30,12 @@ sealed class WriteTaskState extends Equatable {
     this.progress = 0,
     this.supplier,
     this.taskStage = TaskStage.slabDown,
+    this.taskStatus = TaskStatus.created,
   }) : startDate = startDate ?? DateTime.now();
 
   WriteTaskState copyWith({
     List<Contact?>? suppliers,
-    List<Task?>? parentTasks,
+    List<t.Task?>? parentTasks,
     AutovalidateMode? autovalidateMode,
     DateTime? endDate,
     DateTime? startDate,
@@ -45,6 +47,7 @@ sealed class WriteTaskState extends Equatable {
     String? name,
     int? parentTask,
     TaskStage? taskStage,
+    TaskStatus? taskStatus,
   });
 
   @override
@@ -80,12 +83,13 @@ final class WriteTaskCubitInitial extends WriteTaskState {
     super.progress,
     super.supplier,
     super.taskStage,
+    super.taskStatus,
   });
 
   @override
   WriteTaskState copyWith({
     List<Contact?>? suppliers,
-    List<Task?>? parentTasks,
+    List<t.Task?>? parentTasks,
     AutovalidateMode? autovalidateMode,
     DateTime? endDate,
     DateTime? startDate,
@@ -97,6 +101,7 @@ final class WriteTaskCubitInitial extends WriteTaskState {
     String? name,
     int? parentTask,
     TaskStage? taskStage,
+    TaskStatus? taskStatus,
   }) {
     return WriteTaskCubitInitial(
       parentTasks: parentTasks ?? this.parentTasks,
@@ -112,6 +117,7 @@ final class WriteTaskCubitInitial extends WriteTaskState {
       progress: progress ?? this.progress,
       supplier: supplier ?? this.supplier,
       taskStage: taskStage ?? this.taskStage,
+      taskStatus: taskStatus ?? this.taskStatus,
     );
   }
 }

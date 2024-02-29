@@ -13,16 +13,20 @@ import 'package:bflow_client/src/features/contacts/domain/entities/contact_entit
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/write_task/write_task_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class WriteActivityWidget extends StatelessWidget with Validator {
+class WriteTaskWidget extends StatelessWidget with Validator {
   final _formKey = GlobalKey<FormState>();
-  final int? jobId;
+  final int jobId;
+  final Task? task;
+  final TasksBloc tasksBloc;
 
-  WriteActivityWidget({super.key, this.jobId});
+  WriteTaskWidget(
+      {super.key, required this.jobId, this.task, required this.tasksBloc});
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +34,10 @@ class WriteActivityWidget extends StatelessWidget with Validator {
       create: (context) => WriteTaskCubit(
         getContactsUseCase: DependencyInjection.sl(),
         getTasksUseCase: DependencyInjection.sl(),
+        createTasksUseCase: DependencyInjection.sl(),
+        updateTasksUseCase: DependencyInjection.sl(),
+        homeBloc: DependencyInjection.sl(),
+        tasksBloc: tasksBloc,
       )..initForm(jobId),
       child: BlocBuilder<WriteTaskCubit, WriteTaskState>(
         builder: (context, state) {
@@ -41,24 +49,28 @@ class WriteActivityWidget extends StatelessWidget with Validator {
             );
           }
 
-          if (state.formStatus == FormStatus.failed) {
+          if (state.formStatus == FormStatus.loadFailed) {
             return Center(
               child: FailureWidget(
-                failure: ServerFailure(message: "Unable to load forma"),
+                failure: ServerFailure(message: state.failure?.message),
               ),
             );
           }
 
           return Form(
             key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: ListView(
+              //mainAxisAlignment: MainAxisAlignment.start,
+              //crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                state.formStatus == FormStatus.failed
+                    ? Text(state.failure?.message ?? "")
+                    : const SizedBox.shrink(),
                 InputWidget(
                   label: "Name Task",
                   onChanged: writeTaskBloc.updateName,
                   initialValue: state.name,
+                  validator: validateName,
                 ),
                 const SizedBox(height: 20),
                 DropdownWidget<Task?>(
@@ -80,7 +92,7 @@ class WriteActivityWidget extends StatelessWidget with Validator {
                         label: "Supplier",
                         items: state.suppliers,
                         getLabel: (r) => r?.name ?? "(No contact)",
-                        onChanged: null,
+                        onChanged: writeTaskBloc.updateSupplier,
                         initialValue: state.supplier,
                       ),
                     ),
@@ -90,8 +102,8 @@ class WriteActivityWidget extends StatelessWidget with Validator {
                         label: "Status",
                         items: TaskStatus.values,
                         getLabel: (r) => r.name,
-                        onChanged: null,
-                        initialValue: null,
+                        onChanged: writeTaskBloc.updateStatus,
+                        initialValue: state.taskStatus,
                       ),
                     ),
                   ],
@@ -113,6 +125,7 @@ class WriteActivityWidget extends StatelessWidget with Validator {
                       child: InputWidget(
                         label: "Progress",
                         keyboardType: TextInputType.number,
+                        initialValue: state.progress.toString(),
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
                           RangeInputFormatter()
@@ -139,6 +152,7 @@ class WriteActivityWidget extends StatelessWidget with Validator {
                         label: "End Date",
                         onChange: writeTaskBloc.updateEndDate,
                         initialValue: state.endDate,
+                        validator: validateEndDate,
                       ),
                     ),
                   ],
@@ -171,7 +185,7 @@ class WriteActivityWidget extends StatelessWidget with Validator {
                     ),
                     const SizedBox(width: 12),
                     ActionButtonWidget(
-                      onPressed: () {},
+                      onPressed: () => _createOrUpdateTask(writeTaskBloc),
                       type: ButtonType.elevatedButton,
                       title: "Save",
                       backgroundColor: AppColor.blue,
@@ -185,5 +199,18 @@ class WriteActivityWidget extends StatelessWidget with Validator {
         },
       ),
     );
+  }
+
+  _createOrUpdateTask(WriteTaskCubit writeTaskCubit) {
+    var validate = _formKey.currentState!.validate();
+    if (validate) {
+      if (task == null) {
+        writeTaskCubit.createTask(jobId);
+      } else {
+        writeTaskCubit.updateTask(task!);
+      }
+    } else {
+      writeTaskCubit.updateAutovalidateMode(AutovalidateMode.always);
+    }
   }
 }

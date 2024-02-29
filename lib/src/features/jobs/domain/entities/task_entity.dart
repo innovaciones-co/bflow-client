@@ -4,7 +4,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart'
 import 'package:equatable/equatable.dart';
 
 class Task implements Equatable {
-  final int id;
+  final int? id;
   final String name;
   final DateTime? callDate;
   final DateTime? startDate;
@@ -19,7 +19,7 @@ class Task implements Equatable {
   final int job;
 
   Task({
-    required this.id,
+    this.id,
     required this.name,
     this.callDate,
     this.startDate,

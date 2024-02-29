@@ -23,7 +23,7 @@ class TasksRemoteDataSource extends RemoteDataSource {
   Future<TaskModel> createTask(Task task) async {
     final taskModel = TaskModel.fromEntity(task);
     int taskId = await apiService.post(
-      endpoint: ApiConstants.listJobsEndpoint,
+      endpoint: ApiConstants.listTasksEndpoint,
       data: taskModel.toMap(),
     );
 
