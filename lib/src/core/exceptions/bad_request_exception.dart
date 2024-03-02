@@ -14,7 +14,11 @@ class BadRequestException implements Exception {
 
     if (errorResponse!.fieldErrors != null &&
         errorResponse!.fieldErrors!.isNotEmpty) {
-      return "${errorResponse!.fieldErrors?.first.field} ${errorResponse?.fieldErrors?.first.message}";
+      String? fieldName = errorResponse?.fieldErrors?.first.field;
+
+      return fieldName != null
+          ? "$fieldName! ${errorResponse?.fieldErrors?.first.message}"
+          : "${errorResponse?.fieldErrors?.first.message}";
     }
 
     return errorResponse!.message ?? "Bad request";

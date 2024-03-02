@@ -13,8 +13,8 @@ sealed class WriteTaskState extends Equatable {
   final String? description;
   final String name;
   final int? parentTask;
-  final TaskStage taskStage;
-  final TaskStatus taskStatus;
+  final TaskStage stage;
+  final TaskStatus status;
 
   WriteTaskState({
     this.parentTasks = const [],
@@ -29,8 +29,8 @@ sealed class WriteTaskState extends Equatable {
     this.parentTask,
     this.progress = 0,
     this.supplier,
-    this.taskStage = TaskStage.slabDown,
-    this.taskStatus = TaskStatus.created,
+    this.stage = TaskStage.slabDown,
+    this.status = TaskStatus.created,
   }) : startDate = startDate ?? DateTime.now();
 
   WriteTaskState copyWith({
@@ -64,7 +64,8 @@ sealed class WriteTaskState extends Equatable {
         startDate,
         supplier ?? '',
         suppliers,
-        taskStage,
+        stage,
+        status,
       ];
 }
 
@@ -82,8 +83,8 @@ final class WriteTaskCubitInitial extends WriteTaskState {
     super.parentTask,
     super.progress,
     super.supplier,
-    super.taskStage,
-    super.taskStatus,
+    super.stage,
+    super.status,
   });
 
   @override
@@ -116,8 +117,8 @@ final class WriteTaskCubitInitial extends WriteTaskState {
       parentTask: parentTask ?? this.parentTask,
       progress: progress ?? this.progress,
       supplier: supplier ?? this.supplier,
-      taskStage: taskStage ?? this.taskStage,
-      taskStatus: taskStatus ?? this.taskStatus,
+      stage: taskStage ?? stage,
+      status: taskStatus ?? status,
     );
   }
 }

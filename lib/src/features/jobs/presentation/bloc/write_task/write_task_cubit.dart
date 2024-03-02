@@ -36,16 +36,20 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
     required this.tasksBloc,
     required this.homeBloc,
     this.task,
-  }) : super(WriteTaskCubitInitial(
-          name: task?.name ?? '',
-          parentTask: task?.parentTask,
-          taskStage: task?.stage ?? TaskStage.slabDown,
-          supplier: task?.supplier,
-          startDate: task?.startDate,
-          endDate: task?.endDate,
-          progress: task?.progress ?? 0,
-          description: task?.comments,
-        ));
+  }) : super(
+          WriteTaskCubitInitial(
+            name: task?.name ?? '',
+            parentTask: task?.parentTask,
+            supplier: task?.supplier,
+            startDate: task?.startDate,
+            endDate: task?.endDate,
+            progress: task?.progress ?? 0,
+            description: task?.comments,
+            stage: task?.stage ?? TaskStage.slabDown,
+            status: task?.status ?? TaskStatus.created,
+            formStatus: FormStatus.initialized,
+          ),
+        );
 
   void initForm(int? jobId) async {
     GetContactsParams getContactParams =
@@ -55,7 +59,10 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
     final parentTasks = await getTasksUseCase.execute(tasksParams);
 
     if (suppliers.isRight() && parentTasks.isRight()) {
-      List<Contact?> suppliersList = [null, ...suppliers.getOrElse(() => [])];
+      List<Contact?> suppliersList = [
+        null,
+        ...suppliers.getOrElse(() => []),
+      ];
       List<t.Task?> parentTasksList = [
         null,
         ...parentTasks.getOrElse(() => [])
@@ -65,6 +72,7 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
           suppliers: suppliersList,
           parentTasks: parentTasksList,
           formStatus: FormStatus.loaded,
+          supplier: suppliersList.first,
         ),
       );
     } else {
@@ -77,7 +85,7 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
   }
 
   void updateProgress(String? progress) {
-    int? intProgress = int.tryParse(progress ?? "");
+    int? intProgress = int.tryParse(progress ?? "0");
     emit(state.copyWith(progress: intProgress));
   }
 
@@ -117,8 +125,8 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
 
     t.Task task = t.Task(
       name: state.name,
-      status: state.taskStatus,
-      stage: state.taskStage,
+      status: state.status,
+      stage: state.stage,
       job: jobId,
       startDate: state.startDate,
       endDate: state.endDate,
@@ -137,7 +145,7 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
       },
       (r) {
         emit(state.copyWith(formStatus: FormStatus.success));
-        tasksBloc.add(const GetTasksEvent());
+        tasksBloc.add(GetTasksEvent(jobId: task.job));
         homeBloc.add(ShowMessageEvent(
           message: "Task added!",
           type: AlertType.success,
@@ -146,7 +154,43 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
     );
   }
 
-  void updateTask(t.Task task) {}
+  void updateTask(t.Task newTask) async {
+    debugPrint(newTask.toString());
+    emit(state.copyWith(
+      formStatus: FormStatus.inProgress,
+    ));
+
+    t.Task task = t.Task(
+      id: newTask.id,
+      name: state.name,
+      status: state.status,
+      stage: state.stage,
+      job: newTask.job,
+      startDate: state.startDate,
+      endDate: state.endDate,
+      comments: state.description,
+      progress: state.progress,
+      parentTask: state.parentTask,
+      supplier: state.supplier,
+    );
+
+    var updateTask =
+        await updateTasksUseCase.execute(UpdateTaskParams(task: task));
+
+    updateTask.fold(
+      (l) {
+        emit(state.copyWith(formStatus: FormStatus.failed, failure: l));
+      },
+      (r) {
+        emit(state.copyWith(formStatus: FormStatus.success));
+        tasksBloc.add(GetTasksEvent(jobId: task.job));
+        homeBloc.add(ShowMessageEvent(
+          message: "Task updated!",
+          type: AlertType.success,
+        ));
+      },
+    );
+  }
 
   void updateAutovalidateMode(AutovalidateMode autovalidateMode) {
     emit(state.copyWith(autovalidateMode: autovalidateMode));

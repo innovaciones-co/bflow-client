@@ -1,6 +1,7 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../widgets/left_dialog_widget.dart';
 
@@ -121,12 +122,7 @@ extension BuildContextEntension<T> on BuildContext {
 
   ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showAlert(
       {required String message, AlertType type = AlertType.info}) {
-    Color bgColor = switch (type) {
-      AlertType.info => AppColor.blue,
-      AlertType.success => AppColor.green,
-      AlertType.warning => AppColor.orange,
-      AlertType.error => AppColor.red,
-    };
+    Color bgColor = _getBgColor(type);
 
     return ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
@@ -139,20 +135,33 @@ extension BuildContextEntension<T> on BuildContext {
     );
   }
 
-  // Future<bool?> showToast(String message) {
-  //   return Fluttertoast.showToast(
-  //     msg: message,
-  //     toastLength: Toast.LENGTH_SHORT,
-  //     gravity: ToastGravity.BOTTOM,
-  //     timeInSecForIosWeb: 1,
-  //     backgroundColor: primary,
-  //     textColor: onPrimary,
-  //   );
-  // }
+  Color _getBgColor(AlertType type) {
+    return switch (type) {
+      AlertType.info => AppColor.blue,
+      AlertType.success => AppColor.green,
+      AlertType.warning => AppColor.orange,
+      AlertType.error => AppColor.red,
+    };
+  }
+
+  Future<bool?> showToast({
+    required String message,
+    AlertType type = AlertType.info,
+  }) {
+    return Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM_LEFT,
+      timeInSecForIosWeb: 1,
+      backgroundColor: _getBgColor(type),
+      textColor: Colors.white,
+    );
+  }
 
   Future<void> showLeftDialog(String title, Widget child) {
     return showDialog<void>(
       context: this,
+      useRootNavigator: false,
       builder: (BuildContext context) {
         return LeftDialogWidget(
           title: title,

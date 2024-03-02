@@ -49,7 +49,11 @@ class ActionButtonWidget extends StatelessWidget {
             children: [
               icon != null ? Icon(icon, size: 18) : const SizedBox(),
               icon != null ? const SizedBox(width: 6) : const SizedBox(),
-              Text(title),
+              Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ],
           ),
         );

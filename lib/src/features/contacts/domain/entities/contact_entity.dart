@@ -1,14 +1,14 @@
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:equatable/equatable.dart';
 
-class Contact implements Equatable {
+class Contact extends Equatable {
   final int? id;
   final String name;
   final String? address;
   final String email;
   final ContactType type;
 
-  Contact({
+  const Contact({
     this.id,
     required this.name,
     this.address,
@@ -17,7 +17,7 @@ class Contact implements Equatable {
   });
 
   @override
-  List<Object?> get props => [id, name, address, email, type];
+  List<Object> get props => [id ?? '', name, address ?? '', email, type];
 
   @override
   bool? get stringify => true;

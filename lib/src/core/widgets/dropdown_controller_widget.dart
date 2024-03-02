@@ -1,45 +1,67 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 
-class DropdownWidget<T> extends StatefulWidget {
+class DropdownControllerWidget<T> extends StatefulWidget {
   final String? label;
   final EdgeInsets labelPadding;
   final List<T> items;
   final ValueChanged<T>? onChanged;
   final String Function(T) getLabel;
   final String? Function(T?)? validator;
-  final T? initialValue;
+  final T? currentItem;
 
-  const DropdownWidget({
+  const DropdownControllerWidget({
     super.key,
     this.label,
     this.items = const [],
     this.onChanged,
     required this.getLabel,
     this.validator,
-    this.initialValue,
+    this.currentItem,
     this.labelPadding = const EdgeInsets.symmetric(horizontal: 8),
   });
 
   @override
-  State<DropdownWidget<T>> createState() => _DropdownWidgetState<T>();
+  State<DropdownControllerWidget<T>> createState() =>
+      _DropdownControllerWidgetState<T>();
 }
 
-class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
-  T? dropdownValue;
+class _DropdownControllerWidgetState<T>
+    extends State<DropdownControllerWidget<T>> {
+  T? _currentItem;
+
   final _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+
+    /* setState(() {
+      _controller.text =
+          _currentItem != null ? widget.getLabel(_currentItem as T) : '';
+    }); */
+
     setState(() {
       if (widget.items.isNotEmpty) {
-        dropdownValue = widget.initialValue ?? widget.items.first;
-        if (widget.onChanged != null && dropdownValue != null) {
-          widget.onChanged!(dropdownValue as T);
+        _currentItem = widget.currentItem ?? widget.items.first;
+        if (widget.onChanged != null && _currentItem != null) {
+          widget.onChanged!(_currentItem as T);
         }
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(DropdownControllerWidget<T> oldWidget) {
+    if (this._currentItem != widget.currentItem) {
+      setState(() {
+        this._currentItem = widget.currentItem;
+
+        _controller.text =
+            _currentItem != null ? widget.getLabel(_currentItem as T) : '';
+      });
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -65,14 +87,14 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
           expandedInsets: EdgeInsets.zero,
           trailingIcon: const Icon(Icons.keyboard_arrow_down_outlined),
           selectedTrailingIcon: const Icon(Icons.keyboard_arrow_up_outlined),
-          initialSelection: dropdownValue,
+          initialSelection: _currentItem,
           onSelected: (T? value) {
             if (widget.onChanged != null && value != null) {
               widget.onChanged!(value);
             }
             setState(() {
               if (value != null) {
-                dropdownValue = value;
+                _currentItem = value;
               }
             });
           },
@@ -84,9 +106,8 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
               label: label,
             );
           }).toList(),
-          errorText: widget.validator != null
-              ? widget.validator!(dropdownValue)
-              : null,
+          errorText:
+              widget.validator != null ? widget.validator!(_currentItem) : null,
         ),
       ],
     );
