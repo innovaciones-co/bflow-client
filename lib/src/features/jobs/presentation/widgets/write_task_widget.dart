@@ -15,6 +15,7 @@ import 'package:bflow_client/src/features/contacts/domain/entities/contact_entit
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/write_task/write_task_cubit.dart';
 import 'package:flutter/material.dart';
@@ -27,9 +28,14 @@ class WriteTaskWidget extends StatelessWidget with Validator {
   final int jobId;
   final Task? task;
   final TasksBloc tasksBloc;
+  final JobBloc jobBloc;
 
   WriteTaskWidget(
-      {super.key, required this.jobId, this.task, required this.tasksBloc});
+      {super.key,
+      required this.jobId,
+      this.task,
+      required this.tasksBloc,
+      required this.jobBloc});
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +48,8 @@ class WriteTaskWidget extends StatelessWidget with Validator {
         updateTasksUseCase: DependencyInjection.sl(),
         homeBloc: DependencyInjection.sl(),
         tasksBloc: tasksBloc,
+        jobBloc: jobBloc,
+        jobsBloc: DependencyInjection.sl(),
       )..initForm(jobId),
       child: BlocConsumer<WriteTaskCubit, WriteTaskState>(
         listener: (alertContext, state) {

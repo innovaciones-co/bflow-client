@@ -75,6 +75,7 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
                     WriteTaskWidget(
                       jobId: jobId!,
                       tasksBloc: context.read(),
+                      jobBloc: context.read(),
                     ),
                   ),
                   type: ButtonType.elevatedButton,

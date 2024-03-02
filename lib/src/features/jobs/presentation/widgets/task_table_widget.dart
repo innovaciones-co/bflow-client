@@ -262,6 +262,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                   WriteTaskWidget(
                     jobId: task.job,
                     tasksBloc: context.read(),
+                    jobBloc: context.read(),
                     task: task,
                   ),
                 ),

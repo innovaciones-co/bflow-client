@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/domain/entities/form_status.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
@@ -12,6 +13,8 @@ import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart'
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_task_use_case.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -27,15 +30,19 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
   final UpdateTaskUseCase updateTasksUseCase;
   final TasksBloc tasksBloc;
   final HomeBloc homeBloc;
+  final JobBloc jobBloc;
+  final JobsBloc jobsBloc;
 
   WriteTaskCubit({
+    this.task,
     required this.getContactsUseCase,
     required this.getTasksUseCase,
     required this.createTasksUseCase,
     required this.updateTasksUseCase,
     required this.tasksBloc,
     required this.homeBloc,
-    this.task,
+    required this.jobBloc,
+    required this.jobsBloc,
   }) : super(
           WriteTaskCubitInitial(
             name: task?.name ?? '',
@@ -188,6 +195,8 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
           message: "Task updated!",
           type: AlertType.success,
         ));
+        jobsBloc.add(GetJobsEvent());
+        jobBloc.add(GetJobEvent(id: newTask.job));
       },
     );
   }
