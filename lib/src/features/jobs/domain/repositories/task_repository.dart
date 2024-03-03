@@ -13,7 +13,7 @@ abstract class TasksRepository {
 
   Future<Either<Failure, t.Task>> createTask(t.Task task);
 
-  Future<Either<Failure, t.Task>> update(t.Task task);
+  Future<Either<Failure, t.Task>> updateTask(t.Task task);
 
   Future<Either<Failure, void>> delete(int id);
 }

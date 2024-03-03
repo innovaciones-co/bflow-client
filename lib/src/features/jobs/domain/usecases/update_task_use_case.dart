@@ -11,7 +11,7 @@ class UpdateTaskUseCase implements UseCase<t.Task, UpdateTaskParams> {
   UpdateTaskUseCase({required this.repository});
   @override
   Future<Either<Failure, t.Task>> execute(UpdateTaskParams params) async {
-    var task = await repository.update(params.task);
+    var task = await repository.updateTask(params.task);
     return task;
   }
 }

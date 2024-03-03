@@ -7,7 +7,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
 
 class TaskModel extends Task {
-  TaskModel({
+  const TaskModel({
     required super.id,
     required super.name,
     super.callDate,
@@ -53,7 +53,7 @@ class TaskModel extends Task {
             : DateTime.parse(json["startDate"]),
         endDate:
             json["endDate"] == null ? null : DateTime.parse(json["endDate"]),
-        comments: json["comments"],
+        comments: json["description"],
         progress: json["progress"],
         status: TaskStatus.fromString(json["status"]),
         stage: TaskStage.fromString(json["stage"]),
@@ -73,7 +73,7 @@ class TaskModel extends Task {
         "callDate": callDate?.toDateFormat(),
         "startDate": startDate?.toDateFormat(),
         "endDate": endDate?.toDateFormat(),
-        "comments": comments,
+        "description": comments,
         "progress": progress,
         "status": status.toJSON(),
         "stage": stage.toJSON(),

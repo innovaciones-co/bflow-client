@@ -5,6 +5,7 @@ import 'package:bflow_client/src/core/exceptions/bad_response_exception.dart';
 import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.dart';
 import 'package:bflow_client/src/features/shared/data/models/error_response_model.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 
 import 'api.dart';
 
@@ -99,12 +100,18 @@ class ApiService {
         method: method.toString(),
         validateStatus: (status) => status != null ? status < 500 : false,
       );
+
+      debugPrint("Request to: : ${url.toString()}");
+      debugPrint("Body: ${body.toString()}");
+
       final response = await client.request(
         url,
         options: options,
         data: body,
         queryParameters: queryParams,
       );
+
+      debugPrint("Response: ${response.toString()}");
 
       switch (response.statusCode) {
         case 400:

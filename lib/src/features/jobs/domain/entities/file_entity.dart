@@ -2,7 +2,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/file_category.dar
 import 'package:bflow_client/src/features/jobs/domain/entities/file_tag.dart';
 import 'package:equatable/equatable.dart';
 
-class File implements Equatable {
+class File extends Equatable {
   final int id;
   final String uuid;
   final String temporaryUrl;

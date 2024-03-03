@@ -1,4 +1,5 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/extensions/ui_extensions.dart';
 import 'package:bflow_client/src/core/widgets/custom_chip_widget.dart';
@@ -6,6 +7,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart'
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/no_tasks_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/write_task_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -138,9 +140,10 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                               .length;
                       index2 += 1)
                     _tableRow(
-                        task: childrenTasksMap[parentTasks[index].id]![index2],
-                        index: index2,
-                        parent: false),
+                      task: childrenTasksMap[parentTasks[index].id]![index2],
+                      index: index2,
+                      parent: false,
+                    ),
                 ],
               )
           ],
@@ -254,7 +257,15 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
-                onPressed: () {},
+                onPressed: () => context.showLeftDialog(
+                  'Edit Activity',
+                  WriteTaskWidget(
+                    jobId: task.job,
+                    tasksBloc: context.read(),
+                    jobBloc: context.read(),
+                    task: task,
+                  ),
+                ),
                 color: AppColor.blue,
                 icon: const Icon(
                   Icons.edit_outlined,

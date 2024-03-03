@@ -7,7 +7,7 @@ import 'package:equatable/equatable.dart';
 
 import '../../../users/domain/entities/user_entity.dart';
 
-class Job implements Equatable {
+class Job extends Equatable {
   final int? id;
   final String jobNumber;
   final String name;
@@ -23,7 +23,7 @@ class Job implements Equatable {
   final List<Note>? notes;
   final List<File>? files;
 
-  Job({
+  const Job({
     this.id,
     required this.jobNumber,
     required this.name,

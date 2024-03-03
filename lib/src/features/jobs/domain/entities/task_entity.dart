@@ -3,7 +3,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
 import 'package:equatable/equatable.dart';
 
-class Task implements Equatable {
+class Task extends Equatable {
   final int? id;
   final String name;
   final DateTime? callDate;
@@ -18,7 +18,7 @@ class Task implements Equatable {
   final List<dynamic>? attachments;
   final int job;
 
-  Task({
+  const Task({
     this.id,
     required this.name,
     this.callDate,

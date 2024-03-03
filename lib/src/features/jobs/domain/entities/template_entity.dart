@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 
-class TemplateEntity implements Equatable {
+class TemplateEntity extends Equatable {
   final int id;
   final String name;
 
-  TemplateEntity({
+  const TemplateEntity({
     required this.id,
     required this.name,
   });

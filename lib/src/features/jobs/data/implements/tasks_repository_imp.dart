@@ -61,9 +61,9 @@ class TasksRepositoryImp implements TasksRepository {
   }
 
   @override
-  Future<Either<Failure, t.Task>> update(t.Task task) async {
+  Future<Either<Failure, t.Task>> updateTask(t.Task task) async {
     try {
-      return Right(await remoteDataSource.createTask(task));
+      return Right(await remoteDataSource.updateTask(task));
     } on RemoteDataSourceException catch (e) {
       return Left(ServerFailure(message: e.message));
     } on BadRequestException catch (e) {
