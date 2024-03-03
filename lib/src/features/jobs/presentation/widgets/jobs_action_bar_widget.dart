@@ -45,6 +45,7 @@ class JobsActionBarWidget extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(width: 8),
           ActionButtonWidget(
             onPressed: () =>
                 context.showLeftDialog('New Job', WriteJobWidget()),
