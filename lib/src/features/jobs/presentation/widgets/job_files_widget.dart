@@ -2,7 +2,8 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/download_file_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/file_download_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/file_upload_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,7 +27,9 @@ class JobFilesWidget extends StatelessWidget {
                   children: [
                     const Text("Documents"),
                     ActionButtonWidget(
-                      onPressed: () {},
+                      onPressed: () => context.showModal("Upload file", [
+                        const FileUploadWidget(),
+                      ]),
                       type: ButtonType.elevatedButton,
                       title: "Attach",
                       icon: Icons.attach_file_outlined,
@@ -45,7 +48,7 @@ class JobFilesWidget extends StatelessWidget {
                           spacing: 10,
                           alignment: WrapAlignment.start,
                           children: state.job.files!
-                              .map((e) => DownloadFileWidget(
+                              .map((e) => FileDownloadWidget(
                                     file: e,
                                   ))
                               .toList(),
