@@ -18,53 +18,57 @@ class JobFilesWidget extends StatelessWidget {
         }
 
         if (state is JobLoaded) {
-          return Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text("Documents"),
-                  ActionButtonWidget(
-                    onPressed: () {},
-                    type: ButtonType.elevatedButton,
-                    title: "Attach",
-                    icon: Icons.attach_file_outlined,
-                    backgroundColor: AppColor.blue,
-                    foregroundColor: AppColor.white,
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              state.job.notes != null
-                  ? SizedBox(
-                      width: double.infinity,
-                      child: Wrap(
-                        spacing: 10,
-                        alignment: WrapAlignment.start,
-                        children: state.job.notes!
-                            .map((e) => const DownloadFileWidget())
-                            .toList(),
-                      ),
+          return Expanded(
+            child: ListView(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Documents"),
+                    ActionButtonWidget(
+                      onPressed: () {},
+                      type: ButtonType.elevatedButton,
+                      title: "Attach",
+                      icon: Icons.attach_file_outlined,
+                      backgroundColor: AppColor.blue,
+                      foregroundColor: AppColor.white,
                     )
-                  : const SizedBox.shrink(),
-              const SizedBox(
-                height: 25,
-              ),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Job Notes"),
-                ],
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              state.job.notes != null
-                  ? _listNotes(state, context)
-                  : const SizedBox.shrink()
-            ],
+                  ],
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                state.job.files != null
+                    ? SizedBox(
+                        width: double.infinity,
+                        child: Wrap(
+                          spacing: 10,
+                          alignment: WrapAlignment.start,
+                          children: state.job.files!
+                              .map((e) => DownloadFileWidget(
+                                    file: e,
+                                  ))
+                              .toList(),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+                const SizedBox(
+                  height: 25,
+                ),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Job Notes"),
+                  ],
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                state.job.notes != null
+                    ? _listNotes(state, context)
+                    : const SizedBox.shrink()
+              ],
+            ),
           );
         }
 
@@ -73,7 +77,7 @@ class JobFilesWidget extends StatelessWidget {
     );
   }
 
-  Column _listNotes(JobLoaded state, BuildContext context) {
+  Widget _listNotes(JobLoaded state, BuildContext context) {
     return Column(
       children: state.job.notes!
           .map(

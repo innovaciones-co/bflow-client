@@ -11,7 +11,7 @@ import 'file_model.dart';
 import 'note_model.dart';
 
 class JobModel extends Job {
-  JobModel({
+  const JobModel({
     required super.id,
     required super.jobNumber,
     required super.name,
@@ -69,7 +69,7 @@ class JobModel extends Job {
         files: json["files"] == null
             ? []
             : List<FileModel>.from(
-                json["files"]!.map((x) => NoteModel.fromMap(x))),
+                json["files"]!.map((x) => FileModel.fromMap(x))),
       );
 
   Map<String, dynamic> toMap() => {
