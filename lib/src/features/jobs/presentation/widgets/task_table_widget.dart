@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
@@ -5,6 +6,7 @@ import 'package:bflow_client/src/core/extensions/ui_extensions.dart';
 import 'package:bflow_client/src/core/widgets/custom_chip_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/task/task_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/no_tasks_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_task_widget.dart';
@@ -272,13 +274,20 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                   size: 20,
                 ),
               ),
-              IconButton(
-                onPressed: () {},
-                color: AppColor.blue,
-                icon: const Icon(
-                  Icons.delete_outline_outlined,
-                  size: 20,
-                ),
+              BlocProvider<TaskCubit>(
+                create: (context) => DependencyInjection.sl(),
+                child: Builder(builder: (context) {
+                  return IconButton(
+                    onPressed: () => task.id != null
+                        ? context.read<TaskCubit>().deleteTask(task.id!)
+                        : null,
+                    color: AppColor.blue,
+                    icon: const Icon(
+                      Icons.delete_outline_outlined,
+                      size: 20,
+                    ),
+                  );
+                }),
               ),
             ],
           ),
