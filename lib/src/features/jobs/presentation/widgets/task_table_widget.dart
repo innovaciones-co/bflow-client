@@ -25,7 +25,6 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
   Map<int, TableColumnWidth> columnWidths = {
     0: const FixedColumnWidth(40),
     1: const FixedColumnWidth(40),
-    //3: const MaxColumnWidth(const FixedColumnWidth(100.0), FractionColumnWidth(0.1)),
     4: const FixedColumnWidth(110),
     5: const FixedColumnWidth(100),
     6: const FixedColumnWidth(100),
@@ -275,11 +274,19 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                 ),
               ),
               BlocProvider<TaskCubit>(
-                create: (context) => DependencyInjection.sl(),
+                create: (context) => TaskCubit(
+                  getJobUseCase: DependencyInjection.sl(),
+                  getTaskUseCase: DependencyInjection.sl(),
+                  deleteTaskUseCase: DependencyInjection.sl(),
+                  tasksBloc: context.read(),
+                  homeBloc: context.read(),
+                ),
                 child: Builder(builder: (context) {
                   return IconButton(
                     onPressed: () => task.id != null
-                        ? context.read<TaskCubit>().deleteTask(task.id!)
+                        ? context
+                            .read<TaskCubit>()
+                            .deleteTask(task.id!, task.job)
                         : null,
                     color: AppColor.blue,
                     icon: const Icon(

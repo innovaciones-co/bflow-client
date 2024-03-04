@@ -16,7 +16,7 @@ final class TaskError extends TaskState {
 }
 
 final class TaskLoaded extends TaskState {
-  final Task task;
+  final t.Task task;
   final Job job;
 
   const TaskLoaded({required this.job, required this.task});
