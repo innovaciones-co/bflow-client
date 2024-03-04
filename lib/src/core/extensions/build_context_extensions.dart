@@ -3,6 +3,7 @@ import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../widgets/dialog_widget.dart';
 import '../widgets/left_dialog_widget.dart';
 
 extension BuildContextEntension<T> on BuildContext {
@@ -166,6 +167,19 @@ extension BuildContextEntension<T> on BuildContext {
         return LeftDialogWidget(
           title: title,
           child: child,
+        );
+      },
+    );
+  }
+
+  Future<void> showModal(String title, List<Widget> children) {
+    return showDialog<void>(
+      context: this,
+      useRootNavigator: false,
+      builder: (BuildContext context) {
+        return DialogWidget(
+          title: title,
+          children: children,
         );
       },
     );
