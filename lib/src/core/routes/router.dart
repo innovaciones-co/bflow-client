@@ -31,12 +31,6 @@ const List<CustomNavigationDestination> homeDestinations = [
     route: RoutesName.contacts,
     child: ContactsPage(),
   ),
-  CustomNavigationDestination(
-    label: 'Email',
-    icon: Icon(Icons.email_outlined),
-    route: RoutesName.emailAction,
-    child: TaskConfirmationPage(),
-  ),
 ];
 
 class CustomNavigationDestination {
@@ -78,6 +72,33 @@ final appRouter = GoRouter(
         ),
       ),
     ),
+    // TaskConfirmationScreen
+    GoRoute(
+        path: RoutesName.taskConfirmation,
+        pageBuilder: (context, state) {
+          final idStr = state.pathParameters["id"];
+          final int? taskId = idStr != null ? int.tryParse(idStr) : null;
+
+          if (taskId == null) {
+            return const MaterialPage(
+              key: _pageKey,
+              child: Scaffold(
+                key: _scaffoldKey,
+                body: Text("Not found"), // TODO: replace with no found widget
+              ),
+            );
+          }
+
+          return MaterialPage<void>(
+            key: _pageKey,
+            child: TaskConfirmationPage(
+              key: _scaffoldKey,
+              taskId: taskId,
+              action:
+                  TaskAction.fromString(state.uri.queryParameters['action']),
+            ),
+          );
+        }),
     // Job Screen
     GoRoute(
       path: RoutesName.job,

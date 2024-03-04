@@ -1,162 +1,188 @@
+import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/task/task_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+enum TaskAction {
+  confirm,
+  reschedule,
+  reject,
+  notFound;
+
+  factory TaskAction.fromString(String? str) {
+    switch (str) {
+      case 'confirm':
+        return TaskAction.confirm;
+      case 'reschedule':
+        return TaskAction.reschedule;
+      case 'reject':
+        return TaskAction.reject;
+      default:
+        return TaskAction.notFound;
+    }
+  }
+}
 
 class TaskConfirmationPage extends StatelessWidget {
-  const TaskConfirmationPage({super.key});
+  final int taskId;
+  final TaskAction action;
+
+  const TaskConfirmationPage(
+      {super.key, required this.taskId, required this.action});
 
   @override
   Widget build(BuildContext context) {
-    //final query = state.queryParams['id'];
-    //GoRouterState.of(context).pathParameters['id']!
-    String action = "completed";
-    Map<String, String> data = {};
+    /* Map<String, String> data = {}; */
     Color lineColor = Colors.transparent;
     String title = "";
     String subTitle = "";
     switch (action) {
-      case "completed":
-        data = {
-          'Action': 'completed',
-          'Job number': 'SH2235',
-          'Addresss': '#94 Pola St Dianella',
-          'Order': '12345',
-          'Booking Date': '01 Jan 2023',
-          'End Date': '01 Jan 2023',
-        };
+      case TaskAction.confirm:
         lineColor = AppColor.green;
         title = "The task has been confimed";
         subTitle = "Thank you!";
         break;
-      case "date":
-        data = {
-          'Action': 'date',
-          'Job number': 'SH2235',
-          'Addresss': '#94 Pola St Dianella',
-          'Order': '12345',
-          'Booking Date': '01 Jan 2023',
-          'Coments':
-              'This job is ready to go please deliver any time before 11th, bcndcndosnvcodwv dwv dwjkvnalknj dksnv odnaiov ndfoav iofanov ',
-          'Supplier': 'JHL cartage',
-          'Project supervisor': 'Alberto Federico',
-          'End Date': '01 Jan 2023',
-        };
+      case TaskAction.reschedule:
         lineColor = Colors.transparent;
         title = "Propose a new date";
         subTitle = "Select the date and send it for confirmation";
         break;
-      case "reject":
-        data = {
-          'Action': 'reject',
-          'Job number': 'SH2235',
-          'Addresss': '#94 Pola St Dianella',
-          'Order': '12345',
-          'Booking Date': '01 Jan 2023',
-        };
+      case TaskAction.reject:
         lineColor = AppColor.red;
         title = "The task has been rejected";
         subTitle = "Contact the supervisor";
         break;
+      case TaskAction.notFound:
+        return Text("Not found"); // TODO: Create no found widget
     }
 
-    return Container(
-      color: AppColor.darkGrey,
-      width: 600,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 15),
-            decoration: BoxDecoration(
-              color: AppColor.black,
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Image.asset(
-              'assets/img/sh_logo_and_text.png',
-              height: 25,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 35),
-            decoration: BoxDecoration(
-              color: AppColor.white,
-              borderRadius: BorderRadius.circular(5),
-              border: Border(
-                left: BorderSide(
-                  color: lineColor,
-                  width: 5,
-                ),
+    return Scaffold(
+      body: Container(
+        color: AppColor.darkGrey,
+        width: 600,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 15),
+              decoration: BoxDecoration(
+                color: AppColor.black,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Image.asset(
+                'assets/img/sh_logo_and_text.png',
+                height: 25,
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style:
-                      context.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 35),
+              decoration: BoxDecoration(
+                color: AppColor.white,
+                borderRadius: BorderRadius.circular(5),
+                border: Border(
+                  left: BorderSide(
+                    color: lineColor,
+                    width: 5,
+                  ),
                 ),
-                const SizedBox(height: 10),
-                Text(subTitle),
-              ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: context.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(subTitle),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 35),
-            decoration: BoxDecoration(
-              color: AppColor.white,
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Column(
-              children: [
-                Table(
-                  columnWidths: const {
-                    0: FixedColumnWidth(140),
-                  },
-                  children: [
-                    ...data.entries.map((entry) {
-                      return _tableRow(entry.key, entry.value, context);
-                    }),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ActionButtonWidget(
-                      onPressed: () {},
-                      type: ButtonType.elevatedButton,
-                      title: action != "date" ? "Close" : "Cancel",
-                      backgroundColor:
-                          action != "date" ? AppColor.blue : AppColor.lightBlue,
-                      foregroundColor:
-                          action != "date" ? AppColor.white : AppColor.blue,
-                    ),
-                    action != "date"
-                        ? const SizedBox.shrink()
-                        : Wrap(
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 35),
+              decoration: BoxDecoration(
+                color: AppColor.white,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Column(
+                children: [
+                  BlocProvider<TaskCubit>(
+                    create: (context) =>
+                        DependencyInjection.sl()..loadTask(taskId),
+                    child: BlocBuilder<TaskCubit, TaskState>(
+                      builder: (context, state) {
+                        if (state is TaskLoaded) {
+                          Task task = state.task;
+                          Job job = state.job;
+                          Map<String, String> data = {
+                            'Job number': job.jobNumber,
+                            'Addresss': job.address,
+                            'Booking Date': task.startDate.toString(),
+                            'Comments': task.comments ?? "No comments",
+                            'Supplier': task.supplier?.name ?? "No Supplier",
+                            'Project supervisor': job.supervisor.fullName,
+                            'End Date': task.endDate.toString(),
+                          };
+                          return Table(
+                            columnWidths: const {
+                              0: FixedColumnWidth(140),
+                            },
                             children: [
-                              const SizedBox(width: 15),
-                              ActionButtonWidget(
-                                onPressed: () {},
-                                type: ButtonType.elevatedButton,
-                                title: "Propose date",
-                                backgroundColor: AppColor.blue,
-                                foregroundColor: AppColor.white,
-                              )
+                              ...data.entries.map((entry) {
+                                return _tableRow(
+                                    entry.key, entry.value, context);
+                              }),
                             ],
-                          ),
-                  ],
-                )
-              ],
-            ),
-          )
-        ],
+                          );
+                        }
+                        return CircularProgressIndicator(); // TODO: Complete
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ActionButtonWidget(
+                        onPressed: () {},
+                        type: ButtonType.elevatedButton,
+                        title: action != "date" ? "Close" : "Cancel",
+                        backgroundColor: action != "date"
+                            ? AppColor.blue
+                            : AppColor.lightBlue,
+                        foregroundColor:
+                            action != "date" ? AppColor.white : AppColor.blue,
+                      ),
+                      action != "date"
+                          ? const SizedBox.shrink()
+                          : Wrap(
+                              children: [
+                                const SizedBox(width: 15),
+                                ActionButtonWidget(
+                                  onPressed: () {},
+                                  type: ButtonType.elevatedButton,
+                                  title: "Propose date",
+                                  backgroundColor: AppColor.blue,
+                                  foregroundColor: AppColor.white,
+                                )
+                              ],
+                            ),
+                    ],
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
