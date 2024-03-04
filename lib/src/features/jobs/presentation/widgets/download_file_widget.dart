@@ -1,11 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/core/utils/file_download.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_category.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
 import 'package:flutter/material.dart';
 
-class DownloadFileWidget extends StatelessWidget {
+class DownloadFileWidget extends StatefulWidget {
   final File file;
 
   const DownloadFileWidget({
@@ -13,6 +14,12 @@ class DownloadFileWidget extends StatelessWidget {
     required this.file,
   });
 
+  @override
+  State<DownloadFileWidget> createState() => _DownloadFileWidgetState();
+}
+
+class _DownloadFileWidgetState extends State<DownloadFileWidget> {
+  bool isDownloaded = false;
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
@@ -37,14 +44,21 @@ class DownloadFileWidget extends StatelessWidget {
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
             leading: Icon(
-              _getIcon(file),
+              _getIcon(widget.file),
               size: 18,
             ),
-            title: Text(file.name),
+            title: Text(widget.file.name),
             trailing: IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.download,
+              onPressed: () async {
+                bool downloaded = await FileDownload.downloadFile(
+                    widget.file.temporaryUrl, widget.file.name);
+                setState(() {
+                  isDownloaded = downloaded;
+                });
+              },
+              icon: Icon(
+                !isDownloaded ? Icons.download : Icons.done_outlined,
+                color: !isDownloaded ? AppColor.black : AppColor.green,
                 size: 22,
               ),
             ),
