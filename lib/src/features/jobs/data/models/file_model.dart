@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_category.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_tag.dart';
+import 'package:flutter/material.dart';
 
 class FileModel extends File {
-  FileModel({
+  const FileModel({
     required super.id,
     required super.uuid,
     required super.temporaryUrl,
@@ -21,17 +22,22 @@ class FileModel extends File {
 
   String toJson() => json.encode(toMap());
 
-  factory FileModel.fromMap(Map<String, dynamic> json) => FileModel(
-        id: json["id"],
-        uuid: json["uuid"],
-        temporaryUrl: json["temporaryUrl"],
-        bucket: json["bucket"],
-        name: json["name"],
-        type: json["type"],
-        category: FileCategory.fromString(json["category"]),
-        tag: FileTag.fromString(json["tag"]),
-        job: json["job"],
-      );
+  factory FileModel.fromMap(Map<String, dynamic> json) {
+    debugPrint(json.toString());
+    return FileModel(
+      id: json["id"],
+      uuid: json["uuid"],
+      temporaryUrl: json["temporaryUrl"],
+      bucket: json["bucket"],
+      name: json["name"],
+      type: json["type"],
+      category: json["category"] != null
+          ? FileCategory.fromString(json["category"])
+          : null,
+      tag: json["tag"] != null ? FileTag.fromString(json["tag"]) : null,
+      job: json["job"],
+    );
+  }
 
   Map<String, dynamic> toMap() => {
         "id": id,
