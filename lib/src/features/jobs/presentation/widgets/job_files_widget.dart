@@ -28,7 +28,9 @@ class JobFilesWidget extends StatelessWidget {
                     const Text("Documents"),
                     ActionButtonWidget(
                       onPressed: () => context.showModal("Upload file", [
-                        const FileUploadWidget(),
+                        FileUploadWidget(
+                          jobId: state.job.id,
+                        ),
                       ]),
                       type: ButtonType.elevatedButton,
                       title: "Attach",

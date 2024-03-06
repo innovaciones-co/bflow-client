@@ -14,7 +14,7 @@ enum FileTag {
 
   String toJSON() => name.toUpperCase().replaceAll(' ', '_');
 
-  static FileTag fromString(String str) {
+  factory FileTag.fromString(String str) {
     switch (str.toLowerCase()) {
       case "purchase_order":
         return FileTag.purchaseOrder;
@@ -26,6 +26,23 @@ enum FileTag {
         return FileTag.other;
       default:
         throw InvalidArgumentException(str);
+    }
+  }
+
+  factory FileTag.fromFilename(String fileName) {
+    String lowerCaseFileName = fileName.toLowerCase();
+
+    if (lowerCaseFileName.startsWith('po') ||
+        lowerCaseFileName.contains('purchase order')) {
+      return FileTag.purchaseOrder;
+    } else if (lowerCaseFileName.contains('contract')) {
+      return FileTag.contract;
+    } else if (lowerCaseFileName.contains('plan') ||
+        lowerCaseFileName.endsWith('dwg') ||
+        lowerCaseFileName.endsWith('dxf')) {
+      return FileTag.plan;
+    } else {
+      return FileTag.other;
     }
   }
 }

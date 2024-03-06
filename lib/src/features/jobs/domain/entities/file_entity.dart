@@ -1,10 +1,11 @@
 import 'package:bflow_client/src/features/jobs/domain/entities/file_category.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_tag.dart';
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 
 class File extends Equatable {
-  final int id;
-  final String uuid;
+  final int? id;
+  final String? uuid;
   final String temporaryUrl;
   final String? bucket;
   final String name;
@@ -13,10 +14,11 @@ class File extends Equatable {
   final FileTag? tag;
   final int? job;
   final int? task;
+  final MultipartFile? multipartFile;
 
   const File({
-    required this.id,
-    required this.uuid,
+    this.id,
+    this.uuid,
     required this.temporaryUrl,
     this.bucket,
     required this.name,
@@ -25,6 +27,7 @@ class File extends Equatable {
     this.tag,
     this.job,
     this.task,
+    this.multipartFile,
   });
 
   @override
@@ -39,6 +42,7 @@ class File extends Equatable {
         tag,
         job,
         task,
+        multipartFile
       ];
 
   @override

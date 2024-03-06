@@ -42,13 +42,18 @@ class ApiService {
     required String endpoint,
     Map<String, dynamic>? data,
     Map<String, dynamic>? queryParams,
+    bool encodeJson = true,
+    bool formData = false,
+    Map<String, String>? headers = const {'Content-Type': 'application/json'},
   }) async {
     final response = await _performRequest(
       Methods.post,
       '${ApiConstants.baseUrl}/$endpoint',
-      body: jsonEncode(data),
+      body: !formData
+          ? (encodeJson ? jsonEncode(data) : data)
+          : FormData.fromMap(data!),
       queryParams: queryParams,
-      headers: {'Content-Type': 'application/json'},
+      headers: headers,
     );
     return response.data;
   }
@@ -93,13 +98,14 @@ class ApiService {
     String url, {
     Map<String, String>? headers,
     Map<String, dynamic>? queryParams,
-    String? body,
+    dynamic body,
   }) async {
     try {
       final options = Options(
-        method: method.toString(),
-        validateStatus: (status) => status != null ? status < 500 : false,
-      );
+          method: method.toString(),
+          validateStatus: (status) => status != null ? status < 500 : false,
+          //headers: headers,
+          contentType: '');
 
       debugPrint("Request to: : ${url.toString()}");
       debugPrint("Body: ${body.toString()}");
@@ -111,6 +117,7 @@ class ApiService {
         queryParameters: queryParams,
       );
 
+      debugPrint("Status code: ${response.statusCode.toString()}");
       debugPrint("Response: ${response.toString()}");
 
       switch (response.statusCode) {
@@ -129,6 +136,8 @@ class ApiService {
           throw BadResponseException('Forbidden');
         case 404:
           throw BadResponseException('Not found');
+        case 413:
+          throw BadResponseException('Maximum upload size exceeded');
       }
 
       return response;
