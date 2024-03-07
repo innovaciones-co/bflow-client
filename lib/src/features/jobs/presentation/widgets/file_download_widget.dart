@@ -47,7 +47,14 @@ class _FileDownloadWidgetState extends State<FileDownloadWidget> {
               _getIcon(widget.file),
               size: 18,
             ),
-            title: Text(widget.file.name),
+            title: Tooltip(
+              message: widget.file.name,
+              child: Text(
+                widget.file.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
             trailing: IconButton(
               onPressed: () async {
                 bool downloaded = await FileDownload.downloadFile(

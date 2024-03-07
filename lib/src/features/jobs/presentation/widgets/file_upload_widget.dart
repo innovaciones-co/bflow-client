@@ -3,11 +3,11 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
-import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_category.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_tag.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/files/files_cubit.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:dio/dio.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -19,11 +19,13 @@ import 'package:go_router/go_router.dart';
 class FileUploadWidget extends StatefulWidget {
   final int? jobId;
   final int? taskId;
+  final JobBloc jobBloc;
 
   const FileUploadWidget({
     super.key,
     this.jobId,
     this.taskId,
+    required this.jobBloc,
   }) : assert(jobId != taskId);
 
   @override
@@ -38,7 +40,10 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<FilesCubit>(
-      create: (context) => DependencyInjection.sl(),
+      create: (context) => FilesCubit(
+        uploadFilesUseCase: DependencyInjection.sl(),
+        jobBloc: widget.jobBloc,
+      ),
       child: Builder(builder: (context) {
         final FilesCubit filesCubit = context.read();
 
@@ -160,10 +165,6 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
       builder: (context, state) {
         if (state is FilesLoading) {
           return const LoadingWidget();
-        }
-
-        if (state is FilesError) {
-          return FailureWidget(failure: state.failure);
         }
 
         return Container(

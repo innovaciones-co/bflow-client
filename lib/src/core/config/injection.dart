@@ -105,6 +105,7 @@ class DependencyInjection {
     sl.registerFactory<FilesCubit>(
       () => FilesCubit(
         uploadFilesUseCase: sl(),
+        jobBloc: sl(),
       ),
     );
 

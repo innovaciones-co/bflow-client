@@ -30,6 +30,7 @@ class JobFilesWidget extends StatelessWidget {
                       onPressed: () => context.showModal("Upload file", [
                         FileUploadWidget(
                           jobId: state.job.id,
+                          jobBloc: context.read<JobBloc>(),
                         ),
                       ]),
                       type: ButtonType.elevatedButton,
