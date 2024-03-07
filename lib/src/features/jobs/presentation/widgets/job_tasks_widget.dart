@@ -26,10 +26,6 @@ class JobTasksWidget extends StatelessWidget {
           return _buildTasks(context, tasks);
         }
 
-        /* if (state is TasksError) {
-          return FailureWidget(failure: state.failure);
-        } */
-
         return const SizedBox.shrink();
       },
     );
