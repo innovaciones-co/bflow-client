@@ -39,8 +39,10 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
               color: AppColor.grey,
             ),
             _buildDropdown(context),
-            _showSelectedStatus()
           ],
+        ),
+        Expanded(
+          child: _showSelectedStatus(),
         ),
         Row(
           children: [
@@ -174,7 +176,6 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
 
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 10),
-          constraints: const BoxConstraints(maxWidth: 650),
           child: Wrap(
             children: state.statusFilter
                 .map(

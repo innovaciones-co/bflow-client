@@ -6,19 +6,19 @@ import 'package:bflow_client/src/features/jobs/domain/entities/file_category.dar
 import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
 import 'package:flutter/material.dart';
 
-class DownloadFileWidget extends StatefulWidget {
+class FileDownloadWidget extends StatefulWidget {
   final File file;
 
-  const DownloadFileWidget({
+  const FileDownloadWidget({
     super.key,
     required this.file,
   });
 
   @override
-  State<DownloadFileWidget> createState() => _DownloadFileWidgetState();
+  State<FileDownloadWidget> createState() => _FileDownloadWidgetState();
 }
 
-class _DownloadFileWidgetState extends State<DownloadFileWidget> {
+class _FileDownloadWidgetState extends State<FileDownloadWidget> {
   bool isDownloaded = false;
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,14 @@ class _DownloadFileWidgetState extends State<DownloadFileWidget> {
               _getIcon(widget.file),
               size: 18,
             ),
-            title: Text(widget.file.name),
+            title: Tooltip(
+              message: widget.file.name,
+              child: Text(
+                widget.file.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
             trailing: IconButton(
               onPressed: () async {
                 bool downloaded = await FileDownload.downloadFile(

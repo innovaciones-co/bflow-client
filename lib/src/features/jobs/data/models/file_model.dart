@@ -1,22 +1,37 @@
 import 'dart:convert';
 
+import 'package:bflow_client/src/features/jobs/data/models/file_entity_model.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_category.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_tag.dart';
 import 'package:flutter/material.dart';
 
 class FileModel extends File {
-  const FileModel({
-    required super.id,
-    required super.uuid,
-    required super.temporaryUrl,
-    super.bucket,
-    required super.name,
-    super.type,
-    super.category,
-    super.tag,
-    super.job,
-  });
+  const FileModel(
+      {required super.id,
+      required super.uuid,
+      required super.temporaryUrl,
+      super.bucket,
+      required super.name,
+      super.type,
+      super.category,
+      super.tag,
+      super.job,
+      super.task,
+      super.multipartFile});
+
+  factory FileModel.fromEntity(File file) => FileModel(
+      id: file.id,
+      uuid: file.uuid,
+      temporaryUrl: file.temporaryUrl,
+      name: file.name,
+      bucket: file.bucket,
+      type: file.type,
+      category: file.category,
+      tag: file.tag,
+      task: file.task,
+      job: file.job,
+      multipartFile: file.multipartFile);
 
   factory FileModel.fromJson(String str) => FileModel.fromMap(json.decode(str));
 
@@ -49,5 +64,27 @@ class FileModel extends File {
         "category": category?.toJSON(),
         "tag": tag?.toJSON(),
         "job": job,
+        "task": task,
       };
+
+  Future<Map<String, dynamic>> toCreateMap() async {
+    late FileEntity entity;
+
+    if (job != null) {
+      entity = FileEntity.job;
+    } else {
+      entity = FileEntity.task;
+    }
+
+    return {
+      "file": multipartFile,
+      "name": name,
+      "type": type,
+      "category": category?.toJSON(),
+      "tag": tag?.toJSON(),
+      "entity": entity.toString(),
+      "job": job,
+      "task": task,
+    };
+  }
 }

@@ -13,7 +13,7 @@ enum FileCategory {
 
   String toJSON() => name.toUpperCase().replaceAll(' ', '_');
 
-  static FileCategory fromString(String str) {
+  factory FileCategory.fromString(String str) {
     switch (str.toLowerCase()) {
       case "document":
         return FileCategory.document;
@@ -23,6 +23,26 @@ enum FileCategory {
         return FileCategory.plan;
       default:
         throw InvalidArgumentException(str);
+    }
+  }
+
+  factory FileCategory.fromExtension(String fileExtension) {
+    switch (fileExtension.toLowerCase()) {
+      case 'pdf':
+      case 'doc':
+      case 'docx':
+      case 'txt':
+        return FileCategory.document;
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'gif':
+        return FileCategory.photo;
+      case 'dwg':
+      case 'dxf':
+        return FileCategory.plan;
+      default:
+        return FileCategory.document;
     }
   }
 }
