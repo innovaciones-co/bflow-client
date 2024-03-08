@@ -1,9 +1,12 @@
+import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/notes/notes_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/file_download_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/file_upload_widget.dart';
+import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -105,7 +108,82 @@ class JobFilesWidget extends StatelessWidget {
               child: Text(e.body),
             ),
           )
-          .toList(),
+          .toList()
+        ..add(
+          _buildAddNote(context),
+        ),
+    );
+  }
+
+  Container _buildAddNote(BuildContext context) {
+    return Container(
+      width: context.width / 2,
+      margin: const EdgeInsets.only(bottom: 15),
+      decoration: BoxDecoration(
+        color: AppColor.white,
+        boxShadow: [
+          BoxShadow(
+            color: AppColor.grey,
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(2, 2), // changes position of shadow
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(25.0),
+      child: BlocBuilder<JobBloc, JobState>(
+        builder: (context, state) {
+          if (state is! JobLoaded) {
+            return const SizedBox.shrink();
+          }
+          return BlocProvider(
+            create: (context) => NotesCubit(
+              createNoteUsecase: DependencyInjection.sl(),
+              jobId: (state).job.id!,
+              jobBloc: context.read(),
+            ),
+            child: BlocBuilder<NotesCubit, NotesState>(
+              builder: (context, state) {
+                var bloc = context.read<NotesCubit>();
+
+                if (state is NotesLoading) {
+                  return const LoadingWidget();
+                }
+
+                return Column(
+                  children: [
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                      ),
+                      minLines: 3,
+                      maxLines: 5,
+                      onChanged: bloc.updateNote,
+                    ),
+                    state.note != null
+                        ? Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                ActionButtonWidget(
+                                  onPressed: bloc.addNote,
+                                  type: ButtonType.elevatedButton,
+                                  title: "Create note",
+                                  backgroundColor: AppColor.blue,
+                                  foregroundColor: AppColor.white,
+                                ),
+                              ],
+                            ),
+                          )
+                        : const SizedBox.shrink()
+                  ],
+                );
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 }

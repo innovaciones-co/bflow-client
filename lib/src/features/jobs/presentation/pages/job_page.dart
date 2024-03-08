@@ -36,7 +36,7 @@ class _JobPageState extends State<JobPage> {
   void initState() {
     super.initState();
 
-    _body = _content[1];
+    _body = _content[0];
   }
 
   @override

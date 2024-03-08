@@ -13,6 +13,9 @@ class ApiConstants {
   static String contactsEndpoint = 'contacts';
   static String contactEndpoint = 'contacts/:id';
 
+  static String notesEndpoint = 'notes';
+  static String noteEndpoint = 'notes/:id';
+
   static String templatesEndpoint = 'templates';
   static String createTaskFromTemplateEndpoint = 'templates/:id/tasks';
 

@@ -11,17 +11,21 @@ import 'package:bflow_client/src/features/contacts/domain/usecases/update_contac
 import 'package:bflow_client/src/features/contacts/presentation/cubit/contacts_cubit.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/data/implements/files_repository_imp.dart';
+import 'package:bflow_client/src/features/jobs/data/implements/notes_repository_imp.dart';
 import 'package:bflow_client/src/features/jobs/data/implements/tasks_repository_imp.dart';
 import 'package:bflow_client/src/features/jobs/data/implements/templates_repository_imp.dart';
 import 'package:bflow_client/src/features/jobs/data/sources/files_remote_data_source.dart';
 import 'package:bflow_client/src/features/jobs/data/sources/jobs_remote_data_source.dart';
+import 'package:bflow_client/src/features/jobs/data/sources/notes_remote_data_source.dart';
 import 'package:bflow_client/src/features/jobs/data/sources/tasks_remote_data_source.dart';
 import 'package:bflow_client/src/features/jobs/data/sources/template_remote_data_source.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/files_repository.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/job_repository.dart';
+import 'package:bflow_client/src/features/jobs/domain/repositories/note_repository.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/task_repository.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/template_repository.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_job_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/create_note_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_tasks_from_template_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_task_use_case.dart';
@@ -168,6 +172,9 @@ class DependencyInjection {
     sl.registerLazySingleton(
       () => UploadFilesUseCase(repository: sl()),
     );
+    sl.registerLazySingleton(
+      () => CreateNoteUsecase(notesRepository: sl()),
+    );
 
     // Repository
     sl.registerLazySingleton<TemplateRepository>(
@@ -191,6 +198,9 @@ class DependencyInjection {
     sl.registerLazySingleton<FilesRepository>(
       () => FilesRepositoryImp(remoteDatasource: sl()),
     );
+    sl.registerLazySingleton<NotesRepository>(
+      () => NotesRepositoryImp(remoteDataSource: sl()),
+    );
 
     // Data sources
     sl.registerLazySingleton<LoginRemoteDataSource>(
@@ -213,6 +223,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => FilesRemoteDatasource(apiService: sl()),
+    );
+    sl.registerLazySingleton(
+      () => NotesRemoteDataSource(apiService: sl()),
     );
   }
 }

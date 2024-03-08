@@ -5,7 +5,7 @@ class Note extends Equatable {
   final String body;
   final int? job;
 
-  const Note({required this.id, required this.body, required this.job});
+  const Note({this.id, required this.body, required this.job});
 
   @override
   List<Object?> get props => [id, body, job];
