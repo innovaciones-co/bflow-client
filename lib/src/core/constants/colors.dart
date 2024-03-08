@@ -18,7 +18,7 @@ class AppColor {
   // Other Colors
   static Color purple = const Color(0xffab86ff);
   static Color lightPurple = const Color(0xfff0ecff);
-  static Color green = const Color(0xff38BB9C);
+  static Color green = const Color(0xff00A650);
   static Color lightGreen = const Color(0xffd9f2e0);
   static Color orange = const Color(0xffFF7733);
   static Color lightOrange = const Color(0xfffff1eb);

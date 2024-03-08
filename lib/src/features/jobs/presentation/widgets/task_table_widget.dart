@@ -3,6 +3,7 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/extensions/ui_extensions.dart';
+import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/custom_chip_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
@@ -273,28 +274,20 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                   size: 20,
                 ),
               ),
-              BlocProvider<TaskCubit>(
-                create: (context) => TaskCubit(
-                  getJobUseCase: DependencyInjection.sl(),
-                  getTaskUseCase: DependencyInjection.sl(),
-                  deleteTaskUseCase: DependencyInjection.sl(),
-                  tasksBloc: context.read(),
-                  homeBloc: context.read(),
+              IconButton(
+                onPressed: () => context
+                    .showModal("Are you sure do you want to delete the task?", [
+                  TaskDeleteConfirmationWidget(
+                    context: context,
+                    task: task,
+                    tasksBloc: context.read(),
+                  ),
+                ]),
+                color: AppColor.blue,
+                icon: const Icon(
+                  Icons.delete_outline_outlined,
+                  size: 20,
                 ),
-                child: Builder(builder: (context) {
-                  return IconButton(
-                    onPressed: () => task.id != null
-                        ? context
-                            .read<TaskCubit>()
-                            .deleteTask(task.id!, task.job)
-                        : null,
-                    color: AppColor.blue,
-                    icon: const Icon(
-                      Icons.delete_outline_outlined,
-                      size: 20,
-                    ),
-                  );
-                }),
               ),
             ],
           ),
@@ -332,5 +325,60 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     }
 
     return childrenTasksMap;
+  }
+}
+
+class TaskDeleteConfirmationWidget extends StatelessWidget {
+  const TaskDeleteConfirmationWidget({
+    super.key,
+    required this.context,
+    required this.task,
+    required this.tasksBloc,
+  });
+
+  final BuildContext context;
+  final Task task;
+  final TasksBloc tasksBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        ActionButtonWidget(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          type: ButtonType.textButton,
+          title: "Cancel",
+          paddingHorizontal: 15,
+          paddingVertical: 18,
+        ),
+        const SizedBox(width: 12),
+        BlocProvider<TaskCubit>(
+          create: (context) => TaskCubit(
+            getJobUseCase: DependencyInjection.sl(),
+            getTaskUseCase: DependencyInjection.sl(),
+            deleteTaskUseCase: DependencyInjection.sl(),
+            tasksBloc: tasksBloc,
+            homeBloc: context.read(),
+          ),
+          child: Builder(builder: (context) {
+            return ActionButtonWidget(
+              onPressed: () {
+                if (task.id != null) {
+                  context.read<TaskCubit>().deleteTask(task.id!, task.job);
+                  Navigator.of(context).pop();
+                }
+              },
+              type: ButtonType.elevatedButton,
+              title: "Delete Task",
+              backgroundColor: AppColor.blue,
+              foregroundColor: AppColor.white,
+            );
+          }),
+        ),
+      ],
+    );
   }
 }
