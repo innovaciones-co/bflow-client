@@ -8,6 +8,7 @@ import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/ta
 import 'package:bflow_client/src/features/jobs/presentation/bloc/templates/templates_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_calendar_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/job_materials_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_tasks_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,6 +31,7 @@ class _JobPageState extends State<JobPage> {
     const JobFilesWidget(),
     const JobTasksWidget(),
     const JobCalendarWidget(),
+    const JobMaterialsWidget(),
   ];
 
   @override
@@ -120,7 +122,13 @@ class _JobPageState extends State<JobPage> {
           onPressed: () => _selectView(2),
           type: ButtonType.textButton,
           title: "View Calendar",
-          icon: Icons.task_outlined,
+          icon: Icons.calendar_today_outlined,
+        ),
+        ActionButtonWidget(
+          onPressed: () => _selectView(3),
+          type: ButtonType.textButton,
+          title: "Bill of materials",
+          icon: Icons.list_alt_outlined,
         ),
         const Spacer(),
         ActionButtonWidget(
