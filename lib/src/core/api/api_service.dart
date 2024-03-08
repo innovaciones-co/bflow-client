@@ -102,10 +102,10 @@ class ApiService {
   }) async {
     try {
       final options = Options(
-          method: method.toString(),
-          validateStatus: (status) => status != null ? status < 500 : false,
-          //headers: headers,
-          contentType: '');
+        method: method.toString(),
+        validateStatus: (status) => status != null ? status < 500 : false,
+        headers: headers,
+      );
 
       debugPrint("Request to: : ${url.toString()}");
       debugPrint("Body: ${body.toString()}");
