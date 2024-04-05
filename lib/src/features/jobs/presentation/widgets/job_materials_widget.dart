@@ -169,7 +169,20 @@ class JobMaterialsWidget extends StatelessWidget {
         _tableCell(const Text("#020230")),
         _tableCell(const Text("Slab mesh AUS")),
         _tableCell(const Text("Slab mesh square - RM 62 (6x24m)")),
-        _tableCell(const Text("13")),
+        _tableCell(
+          TextFormField(
+            initialValue: '123',
+            enableSuggestions: false,
+            autocorrect: false,
+            decoration: const InputDecoration(
+              enabledBorder: InputBorder.none,
+              //errorBorder: InputBorder.none,
+              //hintText: hintText,
+            ),
+          ),
+          paddingLeft: 1,
+          paddingRight: 1,
+        ),
         _tableCell(const Text("m2")),
         _tableCell(const Text("\$68,00")),
         _tableCell(const Text("\$884,00")),
