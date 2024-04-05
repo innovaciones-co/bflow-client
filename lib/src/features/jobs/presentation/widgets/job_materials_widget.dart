@@ -68,7 +68,19 @@ class JobMaterialsWidget extends StatelessWidget {
               //const NoMaterialsWidget(),
               _categoryTable(context),
               _categoryTable(context),
+              const SizedBox(height: 10),
             ],
+          ),
+        ),
+        Container(
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.all(10),
+          width: double.infinity,
+          color: AppColor.lightGrey,
+          child: Text(
+            'Total: \$78400,00',
+            style: context.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
           ),
         ),
       ],
