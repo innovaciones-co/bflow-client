@@ -1,20 +1,22 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/materials_view_bar_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/no_materials_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/write_material_widget.dart';
 import 'package:flutter/material.dart';
 
 final Map<int, TableColumnWidth> columnWidths = {
-  0: FixedColumnWidth(100),
-  1: FixedColumnWidth(40),
-  2: FixedColumnWidth(140), //110),
-  3: FixedColumnWidth(110),
-  4: FixedColumnWidth(170),
-  5: FixedColumnWidth(250),
-  6: FixedColumnWidth(100),
-  7: FixedColumnWidth(100),
-  8: FixedColumnWidth(100),
-  9: FixedColumnWidth(100),
+  0: const FixedColumnWidth(100),
+  1: const FixedColumnWidth(40),
+  2: const FixedColumnWidth(140),
+  3: const FixedColumnWidth(120),
+  4: const FixedColumnWidth(170),
+  5: const FixedColumnWidth(500),
+  6: const FixedColumnWidth(60),
+  7: const FixedColumnWidth(80),
+  8: const FixedColumnWidth(110),
+  9: const FixedColumnWidth(110),
 };
 
 class JobMaterialsWidget extends StatelessWidget {
@@ -52,7 +54,7 @@ class JobMaterialsWidget extends StatelessWidget {
                         side: BorderSide(color: AppColor.darkGrey, width: 2),
                       )),
                       _tableCell(const Text("Item ID")),
-                      _tableCell(const Text("Order ID")),
+                      _tableCell(const Text("Order Number")),
                       _tableCell(const Text("Supplier")),
                       _tableCell(const Text("Description")),
                       _tableCell(const Text("Qty")),
@@ -64,8 +66,8 @@ class JobMaterialsWidget extends StatelessWidget {
                 ],
               ),
               //const NoMaterialsWidget(),
-              _categoryTable(),
-              _categoryTable(),
+              _categoryTable(context),
+              _categoryTable(context),
             ],
           ),
         ),
@@ -73,7 +75,7 @@ class JobMaterialsWidget extends StatelessWidget {
     );
   }
 
-  Table _categoryTable() {
+  Table _categoryTable(BuildContext context) {
     return Table(
       columnWidths: columnWidths,
       border: TableBorder(
@@ -103,7 +105,7 @@ class JobMaterialsWidget extends StatelessWidget {
             _tableCell(const Text("")),
             _tableCell(const Text("")),
             _tableCell(const Text("")),
-            _tableCell(const Text("")),
+            _tableCell(const Text("\$88400,00")),
           ],
         ),
         _tableRow(),
@@ -119,7 +121,8 @@ class JobMaterialsWidget extends StatelessWidget {
             _tableCell(const Text("")),
             _tableCell(
               ActionButtonWidget(
-                onPressed: () {},
+                onPressed: () => context.showLeftDialog(
+                    'New Material', const WriteMaterialWidget()),
                 type: ButtonType.textButton,
                 title: "Add Material",
                 icon: Icons.add,
