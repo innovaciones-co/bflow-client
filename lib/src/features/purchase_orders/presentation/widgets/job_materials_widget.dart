@@ -4,8 +4,8 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/materials_view_bar_widget.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/no_materials_widget.dart';
@@ -25,8 +25,8 @@ class JobMaterialsWidget extends StatelessWidget {
     1: const FixedColumnWidth(40),
     2: const FixedColumnWidth(140),
     3: const FixedColumnWidth(120),
-    4: const FixedColumnWidth(170),
-    5: const FixedColumnWidth(500),
+    4: const FixedColumnWidth(120),
+    5: const FixedColumnWidth(300),
     6: const FixedColumnWidth(60),
     7: const FixedColumnWidth(80),
     8: const FixedColumnWidth(110),
@@ -45,62 +45,65 @@ class JobMaterialsWidget extends StatelessWidget {
           child: BlocProvider<ItemsBloc>(
             create: (context) => DependencyInjection.sl()
               ..add(GetItemsEvent(jobId: state.job.id!)),
-            child: Column(
-              children: [
-                const MaterialsViewBarWidget(),
-                const SizedBox(height: 15),
-                Expanded(
-                  child: CrossScrollWidget(
-                    child: BlocBuilder<ItemsBloc, ItemsState>(
-                      builder: (context, state) {
-                        if (state is ItemsLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
+            child: BlocBuilder<ItemsBloc, ItemsState>(
+              builder: (context, state) {
+                if (state is ItemsLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
 
-                        if (state is ItemsFailed) {
-                          return FailureWidget(failure: state.failure);
-                        }
+                if (state is ItemsFailed) {
+                  return FailureWidget(failure: state.failure);
+                }
 
-                        var items = (state as ItemsLoaded).items;
-                        var categories = (state).categories;
-                        var orders = (state).orders;
-                        var suppliers = (state).orders;
+                var items = (state as ItemsLoaded).items;
+                var categories = (state).categories;
+                var orders = (state).orders;
+                var suppliers = (state).suppliers;
+                final double total = items
+                    .map((e) => e.price)
+                    .reduce((value, element) => value + element);
 
-                        final Map<int, List<Item>> itemsPerCategoryMap =
-                            _itemsPerCategoryMap(items);
+                final Map<int, List<Item>> itemsPerCategoryMap =
+                    _itemsPerCategoryMap(items);
 
-                        if (items.isEmpty) {
-                          return const NoMaterialsWidget();
-                        }
+                if (items.isEmpty) {
+                  return const NoMaterialsWidget();
+                }
 
-                        return Column(
+                return Column(
+                  children: [
+                    const MaterialsViewBarWidget(),
+                    const SizedBox(height: 15),
+                    Expanded(
+                      child: CrossScrollWidget(
+                        child: Column(
                           children: [
                             _tableHeader(),
                             ...itemsPerCategoryMap.entries.map(
                               (e) => _categoryTable(context, e.value),
                             )
                           ],
-                        );
-                      },
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.all(10),
-                  width: double.infinity,
-                  color: AppColor.lightGrey,
-                  child: Text(
-                    'Total: \$78400,00',
-                    style: context.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
-                ),
-                const SizedBox(height: 10),
-              ],
+                    const SizedBox(height: 10),
+                    Container(
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.all(10),
+                      width: double.infinity,
+                      color: AppColor.lightGrey,
+                      child: Text(
+                        'Total: \$$total',
+                        style: context.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                );
+              },
             ),
           ),
         );
@@ -149,7 +152,7 @@ class JobMaterialsWidget extends StatelessWidget {
             _tableCell(const Text("Description")),
             _tableCell(const Text("Qty")),
             _tableCell(const Text("Measure")),
-            _tableCell(const Text("Rate")),
+            _tableCell(const Text("Cost")),
             _tableCell(const Text("Total")),
           ],
         ),
@@ -158,6 +161,10 @@ class JobMaterialsWidget extends StatelessWidget {
   }
 
   Widget _categoryTable(BuildContext context, List<Item> items) {
+    final double totalPerCategory = items.map((i) => i.price).reduce(
+          (a, b) => a + b,
+        );
+
     return Table(
       columnWidths: _columnWidths,
       border: TableBorder(
@@ -170,7 +177,7 @@ class JobMaterialsWidget extends StatelessWidget {
       ),
       children: [
         // TODO: Include Category argument
-        _tableHeaderRow(),
+        _tableHeaderRow("1200", "Reinforcement", totalPerCategory),
         for (int index = 0; index < items.length; index += 1)
           _tableItemRow(items[index]),
         TableRow(
@@ -202,26 +209,26 @@ class JobMaterialsWidget extends StatelessWidget {
     );
   }
 
-  TableRow _tableHeaderRow() {
+  TableRow _tableHeaderRow(String code, String name, double total) {
     return TableRow(
       decoration: BoxDecoration(
         color: AppColor.lightPurple,
       ),
       children: [
-        _tableCell(const Text("1200")),
+        _tableCell(Text(code)),
         _tableCell(Checkbox(
           value: false,
           onChanged: null,
           side: BorderSide(color: AppColor.darkGrey, width: 2),
         )),
-        _tableCell(const Text("Reforimecent")),
+        _tableCell(Text(name)),
         _tableCell(const Text("")),
         _tableCell(const Text("")),
         _tableCell(const Text("")),
         _tableCell(const Text("")),
         _tableCell(const Text("")),
         _tableCell(const Text("")),
-        _tableCell(const Text("\$88400,00")),
+        _tableCell(Text("\$$total")),
       ],
     );
   }
@@ -241,7 +248,7 @@ class JobMaterialsWidget extends StatelessWidget {
         _tableCell(Text(item.id.toString())),
         _tableCell(const Text("#020230 - REPLACE")),
         _tableCell(const Text("Slab mesh AUS - REPLACE")),
-        _tableCell(Text(item.description ?? '')),
+        _tableCell(Text("${item.name}: ${item.description}")),
         _tableCell(
           // TODO: Implement edit and validation
           TextFormField(
@@ -257,7 +264,7 @@ class JobMaterialsWidget extends StatelessWidget {
           paddingLeft: 1,
           paddingRight: 1,
         ),
-        _tableCell(const Text("m2 - REPLACE")),
+        _tableCell(Text(item.measure?.abbreviation ?? "")),
         _tableCell(Text("\$${item.unitPrice}")),
         _tableCell(Text("\$${item.price}")),
       ],
