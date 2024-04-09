@@ -13,30 +13,32 @@ class NoMaterialsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: AppColor.lightGrey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            'assets/img/no_data_found.png',
-          ),
-          const SizedBox(height: 15),
-          Text(
-            "No materials yet",
-            style: context.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ActionButtonWidget(
-                onPressed: () => context.showLeftDialog(
-                    'Import Materials', const WriteMaterialsWidget()),
-                type: ButtonType.textButton,
-                title: "Add materials from template",
-              ),
-            ],
-          )
-        ],
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/img/no_data_found.png',
+            ),
+            const SizedBox(height: 15),
+            Text(
+              "No materials yet",
+              style: context.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ActionButtonWidget(
+                  onPressed: () => context.showLeftDialog(
+                      'Import Materials', const WriteMaterialsWidget()),
+                  type: ButtonType.textButton,
+                  title: "Add materials from template",
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/features/purchase_orders/domain/entities/units.dart';
 import 'package:equatable/equatable.dart';
 
 class Item extends Equatable {
@@ -8,7 +9,7 @@ class Item extends Equatable {
   final int vat;
   final double price;
   final int units;
-  final String? measure;
+  final Unit? measure;
   final int? purchaseOrder;
   final int supplier;
   final int category;
