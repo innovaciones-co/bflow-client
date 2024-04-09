@@ -4,13 +4,19 @@ import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_e
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/item_repository.dart';
 import 'package:dartz/dartz.dart';
 
-class GetItemsUseCase implements UseCase<List<Item>, NoParams> {
+class GetItemsUseCase implements UseCase<List<Item>, GetItemsParams> {
   final ItemsRepository repository;
 
   GetItemsUseCase({required this.repository});
 
   @override
   Future<Either<Failure, List<Item>>> execute(params) {
-    return repository.getItems();
+    return repository.getItems(params.jobId);
   }
+}
+
+class GetItemsParams {
+  final int jobId;
+
+  GetItemsParams({required this.jobId});
 }

@@ -13,9 +13,9 @@ class ItemsRepositoryImp implements ItemsRepository {
   ItemsRepositoryImp({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<Item>>> getItems() async {
+  Future<Either<Failure, List<Item>>> getItems(int jobId) async {
     try {
-      return Right(await remoteDataSource.fetchItems());
+      return Right(await remoteDataSource.fetchItemsByJob(jobId));
     } on RemoteDataSourceException catch (e) {
       return Left(ServerFailure(message: e.message));
     }

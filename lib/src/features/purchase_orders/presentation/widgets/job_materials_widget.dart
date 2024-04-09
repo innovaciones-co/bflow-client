@@ -1,9 +1,13 @@
+import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/materials_view_bar_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_material_widget.dart';
+import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/purchase_orders_bloc.dart';
+import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/materials_view_bar_widget.dart';
+import 'package:bflow_client/src/features/shared/presentation/widgets/cross_scroll_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 final Map<int, TableColumnWidth> columnWidths = {
   0: const FixedColumnWidth(100),
@@ -23,64 +27,84 @@ class JobMaterialsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const MaterialsViewBarWidget(),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Column(
-            children: [
-              const SizedBox(height: 15),
-              Table(
-                columnWidths: columnWidths,
-                border: TableBorder(
-                  right: BorderSide(width: 1.0, color: AppColor.lightGrey),
-                  bottom: BorderSide(width: 0.5, color: AppColor.darkGrey),
-                  left: BorderSide(width: 1.0, color: AppColor.lightGrey),
-                  verticalInside:
-                      BorderSide(width: 1.0, color: AppColor.lightGrey),
+    return Expanded(
+      child: BlocProvider<PurchaseOrdersBloc>(
+        create: (context) => DependencyInjection.sl()
+          ..add(const GetPurchaseOrdersEvent(jobId: 10001)),
+        child: Column(
+          children: [
+            const MaterialsViewBarWidget(),
+            Expanded(
+              child: CrossScrollWidget(
+                child: BlocBuilder<PurchaseOrdersBloc, PurchaseOrdersState>(
+                  builder: (context, state) {
+                    if (state is PurchaseOrdersLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return Column(
+                      children: [
+                        const SizedBox(height: 15),
+                        _tableHeader(),
+                        //const NoMaterialsWidget(),
+                        _categoryTable(context),
+                        _categoryTable(context),
+                      ],
+                    );
+                  },
                 ),
-                children: [
-                  TableRow(
-                    decoration: BoxDecoration(
-                      color: AppColor.grey,
-                    ),
-                    children: [
-                      _tableCell(const Text("Trade code")),
-                      _tableCell(Checkbox(
-                        value: false,
-                        onChanged: null,
-                        side: BorderSide(color: AppColor.darkGrey, width: 2),
-                      )),
-                      _tableCell(const Text("Item ID")),
-                      _tableCell(const Text("Order Number")),
-                      _tableCell(const Text("Supplier")),
-                      _tableCell(const Text("Description")),
-                      _tableCell(const Text("Qty")),
-                      _tableCell(const Text("Measure")),
-                      _tableCell(const Text("Rate")),
-                      _tableCell(const Text("Total")),
-                    ],
-                  ),
-                ],
               ),
-              //const NoMaterialsWidget(),
-              _categoryTable(context),
-              _categoryTable(context),
-              const SizedBox(height: 10),
-            ],
-          ),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.all(10),
+              width: double.infinity,
+              color: AppColor.lightGrey,
+              child: Text(
+                'Total: \$78400,00',
+                style: context.headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
         ),
-        Container(
-          alignment: Alignment.centerRight,
-          padding: const EdgeInsets.all(10),
-          width: double.infinity,
-          color: AppColor.lightGrey,
-          child: Text(
-            'Total: \$78400,00',
-            style: context.headlineSmall
-                ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
+      ),
+    );
+  }
+
+  Table _tableHeader() {
+    return Table(
+      columnWidths: columnWidths,
+      border: TableBorder(
+        right: BorderSide(width: 1.0, color: AppColor.lightGrey),
+        bottom: BorderSide(width: 0.5, color: AppColor.darkGrey),
+        left: BorderSide(width: 1.0, color: AppColor.lightGrey),
+        verticalInside: BorderSide(width: 1.0, color: AppColor.lightGrey),
+      ),
+      children: [
+        TableRow(
+          decoration: BoxDecoration(
+            color: AppColor.grey,
           ),
+          children: [
+            _tableCell(const Text("Trade code")),
+            _tableCell(Checkbox(
+              value: false,
+              onChanged: null,
+              side: BorderSide(color: AppColor.darkGrey, width: 2),
+            )),
+            _tableCell(const Text("Item ID")),
+            _tableCell(const Text("Order Number")),
+            _tableCell(const Text("Supplier")),
+            _tableCell(const Text("Description")),
+            _tableCell(const Text("Qty")),
+            _tableCell(const Text("Measure")),
+            _tableCell(const Text("Rate")),
+            _tableCell(const Text("Total")),
+          ],
         ),
       ],
     );

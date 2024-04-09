@@ -20,6 +20,14 @@ class ItemsRemoteDataSource extends RemoteDataSource {
     return response.map((e) => ItemModel.fromMap(e)).toList();
   }
 
+  Future<List<ItemModel>> fetchItemsByJob(int jobId) async {
+    List<dynamic> response = await apiService.get(
+      endpoint: ApiConstants.listItemsEndpoint,
+      params: {'jobId': jobId.toString()},
+    );
+    return response.map((e) => ItemModel.fromMap(e)).toList();
+  }
+
   Future<List<PurchaseOrderModel>> createPurchaseOrder(List<Item> items) async {
     List<dynamic> response = await apiService.post(
       endpoint: ApiConstants.createPurchaseOrderEndpoint,

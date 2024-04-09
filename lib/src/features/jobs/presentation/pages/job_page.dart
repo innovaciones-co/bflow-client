@@ -8,8 +8,8 @@ import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/ta
 import 'package:bflow_client/src/features/jobs/presentation/bloc/templates/templates_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_calendar_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_widget.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/job_materials_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_tasks_widget.dart';
+import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/job_materials_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,7 +38,7 @@ class _JobPageState extends State<JobPage> {
   void initState() {
     super.initState();
 
-    _body = _content[0];
+    _body = _content[3];
   }
 
   @override

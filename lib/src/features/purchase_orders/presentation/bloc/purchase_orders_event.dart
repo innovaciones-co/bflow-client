@@ -6,3 +6,12 @@ abstract class PurchaseOrdersEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class GetPurchaseOrdersEvent extends PurchaseOrdersEvent {
+  final int jobId;
+
+  const GetPurchaseOrdersEvent({required this.jobId});
+
+  @override
+  List<Object> get props => [jobId];
+}
