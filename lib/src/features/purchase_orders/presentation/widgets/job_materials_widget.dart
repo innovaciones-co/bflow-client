@@ -4,6 +4,7 @@ import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_material_widget.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/materials_view_bar_widget.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/no_materials_widget.dart';
@@ -36,6 +37,7 @@ class JobMaterialsWidget extends StatelessWidget {
         child: Column(
           children: [
             const MaterialsViewBarWidget(),
+            const SizedBox(height: 15),
             Expanded(
               child: CrossScrollWidget(
                 child: BlocBuilder<ItemsBloc, ItemsState>(
@@ -52,16 +54,19 @@ class JobMaterialsWidget extends StatelessWidget {
 
                     var items = (state as ItemsLoaded).items;
 
+                    final Map<int, List<Item>> itemsPerCategoryMap =
+                        _itemsPerCategoryMap(items);
+
                     if (items.isEmpty) {
                       return const NoMaterialsWidget();
                     }
 
                     return Column(
                       children: [
-                        const SizedBox(height: 15),
                         _tableHeader(),
-                        _categoryTable(context),
-                        _categoryTable(context),
+                        ...itemsPerCategoryMap.entries.map(
+                          (e) => _categoryTable(context, e.value),
+                        )
                       ],
                     );
                   },
@@ -85,6 +90,20 @@ class JobMaterialsWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _itemsPerCategoryMap(List<Item> items) {
+    Map<int, List<Item>> itemsPerCategoryMap = {};
+
+    for (var item in items) {
+      if (itemsPerCategoryMap.containsKey(item.category)) {
+        itemsPerCategoryMap[item.category]!.add(item);
+      } else {
+        itemsPerCategoryMap[item.category] = [item];
+      }
+    }
+
+    return itemsPerCategoryMap;
   }
 
   Table _tableHeader() {
@@ -122,7 +141,7 @@ class JobMaterialsWidget extends StatelessWidget {
     );
   }
 
-  Table _categoryTable(BuildContext context) {
+  Widget _categoryTable(BuildContext context, List<Item> items) {
     return Table(
       columnWidths: columnWidths,
       border: TableBorder(
@@ -134,31 +153,10 @@ class JobMaterialsWidget extends StatelessWidget {
         verticalInside: BorderSide(width: 1.0, color: AppColor.lightPurple),
       ),
       children: [
-        TableRow(
-          decoration: BoxDecoration(
-            color: AppColor.lightPurple,
-          ),
-          children: [
-            _tableCell(const Text("1200")),
-            _tableCell(Checkbox(
-              value: false,
-              onChanged: null,
-              side: BorderSide(color: AppColor.darkGrey, width: 2),
-            )),
-            _tableCell(const Text("Reforimecent")),
-            _tableCell(const Text("")),
-            _tableCell(const Text("")),
-            _tableCell(const Text("")),
-            _tableCell(const Text("")),
-            _tableCell(const Text("")),
-            _tableCell(const Text("")),
-            _tableCell(const Text("\$88400,00")),
-          ],
-        ),
-        _tableRow(),
-        _tableRow(),
-        _tableRow(),
-        _tableRow(),
+        // TODO: Include Category argument
+        _tableHeaderRow(),
+        for (int index = 0; index < items.length; index += 1)
+          _tableItemRow(items[index]),
         TableRow(
           decoration: BoxDecoration(
             color: AppColor.white,
@@ -188,7 +186,31 @@ class JobMaterialsWidget extends StatelessWidget {
     );
   }
 
-  TableRow _tableRow() {
+  TableRow _tableHeaderRow() {
+    return TableRow(
+      decoration: BoxDecoration(
+        color: AppColor.lightPurple,
+      ),
+      children: [
+        _tableCell(const Text("1200")),
+        _tableCell(Checkbox(
+          value: false,
+          onChanged: null,
+          side: BorderSide(color: AppColor.darkGrey, width: 2),
+        )),
+        _tableCell(const Text("Reforimecent")),
+        _tableCell(const Text("")),
+        _tableCell(const Text("")),
+        _tableCell(const Text("")),
+        _tableCell(const Text("")),
+        _tableCell(const Text("")),
+        _tableCell(const Text("")),
+        _tableCell(const Text("\$88400,00")),
+      ],
+    );
+  }
+
+  TableRow _tableItemRow(Item item) {
     return TableRow(
       decoration: BoxDecoration(
         color: AppColor.white,
@@ -200,13 +222,14 @@ class JobMaterialsWidget extends StatelessWidget {
           onChanged: null,
           side: BorderSide(color: AppColor.darkGrey, width: 2),
         )),
-        _tableCell(const Text("1200")),
-        _tableCell(const Text("#020230")),
-        _tableCell(const Text("Slab mesh AUS")),
-        _tableCell(const Text("Slab mesh square - RM 62 (6x24m)")),
+        _tableCell(Text(item.id.toString())),
+        _tableCell(const Text("#020230 - REPLACE")),
+        _tableCell(const Text("Slab mesh AUS - REPLACE")),
+        _tableCell(Text(item.description ?? '')),
         _tableCell(
+          // TODO: Implement edit and validation
           TextFormField(
-            initialValue: '123',
+            initialValue: item.units.toString(),
             enableSuggestions: false,
             autocorrect: false,
             decoration: const InputDecoration(
@@ -218,9 +241,9 @@ class JobMaterialsWidget extends StatelessWidget {
           paddingLeft: 1,
           paddingRight: 1,
         ),
-        _tableCell(const Text("m2")),
-        _tableCell(const Text("\$68,00")),
-        _tableCell(const Text("\$884,00")),
+        _tableCell(const Text("m2 - REPLACE")),
+        _tableCell(Text("\$${item.unitPrice}")),
+        _tableCell(Text("\$${item.price}")),
       ],
     );
   }
