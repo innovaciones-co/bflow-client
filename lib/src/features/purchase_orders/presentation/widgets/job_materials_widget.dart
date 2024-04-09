@@ -2,9 +2,11 @@ import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_material_widget.dart';
-import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/purchase_orders_bloc.dart';
+import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/materials_view_bar_widget.dart';
+import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/no_materials_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/cross_scroll_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,26 +30,36 @@ class JobMaterialsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: BlocProvider<PurchaseOrdersBloc>(
-        create: (context) => DependencyInjection.sl()
-          ..add(const GetPurchaseOrdersEvent(jobId: 10001)),
+      child: BlocProvider<ItemsBloc>(
+        create: (context) =>
+            DependencyInjection.sl()..add(const GetItemsEvent(jobId: 10001)),
         child: Column(
           children: [
             const MaterialsViewBarWidget(),
             Expanded(
               child: CrossScrollWidget(
-                child: BlocBuilder<PurchaseOrdersBloc, PurchaseOrdersState>(
+                child: BlocBuilder<ItemsBloc, ItemsState>(
                   builder: (context, state) {
-                    if (state is PurchaseOrdersLoading) {
+                    if (state is ItemsLoading) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
                     }
+
+                    if (state is ItemsFailed) {
+                      return FailureWidget(failure: state.failure);
+                    }
+
+                    var items = (state as ItemsLoaded).items;
+
+                    if (items.isEmpty) {
+                      return const NoMaterialsWidget();
+                    }
+
                     return Column(
                       children: [
                         const SizedBox(height: 15),
                         _tableHeader(),
-                        //const NoMaterialsWidget(),
                         _categoryTable(context),
                         _categoryTable(context),
                       ],

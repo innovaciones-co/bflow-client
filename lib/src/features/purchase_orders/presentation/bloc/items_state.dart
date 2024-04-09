@@ -1,36 +1,36 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-part of 'purchase_orders_bloc.dart';
+part of 'items_bloc.dart';
 
-abstract class PurchaseOrdersState extends Equatable {
-  const PurchaseOrdersState();
+abstract class ItemsState extends Equatable {
+  const ItemsState();
 
   @override
   List<Object> get props => [];
 }
 
-class PurchaseOrdersInitial extends PurchaseOrdersState {}
+class ItemsLoading extends ItemsState {}
 
-class PurchaseOrdersLoading extends PurchaseOrdersState {}
-
-class PurchaseOrdersLoaded extends PurchaseOrdersState {
+class ItemsLoaded extends ItemsState {
   final List<Item> items;
   final List<Category> categories;
   final List<PurchaseOrder> orders;
+  final List<Contact> suppliers;
 
-  const PurchaseOrdersLoaded({
+  const ItemsLoaded({
     required this.items,
     required this.categories,
     required this.orders,
+    required this.suppliers,
   });
 
   @override
   List<Object> get props => [items, categories, orders];
 }
 
-class PurchaseOrdersFailed extends PurchaseOrdersState {
+class ItemsFailed extends ItemsState {
   final Failure failure;
 
-  const PurchaseOrdersFailed({required this.failure});
+  const ItemsFailed({required this.failure});
 
   @override
   List<Object> get props => [failure];

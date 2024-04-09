@@ -56,7 +56,7 @@ import 'package:bflow_client/src/features/purchase_orders/domain/repositories/ca
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/item_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/purchase_order_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_items_use_case.dart';
-import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/purchase_orders_bloc.dart';
+import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:bflow_client/src/features/users/data/implements/users_repository_imp.dart';
 import 'package:bflow_client/src/features/users/data/sources/users_remote_data_source.dart';
 import 'package:bflow_client/src/features/users/domain/repositories/users_repository.dart';
@@ -126,8 +126,7 @@ class DependencyInjection {
         jobBloc: sl(),
       ),
     );
-    sl.registerFactory<PurchaseOrdersBloc>(
-        () => PurchaseOrdersBloc(getItemsUseCase: sl()));
+    sl.registerFactory<ItemsBloc>(() => ItemsBloc(getItemsUseCase: sl()));
 
     // Use cases
 
