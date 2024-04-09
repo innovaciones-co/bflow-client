@@ -21,4 +21,14 @@ class ApiConstants {
 
   static String fileEndpoint = 'files/:id';
   static String uploadFileEndpoint = 'files/upload';
+
+  static String listCategoriesEndpoint = 'categories';
+  static String getCategoryEndpoint = 'categories/:id';
+
+  static String listPurchaseOrdersEndpoint = 'purchaseOrders';
+  static String getPurchaseOrderEndpoint = 'purchaseOrders/:id';
+
+  static String listItemsEndpoint = 'items';
+  static String getItemEndpoint = 'items/:id';
+  static String createPurchaseOrderEndpoint = 'items/purchaeOrders';
 }
