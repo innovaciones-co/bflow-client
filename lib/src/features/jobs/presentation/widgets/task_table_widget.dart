@@ -207,10 +207,13 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                     )
                   : const SizedBox(width: 30),
               Expanded(
-                child: Text(
-                  task.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                child: Tooltip(
+                  message: task.name,
+                  child: Text(
+                    task.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
             ],
