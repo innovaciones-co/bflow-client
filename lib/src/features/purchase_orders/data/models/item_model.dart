@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/entities/units.dart';
 
 class ItemModel extends Item {
   const ItemModel({
@@ -30,7 +31,7 @@ class ItemModel extends Item {
         vat: json["vat"],
         price: json["price"]?.toDouble(),
         units: json["units"],
-        measure: json["measure"],
+        measure: Unit.fromString(json["measure"]),
         purchaseOrder: json["purchaseOrder"],
         supplier: json["supplier"],
         category: json["category"],
@@ -45,7 +46,7 @@ class ItemModel extends Item {
         "vat": vat,
         "price": price,
         "units": units,
-        "measure": measure,
+        "measure": measure?.toJSON(),
         "purchaseOrder": purchaseOrder,
         "supplier": supplier,
         "category": category,

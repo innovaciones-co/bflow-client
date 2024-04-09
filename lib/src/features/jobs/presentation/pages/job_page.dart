@@ -31,7 +31,7 @@ class _JobPageState extends State<JobPage> {
     const JobFilesWidget(),
     const JobTasksWidget(),
     const JobCalendarWidget(),
-    const JobMaterialsWidget(),
+    JobMaterialsWidget(),
   ];
 
   @override

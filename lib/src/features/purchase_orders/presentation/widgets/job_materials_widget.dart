@@ -1,10 +1,11 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/write_material_widget.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/materials_view_bar_widget.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/no_materials_widget.dart';
@@ -12,83 +13,95 @@ import 'package:bflow_client/src/features/shared/presentation/widgets/cross_scro
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final Map<int, TableColumnWidth> columnWidths = {
-  0: const FixedColumnWidth(100),
-  1: const FixedColumnWidth(40),
-  2: const FixedColumnWidth(140),
-  3: const FixedColumnWidth(120),
-  4: const FixedColumnWidth(170),
-  5: const FixedColumnWidth(500),
-  6: const FixedColumnWidth(60),
-  7: const FixedColumnWidth(80),
-  8: const FixedColumnWidth(110),
-  9: const FixedColumnWidth(110),
-};
+import 'write_material_widget.dart';
 
 class JobMaterialsWidget extends StatelessWidget {
-  const JobMaterialsWidget({super.key});
+  JobMaterialsWidget({
+    super.key,
+  });
+
+  final Map<int, TableColumnWidth> _columnWidths = {
+    0: const FixedColumnWidth(100),
+    1: const FixedColumnWidth(40),
+    2: const FixedColumnWidth(140),
+    3: const FixedColumnWidth(120),
+    4: const FixedColumnWidth(170),
+    5: const FixedColumnWidth(500),
+    6: const FixedColumnWidth(60),
+    7: const FixedColumnWidth(80),
+    8: const FixedColumnWidth(110),
+    9: const FixedColumnWidth(110),
+  };
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: BlocProvider<ItemsBloc>(
-        create: (context) =>
-            DependencyInjection.sl()..add(const GetItemsEvent(jobId: 10001)),
-        child: Column(
-          children: [
-            const MaterialsViewBarWidget(),
-            const SizedBox(height: 15),
-            Expanded(
-              child: CrossScrollWidget(
-                child: BlocBuilder<ItemsBloc, ItemsState>(
-                  builder: (context, state) {
-                    if (state is ItemsLoading) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
+    return BlocBuilder<JobBloc, JobState>(
+      builder: (context, state) {
+        if (state is! JobLoaded) {
+          return const SizedBox.shrink();
+        }
 
-                    if (state is ItemsFailed) {
-                      return FailureWidget(failure: state.failure);
-                    }
+        return Expanded(
+          child: BlocProvider<ItemsBloc>(
+            create: (context) => DependencyInjection.sl()
+              ..add(GetItemsEvent(jobId: state.job.id!)),
+            child: Column(
+              children: [
+                const MaterialsViewBarWidget(),
+                const SizedBox(height: 15),
+                Expanded(
+                  child: CrossScrollWidget(
+                    child: BlocBuilder<ItemsBloc, ItemsState>(
+                      builder: (context, state) {
+                        if (state is ItemsLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
 
-                    var items = (state as ItemsLoaded).items;
+                        if (state is ItemsFailed) {
+                          return FailureWidget(failure: state.failure);
+                        }
 
-                    final Map<int, List<Item>> itemsPerCategoryMap =
-                        _itemsPerCategoryMap(items);
+                        var items = (state as ItemsLoaded).items;
 
-                    if (items.isEmpty) {
-                      return const NoMaterialsWidget();
-                    }
+                        final Map<int, List<Item>> itemsPerCategoryMap =
+                            _itemsPerCategoryMap(items);
 
-                    return Column(
-                      children: [
-                        _tableHeader(),
-                        ...itemsPerCategoryMap.entries.map(
-                          (e) => _categoryTable(context, e.value),
-                        )
-                      ],
-                    );
-                  },
+                        if (items.isEmpty) {
+                          return const NoMaterialsWidget();
+                        }
+
+                        return Column(
+                          children: [
+                            _tableHeader(),
+                            ...itemsPerCategoryMap.entries.map(
+                              (e) => _categoryTable(context, e.value),
+                            )
+                          ],
+                        );
+                      },
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 10),
+                Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.all(10),
+                  width: double.infinity,
+                  color: AppColor.lightGrey,
+                  child: Text(
+                    'Total: \$78400,00',
+                    style: context.headlineSmall
+                        ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ],
             ),
-            const SizedBox(height: 10),
-            Container(
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.all(10),
-              width: double.infinity,
-              color: AppColor.lightGrey,
-              child: Text(
-                'Total: \$78400,00',
-                style: context.headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-            ),
-            const SizedBox(height: 10),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -108,7 +121,7 @@ class JobMaterialsWidget extends StatelessWidget {
 
   Table _tableHeader() {
     return Table(
-      columnWidths: columnWidths,
+      columnWidths: _columnWidths,
       border: TableBorder(
         right: BorderSide(width: 1.0, color: AppColor.lightGrey),
         bottom: BorderSide(width: 0.5, color: AppColor.darkGrey),
@@ -143,7 +156,7 @@ class JobMaterialsWidget extends StatelessWidget {
 
   Widget _categoryTable(BuildContext context, List<Item> items) {
     return Table(
-      columnWidths: columnWidths,
+      columnWidths: _columnWidths,
       border: TableBorder(
         top: BorderSide(width: 0.5, color: AppColor.lightPurple),
         right: BorderSide(width: 1.0, color: AppColor.lightPurple),
