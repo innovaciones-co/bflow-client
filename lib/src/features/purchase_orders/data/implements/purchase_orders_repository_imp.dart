@@ -1,4 +1,3 @@
-import 'package:bflow_client/src/core/exceptions/bad_request_exception.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/sources/purchase_orders_remote_data_source.dart';
