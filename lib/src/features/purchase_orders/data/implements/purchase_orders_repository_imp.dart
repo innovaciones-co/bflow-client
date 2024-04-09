@@ -36,8 +36,11 @@ class PurchaseOrdersRepositoryImp implements PurchaseOrdersRepository {
 
   @override
   Future<Either<Failure, List<PurchaseOrder>>> getPurchaseOrdersByJob(
-      int jobId) {
-    // TODO: implement getPurchaseOrdersByJob
-    throw UnimplementedError();
+      int jobId) async {
+    try {
+      return Right(await remoteDataSource.fetchPurchaseOrdersByJob(jobId));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
   }
 }

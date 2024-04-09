@@ -62,6 +62,9 @@ class JobMaterialsWidget extends StatelessWidget {
                         }
 
                         var items = (state as ItemsLoaded).items;
+                        var categories = (state).categories;
+                        var orders = (state).orders;
+                        var suppliers = (state).orders;
 
                         if (items.isEmpty) {
                           return const NoMaterialsWidget();

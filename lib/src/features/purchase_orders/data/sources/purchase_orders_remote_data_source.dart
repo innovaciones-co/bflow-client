@@ -20,9 +20,10 @@ class PurchaseOrdersRemoteDataSource extends RemoteDataSource {
   }
 
   Future<List<PurchaseOrderModel>> fetchPurchaseOrdersByJob(int jobId) async {
-    List<dynamic> response = await apiService.get(
-        endpoint: ApiConstants.listPurchaseOrdersEndpoint,
-        params: {'jobId': jobId.toString()});
+    List<dynamic> response = await apiService
+        .get(endpoint: ApiConstants.listPurchaseOrdersEndpoint, params: {
+      'jobId': jobId.toString(),
+    });
     return response.map((e) => PurchaseOrderModel.fromMap(e)).toList();
   }
 
