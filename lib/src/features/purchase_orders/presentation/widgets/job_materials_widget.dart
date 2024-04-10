@@ -251,13 +251,14 @@ class JobMaterialsWidget extends StatelessWidget {
           side: BorderSide(color: AppColor.darkGrey, width: 2),
         )),
         _tableCell(Text(name)),
-        _tableCell(const Text("")),
-        _tableCell(const Text("")),
-        _tableCell(const Text("")),
-        _tableCell(const Text("")),
-        _tableCell(const Text("")),
-        _tableCell(const Text("")),
-        _tableCell(Text("\$$total")),
+        ...List.generate(
+          6,
+          (index) => _tableCell(const Text("")),
+        ),
+        _tableCell(Text(
+          total.toCurrency(),
+          textAlign: TextAlign.end,
+        )),
       ],
     );
   }
@@ -296,8 +297,14 @@ class JobMaterialsWidget extends StatelessWidget {
           paddingRight: 1,
         ),
         _tableCell(Text(item.measure?.abbreviation ?? "")),
-        _tableCell(Text("\$${item.unitPrice}")),
-        _tableCell(Text("\$${item.price}")),
+        _tableCell(Text(
+          item.unitPrice.toCurrency(),
+          textAlign: TextAlign.end,
+        )),
+        _tableCell(Text(
+          item.price.toCurrency(),
+          textAlign: TextAlign.end,
+        )),
       ],
     );
   }
