@@ -13,3 +13,11 @@ extension DateTimeFormatExtension on DateTime {
 extension DoubleFormatExtension on double {
   String toPercentage() => "${(this * 100).toStringAsFixed(2)}%";
 }
+
+extension CurrencyFormatter on num {
+  String toCurrency({String symbol = "\$", int decimalDigits = 2}) {
+    final formatter = NumberFormat.currency(
+        locale: 'en_AU', decimalDigits: decimalDigits, symbol: symbol);
+    return formatter.format(this);
+  }
+}

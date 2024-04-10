@@ -2,6 +2,7 @@
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
@@ -66,16 +67,17 @@ class JobMaterialsWidget extends StatelessWidget {
                 var categories = (state).categories;
                 var orders = (state).orders;
                 var suppliers = (state).suppliers;
+
+                if (items.isEmpty) {
+                  return const NoMaterialsWidget();
+                }
+
                 final double total = items
                     .map((e) => e.price)
                     .reduce((value, element) => value + element);
 
                 final Map<int, List<ItemView>> itemsPerCategoryMap =
                     _itemsPerCategoryMap(items, categories, orders, suppliers);
-
-                if (items.isEmpty) {
-                  return const NoMaterialsWidget();
-                }
 
                 return Column(
                   children: [
@@ -100,7 +102,7 @@ class JobMaterialsWidget extends StatelessWidget {
                       width: double.infinity,
                       color: AppColor.lightGrey,
                       child: Text(
-                        'Total: \$$total',
+                        'Total: ${total.toCurrency()}',
                         style: context.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold, fontSize: 20),
                       ),
