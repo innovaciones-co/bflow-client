@@ -46,6 +46,7 @@ dependencies:
   download: ^1.0.0
   flutter_dropzone: ^3.0.7
   dotted_border: ^2.1.0
+  collection: ^1.18.0
 
 dev_dependencies:
   flutter_test:

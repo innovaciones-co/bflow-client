@@ -4,15 +4,20 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/entities/purchase_order_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/materials_view_bar_widget.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/no_materials_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/cross_scroll_widget.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../aggregators/item_view.dart';
 import 'write_material_widget.dart';
 
 class JobMaterialsWidget extends StatelessWidget {
@@ -65,8 +70,8 @@ class JobMaterialsWidget extends StatelessWidget {
                     .map((e) => e.price)
                     .reduce((value, element) => value + element);
 
-                final Map<int, List<Item>> itemsPerCategoryMap =
-                    _itemsPerCategoryMap(items);
+                final Map<int, List<ItemView>> itemsPerCategoryMap =
+                    _itemsPerCategoryMap(items, categories, orders, suppliers);
 
                 if (items.isEmpty) {
                   return const NoMaterialsWidget();
@@ -111,7 +116,29 @@ class JobMaterialsWidget extends StatelessWidget {
     );
   }
 
-  _itemsPerCategoryMap(List<Item> items) {
+  Map<int, List<ItemView>> _itemsPerCategoryMap(
+    List<Item> items,
+    List<Category> categories,
+    List<PurchaseOrder> orders,
+    List<Contact> suppliers,
+  ) {
+    final groupedItems = <int, List<ItemView>>{};
+
+    for (final item in items) {
+      var itemView = ItemView(
+        item: item,
+        category: categories.firstWhereOrNull((c) => c.id == item.category),
+        order: orders.firstWhereOrNull((o) => o.id == item.purchaseOrder),
+        supplier: suppliers.firstWhereOrNull((s) => s.id == item.supplier),
+      );
+      groupedItems[item.category] = groupedItems[item.category] ?? [];
+      groupedItems[item.category]!.add(itemView);
+    }
+
+    return groupedItems;
+  }
+
+  /* _itemsPerCategoryMap(List<Item> items) {
     Map<int, List<Item>> itemsPerCategoryMap = {};
 
     for (var item in items) {
@@ -123,7 +150,7 @@ class JobMaterialsWidget extends StatelessWidget {
     }
 
     return itemsPerCategoryMap;
-  }
+  } */
 
   Table _tableHeader() {
     return Table(
@@ -160,8 +187,8 @@ class JobMaterialsWidget extends StatelessWidget {
     );
   }
 
-  Widget _categoryTable(BuildContext context, List<Item> items) {
-    final double totalPerCategory = items.map((i) => i.price).reduce(
+  Widget _categoryTable(BuildContext context, List<ItemView> itemsView) {
+    final double totalPerCategory = itemsView.map((i) => i.item.price).reduce(
           (a, b) => a + b,
         );
 
@@ -176,10 +203,10 @@ class JobMaterialsWidget extends StatelessWidget {
         verticalInside: BorderSide(width: 1.0, color: AppColor.lightPurple),
       ),
       children: [
-        // TODO: Include Category argument
-        _tableHeaderRow("1200", "Reinforcement", totalPerCategory),
-        for (int index = 0; index < items.length; index += 1)
-          _tableItemRow(items[index]),
+        _tableHeaderRow(itemsView.first.category?.id.toString() ?? "",
+            itemsView.first.category?.name ?? "", totalPerCategory),
+        for (int index = 0; index < itemsView.length; index += 1)
+          _tableItemRow(itemsView[index]),
         TableRow(
           decoration: BoxDecoration(
             color: AppColor.white,
@@ -233,7 +260,9 @@ class JobMaterialsWidget extends StatelessWidget {
     );
   }
 
-  TableRow _tableItemRow(Item item) {
+  TableRow _tableItemRow(ItemView itemView) {
+    var item = itemView.item;
+
     return TableRow(
       decoration: BoxDecoration(
         color: AppColor.white,
@@ -246,8 +275,8 @@ class JobMaterialsWidget extends StatelessWidget {
           side: BorderSide(color: AppColor.darkGrey, width: 2),
         )),
         _tableCell(Text(item.id.toString())),
-        _tableCell(const Text("#020230 - REPLACE")),
-        _tableCell(const Text("Slab mesh AUS - REPLACE")),
+        _tableCell(Text(itemView.order?.number ?? "")),
+        _tableCell(Text(itemView.supplier?.name ?? "")),
         _tableCell(Text("${item.name}: ${item.description}")),
         _tableCell(
           // TODO: Implement edit and validation
