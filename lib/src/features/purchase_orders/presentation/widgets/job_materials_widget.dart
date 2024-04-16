@@ -3,6 +3,7 @@ import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
+import 'package:bflow_client/src/core/utils/launch_url.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
@@ -278,7 +279,20 @@ class JobMaterialsWidget extends StatelessWidget {
           side: BorderSide(color: AppColor.darkGrey, width: 2),
         )),
         _tableCell(Text(item.id.toString())),
-        _tableCell(Text(itemView.order?.number ?? "")),
+        _tableCell(
+          itemView.order != null
+              ? ActionButtonWidget(
+                  onPressed: () {
+                    launchURL(
+                        "http://localhost:8080/orders/${itemView.order?.id}");
+                  },
+                  type: ButtonType.textButton,
+                  title: itemView.order?.number ?? "",
+                )
+              : const SizedBox.shrink(),
+        ),
+
+        //_tableCell(Text(itemView.order?.number ?? "")),
         _tableCell(Text(itemView.supplier?.name ?? "")),
         _tableCell(Text("${item.name}: ${item.description}")),
         _tableCell(
