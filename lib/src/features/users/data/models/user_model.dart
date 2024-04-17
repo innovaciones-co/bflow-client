@@ -37,7 +37,7 @@ class UsersModel extends User {
         "username": username,
         "password": password,
         "email": email,
-        "role": role,
+        "role": role?.toJson(),
       };
 
   factory UsersModel.fromEntity(User user) => UsersModel(

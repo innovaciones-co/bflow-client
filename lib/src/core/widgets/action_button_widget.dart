@@ -7,6 +7,7 @@ enum ButtonType {
 }
 
 class ActionButtonWidget extends StatelessWidget {
+  final bool inProgress;
   final Function()? onPressed;
   final ButtonType type;
   final String title;
@@ -26,6 +27,7 @@ class ActionButtonWidget extends StatelessWidget {
     foregroundColor,
     this.paddingHorizontal,
     this.paddingVertical,
+    this.inProgress = false,
   }) : foregroundColor = foregroundColor ?? AppColor.blue;
 
   @override
@@ -33,7 +35,7 @@ class ActionButtonWidget extends StatelessWidget {
     switch (type) {
       case ButtonType.textButton:
         return TextButton(
-          onPressed: onPressed,
+          onPressed: inProgress ? null : onPressed,
           style: ButtonStyle(
             padding: MaterialStatePropertyAll(EdgeInsets.symmetric(
                 vertical: paddingVertical ?? 0,
@@ -47,6 +49,16 @@ class ActionButtonWidget extends StatelessWidget {
           ),
           child: Row(
             children: [
+              inProgress
+                  ? Container(
+                      height: 20,
+                      width: 20,
+                      margin: const EdgeInsets.only(right: 10),
+                      child: CircularProgressIndicator(
+                        color: foregroundColor,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
               icon != null ? Icon(icon, size: 18) : const SizedBox(),
               icon != null ? const SizedBox(width: 6) : const SizedBox(),
               Text(
@@ -59,7 +71,7 @@ class ActionButtonWidget extends StatelessWidget {
         );
       case ButtonType.elevatedButton:
         return ElevatedButton(
-          onPressed: onPressed,
+          onPressed: inProgress ? null : onPressed,
           style: ButtonStyle(
             padding: MaterialStatePropertyAll(EdgeInsets.symmetric(
                 vertical: paddingVertical ?? 18,
@@ -73,6 +85,16 @@ class ActionButtonWidget extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              inProgress
+                  ? Container(
+                      height: 20,
+                      width: 20,
+                      margin: const EdgeInsets.only(right: 10),
+                      child: CircularProgressIndicator(
+                        color: foregroundColor,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
               icon != null ? Icon(icon, size: 18) : const SizedBox(),
               icon != null ? const SizedBox(width: 6) : const SizedBox(),
               Text(title),

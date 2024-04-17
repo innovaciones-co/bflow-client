@@ -106,12 +106,6 @@ class DependencyInjection {
     sl.registerFactory<UsersBloc>(
       () => UsersBloc(sl()),
     );
-    sl.registerFactory<WriteUserCubit>(
-      () => WriteUserCubit(
-        createUserUseCase: sl(),
-        updateUserUseCase: sl(),
-      ),
-    );
     sl.registerFactory<ContactsCubit>(
       () => ContactsCubit(
         sl(),

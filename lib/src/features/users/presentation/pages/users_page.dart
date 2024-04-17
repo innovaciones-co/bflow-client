@@ -17,23 +17,28 @@ class UsersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<UsersBloc>(
-      create: (context) {
-        UsersBloc usersBloc = DependencyInjection.sl();
-        usersBloc.add(GetUsersEvent());
-        return usersBloc;
-      },
+      create: (_) => DependencyInjection.sl()..add(GetUsersEvent()),
       child: PageContainerWidget(
         title: 'Users',
         actions: [
-          ActionButtonWidget(
-            onPressed: () =>
-                context.showLeftDialog('New User', WriteUserWidget()),
-            icon: Icons.add,
-            type: ButtonType.elevatedButton,
-            title: "New user",
-            backgroundColor: AppColor.blue,
-            foregroundColor: AppColor.white,
-          ),
+          Builder(builder: (context) {
+            return ActionButtonWidget(
+              onPressed: () {
+                UsersBloc usersBloc = context.read<UsersBloc>();
+                return context.showLeftDialog(
+                  'New User',
+                  WriteUserWidget(
+                    usersBloc: usersBloc,
+                  ),
+                );
+              },
+              icon: Icons.add,
+              type: ButtonType.elevatedButton,
+              title: "New user",
+              backgroundColor: AppColor.blue,
+              foregroundColor: AppColor.white,
+            );
+          }),
         ],
         child: BlocBuilder<UsersBloc, UsersState>(
           builder: (context, state) {

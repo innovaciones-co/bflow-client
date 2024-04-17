@@ -1,31 +1,56 @@
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/domain/entities/form_status.dart';
+import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/utils/mixins/validator.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/dropdown_widget.dart';
+import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
+import 'package:bflow_client/src/features/users/domain/entities/user_entity.dart';
 import 'package:bflow_client/src/features/users/domain/entities/user_role.dart';
+import 'package:bflow_client/src/features/users/presentation/bloc/users_bloc.dart';
 import 'package:bflow_client/src/features/users/presentation/bloc/write_user/write_user_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
-class WriteUserWidget extends StatelessWidget with Validator {
+class WriteUserWidget extends StatefulWidget {
+  final UsersBloc usersBloc;
+  final User? user;
+
+  const WriteUserWidget({super.key, required this.usersBloc, this.user});
+
+  @override
+  State<WriteUserWidget> createState() => _WriteUserWidgetState();
+}
+
+class _WriteUserWidgetState extends State<WriteUserWidget> with Validator {
+  bool obscurePass1 = true;
+  bool obscurePass2 = true;
   final _formKey = GlobalKey<FormState>();
-
-  WriteUserWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<WriteUserCubit>(
-      create: (context) => DependencyInjection.sl(),
-      child: BlocBuilder<WriteUserCubit, WriteUserState>(
+      create: (context) => WriteUserCubit(
+        createUserUseCase: DependencyInjection.sl(),
+        updateUserUseCase: DependencyInjection.sl(),
+        usersBloc: widget.usersBloc,
+      ),
+      child: BlocConsumer<WriteUserCubit, WriteUserState>(
+        listener: (context, state) {
+          if (state.formStatus == FormStatus.success) {
+            context.showAlert(message: "The user was created successfully");
+
+            if (context.canPop()) {
+              context.pop();
+            }
+          }
+        },
         builder: (context, state) {
           WriteUserCubit userCubit = context.read<WriteUserCubit>();
-
-          if (state.formStatus == FormStatus.inProgress) {
-            return const Center(child: CircularProgressIndicator());
-          }
 
           return Form(
             key: _formKey,
@@ -34,6 +59,17 @@ class WriteUserWidget extends StatelessWidget with Validator {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                state.formStatus == FormStatus.failed && state.failure != null
+                    ? Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        padding: const EdgeInsets.all(10),
+                        color: AppColor.red,
+                        child: FailureWidget(
+                          failure: state.failure!,
+                          textColor: Colors.white,
+                        ),
+                      )
+                    : const SizedBox.shrink(),
                 Row(
                   children: [
                     Expanded(
@@ -41,6 +77,7 @@ class WriteUserWidget extends StatelessWidget with Validator {
                         label: "First Name",
                         validator: validateName,
                         onChanged: userCubit.changeFirstName,
+                        keyboardType: TextInputType.name,
                       ),
                     ),
                     const SizedBox(width: 15),
@@ -48,7 +85,8 @@ class WriteUserWidget extends StatelessWidget with Validator {
                       child: InputWidget(
                         label: "Last Name",
                         validator: validateLastName,
-                        onChanged: userCubit.changeFirstName,
+                        onChanged: userCubit.changeLastName,
+                        keyboardType: TextInputType.name,
                       ),
                     ),
                   ],
@@ -58,6 +96,7 @@ class WriteUserWidget extends StatelessWidget with Validator {
                   label: "Email",
                   validator: validateEmail,
                   onChanged: userCubit.changeEmail,
+                  keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -66,7 +105,8 @@ class WriteUserWidget extends StatelessWidget with Validator {
                       child: InputWidget(
                         label: "Username",
                         validator: validateUsername,
-                        onChanged: userCubit.changeFirstName,
+                        onChanged: userCubit.changeUserName,
+                        keyboardType: TextInputType.name,
                       ),
                     ),
                     const SizedBox(width: 15),
@@ -75,9 +115,33 @@ class WriteUserWidget extends StatelessWidget with Validator {
                         label: "Role",
                         items: state.roles,
                         getLabel: (s) => s.name,
-                        onChanged: null,
+                        onChanged: userCubit.changeRole,
                         initialValue: state.role,
                         validator: validateRole,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: InputWidget(
+                        label: "Password",
+                        validator: validatePassword,
+                        onChanged: userCubit.changePassword,
+                        obscureText: obscurePass1,
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: InputWidget(
+                        label: "Confirm password",
+                        obscureText: obscurePass2,
+                        validator: (value) => validateConfirmPassword(
+                          value,
+                          state.password ?? "",
+                        ),
                       ),
                     ),
                   ],
@@ -97,6 +161,7 @@ class WriteUserWidget extends StatelessWidget with Validator {
                     ),
                     const SizedBox(width: 12),
                     ActionButtonWidget(
+                      inProgress: state.formStatus == FormStatus.inProgress,
                       onPressed: () => _createUser(context),
                       type: ButtonType.elevatedButton,
                       title: "Create User",

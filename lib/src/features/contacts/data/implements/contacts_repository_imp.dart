@@ -49,7 +49,12 @@ class ContactsRepositoryImp implements ContactsRepository {
     } on RemoteDataSourceException catch (e) {
       return Left(ServerFailure(message: e.message));
     } on BadRequestException catch (e) {
-      return Left(ClientFailure(message: e.toString()));
+      return Left(
+        ClientFailure(
+          message: e.toString(),
+          errorResponse: e.errorResponse,
+        ),
+      );
     }
   }
 
@@ -60,7 +65,12 @@ class ContactsRepositoryImp implements ContactsRepository {
     } on RemoteDataSourceException catch (e) {
       return Left(ServerFailure(message: e.message));
     } on BadRequestException catch (e) {
-      return Left(ClientFailure(message: e.toString()));
+      return Left(
+        ClientFailure(
+          message: e.toString(),
+          errorResponse: e.errorResponse,
+        ),
+      );
     }
   }
 }

@@ -3,7 +3,6 @@ enum UserRole {
   supervisor;
 
   @override
-  @override
   String toString() {
     switch (this) {
       case UserRole.admin:
@@ -13,7 +12,11 @@ enum UserRole {
     }
   }
 
-  static UserRole fromString(String str) {
+  String toJson() {
+    return name.toUpperCase();
+  }
+
+  factory UserRole.fromString(String str) {
     switch (str.toLowerCase()) {
       case "admin":
         return UserRole.admin;

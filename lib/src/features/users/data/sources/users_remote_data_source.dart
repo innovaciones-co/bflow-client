@@ -9,9 +9,10 @@ class UsersRemoteDataSource {
 
   UsersRemoteDataSource({required this.apiService});
 
-  Future<UsersModel> fetchUser(int contactId) async {
-    Map<String, dynamic> response =
-        await apiService.get(endpoint: ApiConstants.usersEndpoint);
+  Future<UsersModel> fetchUser(int userId) async {
+    Map<String, dynamic> response = await apiService.get(
+        endpoint:
+            ApiConstants.userEndpoint.replaceAll(":id", userId.toString()));
 
     return UsersModel.fromMap(response);
   }
@@ -38,6 +39,16 @@ class UsersRemoteDataSource {
     int userId = await apiService.put(
       endpoint:
           ApiConstants.userEndpoint.replaceAll(':id', user.id!.toString()),
+      data: userModel.toMap(),
+    );
+    return fetchUser(userId);
+  }
+
+  Future<UsersModel> createUser(User user) async {
+    var userModel = UsersModel.fromEntity(user);
+
+    int userId = await apiService.post(
+      endpoint: ApiConstants.usersEndpoint,
       data: userModel.toMap(),
     );
     return fetchUser(userId);

@@ -66,7 +66,18 @@ class WriteUserInitial extends WriteUserState {
   });
 
   @override
-  List<Object> get props => [roles];
+  List<Object?> get props => [
+        autovalidateMode,
+        roles,
+        failure,
+        formStatus,
+        firstName,
+        lastName,
+        userName,
+        email,
+        password,
+        role,
+      ];
 
   @override
   WriteUserState copyWith({
