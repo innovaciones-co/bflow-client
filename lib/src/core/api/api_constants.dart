@@ -7,7 +7,8 @@ class ApiConstants {
   static String taskEndpoint = 'tasks/:id';
 
   static String listTasksEndpoint = 'tasks';
-  static String listUsersEndpoint = 'users';
+  static String usersEndpoint = 'users';
+  static String userEndpoint = 'users/:id';
   static String loginUsersEndpoint = 'users/login';
 
   static String contactsEndpoint = 'contacts';

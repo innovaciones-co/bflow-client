@@ -1,4 +1,5 @@
 import 'package:bflow_client/src/features/users/domain/entities/user_entity.dart';
+import 'package:bflow_client/src/features/users/domain/entities/user_role.dart';
 
 mixin Validator {
   // Email validation
@@ -36,6 +37,39 @@ mixin Validator {
   String? validateName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Name is required';
+    }
+    return null;
+  }
+
+  String? validateFirstName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'First name is required';
+    }
+    return null;
+  }
+
+  String? validateLastName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Last name is required';
+    }
+    return null;
+  }
+
+  String? validateUsername(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Last name is required';
+    }
+
+    if (value.length < 6) {
+      return 'Username must be at least 6 characters';
+    }
+
+    return null;
+  }
+
+  String? validateRole(UserRole? value) {
+    if (value == null) {
+      return 'Role is required';
     }
     return null;
   }

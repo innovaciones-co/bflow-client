@@ -63,9 +63,12 @@ import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/item
 import 'package:bflow_client/src/features/users/data/implements/users_repository_imp.dart';
 import 'package:bflow_client/src/features/users/data/sources/users_remote_data_source.dart';
 import 'package:bflow_client/src/features/users/domain/repositories/users_repository.dart';
+import 'package:bflow_client/src/features/users/domain/usecases/create_user_use_case.dart';
 import 'package:bflow_client/src/features/users/domain/usecases/get_supervisors_use_case.dart';
 import 'package:bflow_client/src/features/users/domain/usecases/get_users_use_case.dart';
+import 'package:bflow_client/src/features/users/domain/usecases/update_user_use_case.dart';
 import 'package:bflow_client/src/features/users/presentation/bloc/users_bloc.dart';
+import 'package:bflow_client/src/features/users/presentation/bloc/write_user/write_user_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -102,6 +105,12 @@ class DependencyInjection {
     );
     sl.registerFactory<UsersBloc>(
       () => UsersBloc(sl()),
+    );
+    sl.registerFactory<WriteUserCubit>(
+      () => WriteUserCubit(
+        createUserUseCase: sl(),
+        updateUserUseCase: sl(),
+      ),
     );
     sl.registerFactory<ContactsCubit>(
       () => ContactsCubit(
@@ -211,6 +220,12 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => GetCategoriesUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => CreateUserUseCase(sl()),
+    );
+    sl.registerLazySingleton(
+      () => UpdateUserUseCase(sl()),
     );
 
     // Repository
