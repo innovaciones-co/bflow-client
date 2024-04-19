@@ -22,15 +22,21 @@ class ContactsPage extends StatelessWidget {
       child: PageContainerWidget(
         title: 'Contacts',
         actions: [
-          ActionButtonWidget(
-            onPressed: () =>
-                context.showLeftDialog("New Contact", WriteContactWidget()),
-            type: ButtonType.elevatedButton,
-            title: "New contact",
-            backgroundColor: AppColor.blue,
-            foregroundColor: AppColor.white,
-            icon: Icons.add,
-          ),
+          Builder(builder: (context) {
+            return ActionButtonWidget(
+              onPressed: () => context.showLeftDialog(
+                "New Contact",
+                WriteContactWidget(
+                  contactsCubit: context.read(),
+                ),
+              ),
+              type: ButtonType.elevatedButton,
+              title: "New contact",
+              backgroundColor: AppColor.blue,
+              foregroundColor: AppColor.white,
+              icon: Icons.add,
+            );
+          }),
         ],
         child: BlocBuilder<ContactsCubit, ContactsState>(
           builder: (context, state) {

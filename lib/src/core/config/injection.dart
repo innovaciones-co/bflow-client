@@ -4,6 +4,7 @@ import 'package:bflow_client/src/core/api/api_service.dart';
 import 'package:bflow_client/src/features/contacts/data/implements/contacts_repository_imp.dart';
 import 'package:bflow_client/src/features/contacts/data/sources/sources.dart';
 import 'package:bflow_client/src/features/contacts/domain/repositories/contacts_repository.dart';
+import 'package:bflow_client/src/features/contacts/domain/usecases/create_contact_usecase.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/delete_contact_usecase.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/get_contact_usecase.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/get_contacts_usecase.dart';
@@ -68,7 +69,6 @@ import 'package:bflow_client/src/features/users/domain/usecases/get_supervisors_
 import 'package:bflow_client/src/features/users/domain/usecases/get_users_use_case.dart';
 import 'package:bflow_client/src/features/users/domain/usecases/update_user_use_case.dart';
 import 'package:bflow_client/src/features/users/presentation/bloc/users_bloc.dart';
-import 'package:bflow_client/src/features/users/presentation/bloc/write_user/write_user_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -172,6 +172,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => GetContactsUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => CreateContactUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => UpdateContactUseCase(repository: sl()),
