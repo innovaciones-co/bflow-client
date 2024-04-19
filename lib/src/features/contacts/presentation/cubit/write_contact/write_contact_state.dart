@@ -1,6 +1,7 @@
 part of 'write_contact_cubit.dart';
 
 abstract class WriteContactState extends Equatable {
+  final int? id;
   final String? name;
   final String? idNumber;
   final String? email;
@@ -17,6 +18,7 @@ abstract class WriteContactState extends Equatable {
   final AutovalidateMode? autovalidateMode;
 
   const WriteContactState({
+    this.id,
     this.name = '',
     this.idNumber = '',
     this.email = '',
@@ -34,6 +36,7 @@ abstract class WriteContactState extends Equatable {
   });
 
   WriteContactState copyWith({
+    int? id,
     String? name,
     String? idNumber,
     String? email,
@@ -52,6 +55,7 @@ abstract class WriteContactState extends Equatable {
 
   @override
   List<Object?> get props => [
+        id,
         name,
         idNumber,
         email,
@@ -71,6 +75,7 @@ abstract class WriteContactState extends Equatable {
 
 final class WriteContactValidator extends WriteContactState {
   const WriteContactValidator({
+    super.id,
     super.name = '',
     super.idNumber = '',
     super.email = '',
@@ -89,6 +94,7 @@ final class WriteContactValidator extends WriteContactState {
 
   @override
   WriteContactState copyWith({
+    int? id,
     String? name,
     String? idNumber,
     String? email,
@@ -105,6 +111,7 @@ final class WriteContactValidator extends WriteContactState {
     AutovalidateMode? autovalidateMode,
   }) {
     return WriteContactValidator(
+      id: id ?? this.id,
       name: name ?? this.name,
       idNumber: idNumber ?? this.idNumber,
       email: email ?? this.email,

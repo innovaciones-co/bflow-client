@@ -117,7 +117,7 @@ class ContactsPage extends StatelessWidget {
                 _tableData(context, e.name),
                 _tableData(context, e.email),
                 _tableData(context, e.address ?? ''),
-                _tableActions(context, e.id!), // TODO: check
+                _tableActions(context, e), // TODO: check
               ],
             ),
           )
@@ -135,20 +135,31 @@ class ContactsPage extends StatelessWidget {
     );
   }
 
-  _tableActions(BuildContext context, int id) {
+  _tableActions(BuildContext context, Contact contact) {
     return TableCell(
       child: Container(
         padding: const EdgeInsets.all(10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const IconButton(onPressed: null, icon: Icon(Icons.edit_outlined)),
+            IconButton(
+              onPressed: () => context.showLeftDialog(
+                "Edit Contact",
+                WriteContactWidget(
+                  contactsCubit: context.read(),
+                  contact: contact,
+                ),
+              ),
+              color: AppColor.blue,
+              icon: const Icon(Icons.edit_outlined),
+            ),
             BlocProvider<ContactsCubit>(
               create: (context) => DependencyInjection.sl(),
               child: Builder(builder: (context) {
                 return IconButton(
-                  onPressed: () =>
-                      context.read<ContactsCubit>().deleteContact(id),
+                  onPressed: () => context
+                      .read<ContactsCubit>()
+                      .deleteContact(contact.id!), // TODO: Incomplete delete
                   color: AppColor.blue,
                   icon: const Icon(
                     Icons.delete_outline_outlined,
