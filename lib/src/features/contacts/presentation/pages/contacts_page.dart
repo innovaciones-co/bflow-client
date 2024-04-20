@@ -153,21 +153,17 @@ class ContactsPage extends StatelessWidget {
               color: AppColor.blue,
               icon: const Icon(Icons.edit_outlined),
             ),
-            BlocProvider<ContactsCubit>(
-              create: (context) => DependencyInjection.sl(),
-              child: Builder(builder: (context) {
-                return IconButton(
-                  onPressed: () => context
-                      .read<ContactsCubit>()
-                      .deleteContact(contact.id!), // TODO: Incomplete delete
-                  color: AppColor.blue,
-                  icon: const Icon(
-                    Icons.delete_outline_outlined,
-                    size: 20,
-                  ),
-                );
-              }),
-            )
+            Builder(builder: (context) {
+              return IconButton(
+                onPressed: () =>
+                    context.read<ContactsCubit>().deleteContact(contact.id!),
+                color: AppColor.blue,
+                icon: const Icon(
+                  Icons.delete_outline_outlined,
+                  size: 20,
+                ),
+              );
+            })
           ],
         ),
       ),

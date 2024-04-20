@@ -108,8 +108,9 @@ class DependencyInjection {
     );
     sl.registerFactory<ContactsCubit>(
       () => ContactsCubit(
-        sl(),
         deleteContactUseCase: sl(),
+        getContactsUseCase: sl(),
+        homeBloc: sl(),
       ),
     );
     sl.registerFactory<TemplatesCubit>(
