@@ -95,4 +95,8 @@ class WriteUserCubit extends Cubit<WriteUserState> {
   void changeRole(UserRole role) {
     emit(state.copyWith(role: role));
   }
+
+  void updateAutovalidateMode(AutovalidateMode? autovalidateMode) {
+    emit(state.copyWith(autovalidateMode: autovalidateMode));
+  }
 }

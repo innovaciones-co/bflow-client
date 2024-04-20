@@ -162,7 +162,7 @@ class _WriteUserWidgetState extends State<WriteUserWidget> with Validator {
                     const SizedBox(width: 12),
                     ActionButtonWidget(
                       inProgress: state.formStatus == FormStatus.inProgress,
-                      onPressed: () => _createUser(context),
+                      onPressed: () => _createUser(context, userCubit),
                       type: ButtonType.elevatedButton,
                       title: "Create User",
                       backgroundColor: AppColor.blue,
@@ -178,9 +178,11 @@ class _WriteUserWidgetState extends State<WriteUserWidget> with Validator {
     );
   }
 
-  _createUser(BuildContext context) {
+  _createUser(BuildContext context, WriteUserCubit userCubit) {
     if (_formKey.currentState!.validate()) {
       BlocProvider.of<WriteUserCubit>(context).createUser();
+    } else {
+      userCubit.updateAutovalidateMode(AutovalidateMode.always);
     }
   }
 }
