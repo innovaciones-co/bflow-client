@@ -11,7 +11,7 @@ class UpdateUserUseCase extends UseCase<User, UpdateUserParams> {
 
   @override
   Future<Either<Failure, User>> execute(UpdateUserParams params) async {
-    return await repository.createUser(params.user);
+    return await repository.updateUser(params.user);
   }
 }
 
