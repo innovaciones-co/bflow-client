@@ -65,6 +65,7 @@ import 'package:bflow_client/src/features/users/data/implements/users_repository
 import 'package:bflow_client/src/features/users/data/sources/users_remote_data_source.dart';
 import 'package:bflow_client/src/features/users/domain/repositories/users_repository.dart';
 import 'package:bflow_client/src/features/users/domain/usecases/create_user_use_case.dart';
+import 'package:bflow_client/src/features/users/domain/usecases/delete_user_usecase.dart';
 import 'package:bflow_client/src/features/users/domain/usecases/get_supervisors_use_case.dart';
 import 'package:bflow_client/src/features/users/domain/usecases/get_users_use_case.dart';
 import 'package:bflow_client/src/features/users/domain/usecases/update_user_use_case.dart';
@@ -104,7 +105,7 @@ class DependencyInjection {
       () => TasksBloc(sl(), sl()),
     );
     sl.registerFactory<UsersBloc>(
-      () => UsersBloc(sl()),
+      () => UsersBloc(sl(), sl(), sl()),
     );
     sl.registerFactory<ContactsCubit>(
       () => ContactsCubit(
@@ -224,6 +225,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => UpdateUserUseCase(sl()),
+    );
+    sl.registerLazySingleton(
+      () => DeleteUserUseCase(repository: sl()),
     );
 
     // Repository

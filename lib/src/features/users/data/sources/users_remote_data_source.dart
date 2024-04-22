@@ -53,4 +53,10 @@ class UsersRemoteDataSource {
     );
     return fetchUser(userId);
   }
+
+  Future<void> deleteUser(int userId) async {
+    await apiService.delete(
+        endpoint:
+            ApiConstants.userEndpoint.replaceAll(':id', userId.toString()));
+  }
 }

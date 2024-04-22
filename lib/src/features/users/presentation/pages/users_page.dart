@@ -139,8 +139,16 @@ class UsersPage extends StatelessWidget {
               color: AppColor.blue,
               icon: const Icon(Icons.edit_outlined),
             ),
-            const IconButton(
-                onPressed: null, icon: Icon(Icons.delete_outline_outlined))
+            IconButton(
+              onPressed: () => context
+                  .read<UsersBloc>()
+                  .add(DeleteUserEvent(userId: user.id!)),
+              color: AppColor.blue,
+              icon: const Icon(
+                Icons.delete_outline_outlined,
+                size: 20,
+              ),
+            ),
           ],
         ),
       ),

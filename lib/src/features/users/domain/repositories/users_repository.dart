@@ -13,5 +13,5 @@ abstract class UsersRepository {
 
   Future<Either<Failure, User>> updateUser(User user);
 
-  Future<Either<Failure, void>> delete(int id);
+  Future<Either<Failure, void>> deleteUser(int id);
 }
