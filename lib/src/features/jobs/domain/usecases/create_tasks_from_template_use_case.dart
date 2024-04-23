@@ -4,22 +4,21 @@ import 'package:bflow_client/src/features/jobs/domain/repositories/template_repo
 import 'package:dartz/dartz.dart';
 
 class CreateTasksFromTemplateUseCase
-    implements UseCase<void, CreateTasksFromTemplateParams> {
+    implements UseCase<void, CreateFromTemplateParams> {
   final TemplateRepository templateRepository;
 
   CreateTasksFromTemplateUseCase({required this.templateRepository});
 
   @override
-  Future<Either<Failure, void>> execute(CreateTasksFromTemplateParams params) {
+  Future<Either<Failure, void>> execute(CreateFromTemplateParams params) {
     return templateRepository.createTasksFromTemplate(
         params.templateId, params.jobId);
   }
 }
 
-class CreateTasksFromTemplateParams {
+class CreateFromTemplateParams {
   final int templateId;
   final int jobId;
 
-  CreateTasksFromTemplateParams(
-      {required this.templateId, required this.jobId});
+  CreateFromTemplateParams({required this.templateId, required this.jobId});
 }

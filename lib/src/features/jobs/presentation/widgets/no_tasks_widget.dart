@@ -6,6 +6,7 @@ import 'package:bflow_client/src/core/widgets/dialog_widget.dart';
 import 'package:bflow_client/src/core/widgets/dropdown_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/template_entity.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/template_type.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/templates/templates_cubit.dart';
 import 'package:flutter/material.dart';
@@ -62,10 +63,10 @@ class NoTasksWidget extends StatelessWidget {
       builder: (BuildContext context) {
         return BlocProvider<TemplatesCubit>(
           create: (context) => TemplatesCubit(
-            createTasksFromTemplateUseCase: DependencyInjection.sl(),
+            createFromTemplateUseCase: DependencyInjection.sl(),
             templatesUseCase: DependencyInjection.sl(),
             tasksBloc: tasksBloc,
-          )..loadTemplates(),
+          )..loadTemplates(TemplateType.task),
           child: DialogWidget(
             title: "Add new activities",
             children: [
@@ -116,7 +117,7 @@ class NoTasksWidget extends StatelessWidget {
                       return ActionButtonWidget(
                         onPressed: state is TemplatesLoaded
                             ? () {
-                                templateCubit.createTasksFromTemplate(jobId);
+                                templateCubit.createFromTemplate(jobId);
                                 context.pop();
                               }
                             : null,
