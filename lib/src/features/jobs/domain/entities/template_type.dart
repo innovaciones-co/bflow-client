@@ -1,11 +1,12 @@
 import 'package:bflow_client/src/core/exceptions/invalid_argument_exception.dart';
 
 enum TemplateType {
-  task('Task'),
-  material('Material');
+  task('Task', "tasks"),
+  material('Material', "materials");
 
   final String name;
-  const TemplateType(this.name);
+  final String pluralName;
+  const TemplateType(this.name, this.pluralName);
 
   @override
   String toString() => name;

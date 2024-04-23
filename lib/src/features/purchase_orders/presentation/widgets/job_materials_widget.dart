@@ -72,7 +72,10 @@ class JobMaterialsWidget extends StatelessWidget {
                 var suppliers = (state).suppliers;
 
                 if (items.isEmpty) {
-                  return NoMaterialsWidget(jobId: jobId);
+                  return NoMaterialsWidget(
+                    jobId: jobId,
+                    itemsBloc: context.read(),
+                  );
                 }
 
                 final double total = items

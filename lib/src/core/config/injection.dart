@@ -118,7 +118,6 @@ class DependencyInjection {
       () => TemplatesCubit(
         templatesUseCase: sl(),
         createFromTemplateUseCase: sl(),
-        tasksBloc: sl(),
       ),
     );
     sl.registerFactory<TaskCubit>(

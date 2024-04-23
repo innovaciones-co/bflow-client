@@ -27,6 +27,9 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
     required this.getItemsUseCase,
     required this.getOrdersUseCase,
   }) : super(ItemsLoading()) {
+    on<LoadingItemsEvent>(
+      (event, emit) => emit(ItemsLoading()),
+    );
     on<GetItemsEvent>((event, emit) async {
       emit(ItemsLoading());
       final params = GetItemsParams(jobId: event.jobId);

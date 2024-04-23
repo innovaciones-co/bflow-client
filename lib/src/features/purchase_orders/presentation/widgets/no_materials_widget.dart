@@ -1,17 +1,19 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/template_type.dart';
+import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
+import 'package:bflow_client/src/features/templates/presentation/widgets/create_from_template.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'write_materials_widget.dart';
 
 class NoMaterialsWidget extends StatelessWidget {
   final int jobId;
+  final ItemsBloc itemsBloc;
 
   const NoMaterialsWidget({
     super.key,
     required this.jobId,
+    required this.itemsBloc,
   });
 
   @override
@@ -35,12 +37,15 @@ class NoMaterialsWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ActionButtonWidget(
-                  onPressed: () => context.showLeftDialog(
-                      'Import Materials',
-                      WriteMaterialsWidget(
-                        tasksBloc: context.read(),
-                        jobId: jobId,
-                      )),
+                  onPressed: () {
+                    createFromTemplate(
+                      context: context,
+                      jobId: jobId,
+                      onLoading: _loadingItems,
+                      onCreated: _loadItems,
+                      type: TemplateType.material,
+                    );
+                  },
                   type: ButtonType.textButton,
                   title: "Add materials from template",
                 ),
@@ -50,5 +55,13 @@ class NoMaterialsWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _loadItems() {
+    itemsBloc.add(GetItemsEvent(jobId: jobId));
+  }
+
+  _loadingItems() {
+    itemsBloc.add(LoadingItemsEvent());
   }
 }

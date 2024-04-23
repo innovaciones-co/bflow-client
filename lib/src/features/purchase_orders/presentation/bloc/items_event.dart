@@ -7,6 +7,8 @@ abstract class ItemsEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class LoadingItemsEvent extends ItemsEvent {}
+
 class GetItemsEvent extends ItemsEvent {
   final int jobId;
 

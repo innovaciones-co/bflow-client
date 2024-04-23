@@ -3,7 +3,6 @@ import 'package:bflow_client/src/features/jobs/domain/entities/template_entity.d
 import 'package:bflow_client/src/features/jobs/domain/entities/template_type.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_tasks_from_template_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_templates_use_case.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,12 +11,14 @@ part 'templates_state.dart';
 class TemplatesCubit extends Cubit<TemplatesState> {
   final CreateTasksFromTemplateUseCase createFromTemplateUseCase;
   final GetTemplatesUseCase templatesUseCase;
-  final TasksBloc tasksBloc;
+  final Function? onLoading;
+  final Function? onCreated;
 
   TemplatesCubit({
     required this.createFromTemplateUseCase,
     required this.templatesUseCase,
-    required this.tasksBloc,
+    this.onLoading,
+    this.onCreated,
   }) : super(TemplatesInitial());
 
   void loadTemplates(TemplateType templateType) async {
@@ -42,9 +43,13 @@ class TemplatesCubit extends Cubit<TemplatesState> {
       var params = CreateFromTemplateParams(
           templateId: state.selectedTemplate.id, jobId: jobId);
       emit(TemplatesInitial());
-      tasksBloc.add(LoadingTasksEvent());
+      if (onLoading != null) {
+        onLoading!();
+      }
       await createFromTemplateUseCase.execute(params);
-      tasksBloc.add(GetTasksEvent(jobId: jobId));
+      if (onCreated != null) {
+        onCreated!();
+      }
     }
   }
 }
