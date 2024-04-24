@@ -53,6 +53,7 @@ class JobTasksWidget extends StatelessWidget {
                   ),
                   Expanded(
                     child: TabBarView(
+                      // TODO: Keep state when task o diferent tab is selected
                       children: TaskStage.values
                           .map(
                             (stage) => context.isDesktop

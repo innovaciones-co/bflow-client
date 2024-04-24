@@ -8,7 +8,15 @@ sealed class TasksEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class ToggleSelectedTask extends TasksEvent {
+  final Task task;
+
+  const ToggleSelectedTask({required this.task});
+}
+
 class LoadingTasksEvent extends TasksEvent {}
+
+class DeleteTasksEvent extends TasksEvent {}
 
 class GetTasksEvent extends TasksEvent {
   final int? jobId;

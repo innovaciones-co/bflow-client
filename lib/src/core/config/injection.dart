@@ -110,7 +110,12 @@ class DependencyInjection {
       () => JobBloc(sl(), sl()),
     );
     sl.registerFactory<TasksBloc>(
-      () => TasksBloc(sl(), sl()),
+      () => TasksBloc(
+        jobBloc: sl(),
+        getTasksUseCase: sl(),
+        deleteTaskUseCase: sl(),
+        homeBloc: sl(),
+      ),
     );
     sl.registerFactory<UsersBloc>(
       () => UsersBloc(sl(), sl(), sl()),
