@@ -27,6 +27,8 @@ class JobMaterialsWidget extends StatelessWidget {
     super.key,
   });
 
+  int? jobId;
+
   final Map<int, TableColumnWidth> _columnWidths = {
     0: const FixedColumnWidth(100),
     1: const FixedColumnWidth(40),
@@ -48,10 +50,12 @@ class JobMaterialsWidget extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
+        jobId = state.job.id;
+
         return Expanded(
           child: BlocProvider<ItemsBloc>(
-            create: (context) => DependencyInjection.sl()
-              ..add(GetItemsEvent(jobId: state.job.id!)),
+            create: (context) =>
+                DependencyInjection.sl()..add(GetItemsEvent(jobId: jobId!)),
             child: BlocBuilder<ItemsBloc, ItemsState>(
               builder: (context, state) {
                 if (state is ItemsLoading) {
@@ -219,8 +223,7 @@ class JobMaterialsWidget extends StatelessWidget {
             _tableCell(const Text("")),
             _tableCell(
               ActionButtonWidget(
-                onPressed: () => context.showLeftDialog(
-                    'New Material', const WriteMaterialWidget()),
+                onPressed: () => _openWriteMaterialWidget(context),
                 type: ButtonType.textButton,
                 title: "Add Material",
                 icon: Icons.add,
@@ -335,5 +338,14 @@ class JobMaterialsWidget extends StatelessWidget {
         child: widget,
       ),
     );
+  }
+
+  _openWriteMaterialWidget(BuildContext context) {
+    if (jobId == null) {
+      return;
+    }
+
+    context.showLeftDialog('New Material',
+        WriteMaterialWidget(itemsBloc: context.read(), jobId: jobId!));
   }
 }

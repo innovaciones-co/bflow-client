@@ -31,7 +31,8 @@ class ItemModel extends Item {
         vat: json["vat"],
         price: json["price"]?.toDouble(),
         units: json["units"],
-        measure: Unit.fromString(json["measure"]),
+        measure:
+            json["measure"] != null ? Unit.fromString(json["measure"]) : null,
         purchaseOrder: json["purchaseOrder"],
         supplier: json["supplier"],
         category: json["category"],

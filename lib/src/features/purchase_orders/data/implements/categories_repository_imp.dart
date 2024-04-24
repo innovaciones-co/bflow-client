@@ -51,9 +51,15 @@ class CategoriesRepositoryImp implements CategoriesRepository {
 
   @override
   Future<Either<Failure, List<Category>>> getCategoriesBySupplier(
-      int suplierId) {
-    // TODO: implement getCategoriesBySupplier
-    throw UnimplementedError();
+      int supplierId) async {
+    try {
+      var categories = await remoteDataSource.fetchCategories();
+      return Right(categories
+          .where((element) => element.contact == supplierId)
+          .toList());
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
   }
 
   @override

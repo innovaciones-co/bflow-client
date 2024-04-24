@@ -67,4 +67,13 @@ class ItemsRepositoryImp implements ItemsRepository {
     // TODO: implement createPurchaseOrder
     throw UnimplementedError();
   }
+
+  @override
+  Future<Either<Failure, List<Item>>> getItemsByCategory(int categoryId) async {
+    try {
+      return Right(await remoteDataSource.fetchItemsByCategory(categoryId));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
+  }
 }

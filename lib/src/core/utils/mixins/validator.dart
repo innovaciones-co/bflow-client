@@ -162,4 +162,22 @@ mixin Validator {
     }
     return null;
   }
+
+  String? validateQuantity(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Quantity is required";
+    }
+
+    int? quantity = int.tryParse(value);
+
+    if (quantity == null) {
+      return "Quantity shoudl be a valid number";
+    }
+
+    if (quantity < 0) {
+      return "Quantity should be a positive integer";
+    }
+
+    return null;
+  }
 }

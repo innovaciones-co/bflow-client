@@ -34,7 +34,12 @@ class ContactsRepositoryImp implements ContactsRepository {
   Future<Either<Failure, List<Contact>>> getContacts(
       ContactType? contactType) async {
     try {
-      return Right(await remoteDataSource.fetchContacts());
+      var contacts = await remoteDataSource.fetchContacts();
+      if (contactType != null) {
+        return Right(
+            contacts.where((element) => element.type == contactType).toList());
+      }
+      return Right(contacts);
     } on RemoteDataSourceException catch (e) {
       return Left(ServerFailure(message: e.message));
     } on BadRequestException catch (e) {

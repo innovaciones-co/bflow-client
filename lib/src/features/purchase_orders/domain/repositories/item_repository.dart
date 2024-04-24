@@ -6,6 +6,7 @@ import 'package:dartz/dartz.dart';
 abstract class ItemsRepository {
   Future<Either<Failure, Item>> getItem(int id);
   Future<Either<Failure, List<Item>>> getItems(int jobId);
+  Future<Either<Failure, List<Item>>> getItemsByCategory(int categoryId);
   Future<Either<Failure, Item>> createItem(Item item);
   Future<Either<Failure, List<PurchaseOrder>>> createPurchaseOrder(
       List<Item> items);

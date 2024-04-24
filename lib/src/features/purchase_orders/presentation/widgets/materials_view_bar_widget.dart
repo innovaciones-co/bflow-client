@@ -1,7 +1,9 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'write_material_widget.dart';
 
@@ -48,8 +50,7 @@ class _MaterialsViewBarWidgetState extends State<MaterialsViewBarWidget> {
             ),
             const SizedBox(width: 12),
             ActionButtonWidget(
-              onPressed: () => context.showLeftDialog(
-                  'New Material', const WriteMaterialWidget()),
+              onPressed: () => _openWriteMaterialWidget(context),
               type: ButtonType.elevatedButton,
               title: "Add Materials",
               icon: Icons.add,
@@ -68,5 +69,15 @@ class _MaterialsViewBarWidgetState extends State<MaterialsViewBarWidget> {
         ),
       ],
     );
+  }
+
+  _openWriteMaterialWidget(BuildContext context) {
+    JobBloc jobBloc = context.read();
+    JobState state = jobBloc.state;
+
+    if (state is JobLoaded) {
+      context.showLeftDialog('New Material',
+          WriteMaterialWidget(itemsBloc: context.read(), jobId: state.job.id!));
+    }
   }
 }

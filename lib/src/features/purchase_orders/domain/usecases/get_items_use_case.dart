@@ -11,12 +11,16 @@ class GetItemsUseCase implements UseCase<List<Item>, GetItemsParams> {
 
   @override
   Future<Either<Failure, List<Item>>> execute(params) {
+    if (params.categoryId != null) {
+      return repository.getItemsByCategory(params.categoryId!);
+    }
     return repository.getItems(params.jobId);
   }
 }
 
 class GetItemsParams {
   final int jobId;
+  final int? categoryId;
 
-  GetItemsParams({required this.jobId});
+  GetItemsParams({required this.jobId, this.categoryId});
 }

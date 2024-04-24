@@ -64,4 +64,12 @@ class ItemsRemoteDataSource extends RemoteDataSource {
       endpoint: ApiConstants.getItemEndpoint.replaceAll(':id', id.toString()),
     );
   }
+
+  Future<List<Item>> fetchItemsByCategory(int categoryId) async {
+    List<dynamic> response = await apiService.get(
+      endpoint: ApiConstants.listItemsEndpoint,
+      params: {'categoryId': categoryId.toString()},
+    );
+    return response.map((e) => ItemModel.fromMap(e)).toList();
+  }
 }
