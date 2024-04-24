@@ -7,3 +7,14 @@ abstract class UsersEvent extends Equatable {
 }
 
 class GetUsersEvent extends UsersEvent {}
+
+class DeleteUserEvent extends UsersEvent {
+  final int userId;
+
+  const DeleteUserEvent({required this.userId});
+
+  @override
+  List<Object> get props => [
+        userId,
+      ];
+}

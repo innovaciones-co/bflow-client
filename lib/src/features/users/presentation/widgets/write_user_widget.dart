@@ -38,7 +38,7 @@ class _WriteUserWidgetState extends State<WriteUserWidget> with Validator {
         createUserUseCase: DependencyInjection.sl(),
         updateUserUseCase: DependencyInjection.sl(),
         usersBloc: widget.usersBloc,
-      ),
+      )..initFormFromUser(widget.user),
       child: BlocConsumer<WriteUserCubit, WriteUserState>(
         listener: (context, state) {
           if (state.formStatus == FormStatus.success) {
@@ -76,6 +76,7 @@ class _WriteUserWidgetState extends State<WriteUserWidget> with Validator {
                       child: InputWidget(
                         label: "First Name",
                         validator: validateName,
+                        initialValue: state.firstName,
                         onChanged: userCubit.changeFirstName,
                         keyboardType: TextInputType.name,
                       ),
@@ -85,6 +86,7 @@ class _WriteUserWidgetState extends State<WriteUserWidget> with Validator {
                       child: InputWidget(
                         label: "Last Name",
                         validator: validateLastName,
+                        initialValue: state.lastName,
                         onChanged: userCubit.changeLastName,
                         keyboardType: TextInputType.name,
                       ),
@@ -95,6 +97,7 @@ class _WriteUserWidgetState extends State<WriteUserWidget> with Validator {
                 InputWidget(
                   label: "Email",
                   validator: validateEmail,
+                  initialValue: state.email,
                   onChanged: userCubit.changeEmail,
                   keyboardType: TextInputType.emailAddress,
                 ),
@@ -105,7 +108,8 @@ class _WriteUserWidgetState extends State<WriteUserWidget> with Validator {
                       child: InputWidget(
                         label: "Username",
                         validator: validateUsername,
-                        onChanged: userCubit.changeUserName,
+                        initialValue: state.username,
+                        onChanged: userCubit.changeUsername,
                         keyboardType: TextInputType.name,
                       ),
                     ),
@@ -131,6 +135,7 @@ class _WriteUserWidgetState extends State<WriteUserWidget> with Validator {
                         validator: validatePassword,
                         onChanged: userCubit.changePassword,
                         obscureText: obscurePass1,
+                        initialValue: state.password,
                       ),
                     ),
                     const SizedBox(width: 15),
@@ -142,6 +147,7 @@ class _WriteUserWidgetState extends State<WriteUserWidget> with Validator {
                           value,
                           state.password ?? "",
                         ),
+                        initialValue: state.password,
                       ),
                     ),
                   ],
@@ -160,14 +166,25 @@ class _WriteUserWidgetState extends State<WriteUserWidget> with Validator {
                       paddingVertical: 18,
                     ),
                     const SizedBox(width: 12),
-                    ActionButtonWidget(
-                      inProgress: state.formStatus == FormStatus.inProgress,
-                      onPressed: () => _createUser(context),
-                      type: ButtonType.elevatedButton,
-                      title: "Create User",
-                      backgroundColor: AppColor.blue,
-                      foregroundColor: AppColor.white,
-                    ),
+                    widget.user == null
+                        ? ActionButtonWidget(
+                            inProgress:
+                                state.formStatus == FormStatus.inProgress,
+                            onPressed: () => _createUser(context, userCubit),
+                            type: ButtonType.elevatedButton,
+                            title: "Create User",
+                            backgroundColor: AppColor.blue,
+                            foregroundColor: AppColor.white,
+                          )
+                        : ActionButtonWidget(
+                            inProgress:
+                                state.formStatus == FormStatus.inProgress,
+                            onPressed: () => _updateUser(context, userCubit),
+                            type: ButtonType.elevatedButton,
+                            title: "Save User",
+                            backgroundColor: AppColor.blue,
+                            foregroundColor: AppColor.white,
+                          ),
                   ],
                 )
               ],
@@ -178,9 +195,19 @@ class _WriteUserWidgetState extends State<WriteUserWidget> with Validator {
     );
   }
 
-  _createUser(BuildContext context) {
+  _createUser(BuildContext context, WriteUserCubit userCubit) {
     if (_formKey.currentState!.validate()) {
       BlocProvider.of<WriteUserCubit>(context).createUser();
+    } else {
+      userCubit.updateAutovalidateMode(AutovalidateMode.always);
+    }
+  }
+
+  _updateUser(BuildContext context, WriteUserCubit userCubit) {
+    if (_formKey.currentState!.validate()) {
+      BlocProvider.of<WriteUserCubit>(context).updateUser();
+    } else {
+      userCubit.updateAutovalidateMode(AutovalidateMode.always);
     }
   }
 }

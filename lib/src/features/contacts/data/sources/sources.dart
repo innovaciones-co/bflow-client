@@ -19,8 +19,9 @@ class ContactsRemoteDataSource extends RemoteDataSource {
   }
 
   Future<ContactModel> fetchContact(int contactId) async {
-    Map<String, dynamic> response =
-        await apiService.get(endpoint: ApiConstants.contactsEndpoint);
+    Map<String, dynamic> response = await apiService.get(
+        endpoint: ApiConstants.contactEndpoint
+            .replaceAll(':id', contactId.toString()));
 
     return ContactModel.fromMap(response);
   }
@@ -39,7 +40,7 @@ class ContactsRemoteDataSource extends RemoteDataSource {
   Future<ContactModel> createContact(Contact contact) async {
     final contactModel = ContactModel.fromEntity(contact);
     int contactId = await apiService.post(
-      endpoint: ApiConstants.contactEndpoint,
+      endpoint: ApiConstants.contactsEndpoint,
       data: contactModel.toMap(),
     );
 

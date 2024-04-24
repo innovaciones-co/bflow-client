@@ -29,9 +29,19 @@ class UsersRepositoryImp implements UsersRepository {
   }
 
   @override
-  Future<Either<Failure, void>> delete(int id) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<Either<Failure, void>> deleteUser(int id) async {
+    try {
+      return Right(await remoteDataSource.deleteUser(id));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(
+        ClientFailure(
+          message: e.toString(),
+          errorResponse: e.errorResponse,
+        ),
+      );
+    }
   }
 
   @override

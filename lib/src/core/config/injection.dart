@@ -4,6 +4,7 @@ import 'package:bflow_client/src/core/api/api_service.dart';
 import 'package:bflow_client/src/features/contacts/data/implements/contacts_repository_imp.dart';
 import 'package:bflow_client/src/features/contacts/data/sources/sources.dart';
 import 'package:bflow_client/src/features/contacts/domain/repositories/contacts_repository.dart';
+import 'package:bflow_client/src/features/contacts/domain/usecases/create_contact_usecase.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/delete_contact_usecase.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/get_contact_usecase.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/get_contacts_usecase.dart';
@@ -71,11 +72,11 @@ import 'package:bflow_client/src/features/users/data/implements/users_repository
 import 'package:bflow_client/src/features/users/data/sources/users_remote_data_source.dart';
 import 'package:bflow_client/src/features/users/domain/repositories/users_repository.dart';
 import 'package:bflow_client/src/features/users/domain/usecases/create_user_use_case.dart';
+import 'package:bflow_client/src/features/users/domain/usecases/delete_user_usecase.dart';
 import 'package:bflow_client/src/features/users/domain/usecases/get_supervisors_use_case.dart';
 import 'package:bflow_client/src/features/users/domain/usecases/get_users_use_case.dart';
 import 'package:bflow_client/src/features/users/domain/usecases/update_user_use_case.dart';
 import 'package:bflow_client/src/features/users/presentation/bloc/users_bloc.dart';
-import 'package:bflow_client/src/features/users/presentation/bloc/write_user/write_user_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -111,19 +112,19 @@ class DependencyInjection {
       () => TasksBloc(sl(), sl()),
     );
     sl.registerFactory<UsersBloc>(
-      () => UsersBloc(sl()),
+      () => UsersBloc(sl(), sl(), sl()),
     );
     sl.registerFactory<ContactsCubit>(
       () => ContactsCubit(
-        sl(),
         deleteContactUseCase: sl(),
+        getContactsUseCase: sl(),
+        homeBloc: sl(),
       ),
     );
     sl.registerFactory<TemplatesCubit>(
       () => TemplatesCubit(
         templatesUseCase: sl(),
-        createTasksFromTemplateUseCase: sl(),
-        tasksBloc: sl(),
+        createFromTemplateUseCase: sl(),
       ),
     );
     sl.registerFactory<TaskCubit>(
@@ -178,6 +179,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => GetContactsUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => CreateContactUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => UpdateContactUseCase(repository: sl()),
@@ -245,6 +249,9 @@ class DependencyInjection {
       () => GetCategoriesBySupplierUseCase(
         repository: sl(),
       ),
+    );
+    sl.registerLazySingleton(
+      () => DeleteUserUseCase(repository: sl()),
     );
 
     // Repository

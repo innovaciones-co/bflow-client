@@ -92,7 +92,7 @@ class UsersPage extends StatelessWidget {
               _tableData(context, e.lastName),
               _tableData(context, e.email),
               _tableData(context, e.role.toString()),
-              _tableActions(context),
+              _tableActions(context, e),
             ],
           ),
         )
@@ -121,16 +121,34 @@ class UsersPage extends StatelessWidget {
     );
   }
 
-  _tableActions(BuildContext context) {
+  _tableActions(BuildContext context, User user) {
     return TableCell(
       child: Container(
         padding: const EdgeInsets.all(10),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(onPressed: null, icon: Icon(Icons.edit_outlined)),
             IconButton(
-                onPressed: null, icon: Icon(Icons.delete_outline_outlined))
+              onPressed: () => context.showLeftDialog(
+                "Edit Contact",
+                WriteUserWidget(
+                  usersBloc: context.read(),
+                  user: user,
+                ),
+              ),
+              color: AppColor.blue,
+              icon: const Icon(Icons.edit_outlined),
+            ),
+            IconButton(
+              onPressed: () => context
+                  .read<UsersBloc>()
+                  .add(DeleteUserEvent(userId: user.id!)),
+              color: AppColor.blue,
+              icon: const Icon(
+                Icons.delete_outline_outlined,
+                size: 20,
+              ),
+            ),
           ],
         ),
       ),

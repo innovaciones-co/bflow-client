@@ -18,7 +18,7 @@ class ApiConstants {
   static String noteEndpoint = 'notes/:id';
 
   static String templatesEndpoint = 'templates';
-  static String createTaskFromTemplateEndpoint = 'templates/:id/tasks';
+  static String createFromTemplateEndpoint = 'templates/:id';
 
   static String fileEndpoint = 'files/:id';
   static String uploadFileEndpoint = 'files/upload';

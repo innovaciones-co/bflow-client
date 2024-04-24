@@ -22,6 +22,41 @@ class WriteUserCubit extends Cubit<WriteUserState> {
     required this.usersBloc,
   }) : super(const WriteUserInitial());
 
+  void initForm({
+    final int? id,
+    final UserRole? role,
+    final String? password,
+    final String firstName = '',
+    final String lastName = '',
+    final String username = '',
+    final String email = '',
+  }) {
+    emit(state.copyWith(
+      id: id,
+      role: role,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+      username: username,
+      email: email,
+    ));
+  }
+
+  void initFormFromUser(User? user) {
+    if (user == null) {
+      return;
+    }
+    initForm(
+      id: user.id,
+      role: user.role,
+      password: user.password,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      username: user.username,
+      email: user.email,
+    );
+  }
+
   Future<void> createUser() async {
     emit(state.copyWith(formStatus: FormStatus.inProgress));
 
@@ -30,7 +65,7 @@ class WriteUserCubit extends Cubit<WriteUserState> {
       password: state.password,
       firstName: state.firstName!,
       lastName: state.lastName!,
-      username: state.userName!,
+      username: state.username!,
       email: state.email!,
     );
 
@@ -52,17 +87,19 @@ class WriteUserCubit extends Cubit<WriteUserState> {
     emit(state.copyWith(formStatus: FormStatus.inProgress));
 
     User user = User(
+      id: state.id,
       role: state.role,
       password: state.password,
       firstName: state.firstName!,
       lastName: state.lastName!,
-      username: state.userName!,
+      username: state.username!,
       email: state.email!,
     );
 
-    final failureOrUser = await createUserUseCase.execute(
-      CreateUserParams(user: user),
+    final failureOrUser = await updateUserUseCase.execute(
+      UpdateUserParams(user: user),
     );
+
     emit(
       failureOrUser.fold(
         (failure) =>
@@ -84,8 +121,8 @@ class WriteUserCubit extends Cubit<WriteUserState> {
     emit(state.copyWith(lastName: lastName));
   }
 
-  void changeUserName(String userName) {
-    emit(state.copyWith(userName: userName));
+  void changeUsername(String username) {
+    emit(state.copyWith(username: username));
   }
 
   void changePassword(String password) {
@@ -94,5 +131,9 @@ class WriteUserCubit extends Cubit<WriteUserState> {
 
   void changeRole(UserRole role) {
     emit(state.copyWith(role: role));
+  }
+
+  void updateAutovalidateMode(AutovalidateMode? autovalidateMode) {
+    emit(state.copyWith(autovalidateMode: autovalidateMode));
   }
 }

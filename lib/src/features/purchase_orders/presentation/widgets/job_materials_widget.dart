@@ -50,12 +50,12 @@ class JobMaterialsWidget extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        jobId = state.job.id;
+        final jobId = state.job.id!;
 
         return Expanded(
           child: BlocProvider<ItemsBloc>(
             create: (context) =>
-                DependencyInjection.sl()..add(GetItemsEvent(jobId: jobId!)),
+                DependencyInjection.sl()..add(GetItemsEvent(jobId: jobId)),
             child: BlocBuilder<ItemsBloc, ItemsState>(
               builder: (context, state) {
                 if (state is ItemsLoading) {
@@ -74,7 +74,10 @@ class JobMaterialsWidget extends StatelessWidget {
                 var suppliers = (state).suppliers;
 
                 if (items.isEmpty) {
-                  return const NoMaterialsWidget();
+                  return NoMaterialsWidget(
+                    jobId: jobId,
+                    itemsBloc: context.read(),
+                  );
                 }
 
                 final double total = items

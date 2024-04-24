@@ -6,9 +6,10 @@ sealed class WriteUserState extends Equatable {
   final List<UserRole> roles = UserRole.values;
   final Failure? failure;
   final FormStatus formStatus;
+  final int? id;
   final String? firstName;
   final String? lastName;
-  final String? userName;
+  final String? username;
   final String? email;
   final String? password;
   final UserRole? role;
@@ -17,9 +18,10 @@ sealed class WriteUserState extends Equatable {
     this.autovalidateMode = AutovalidateMode.disabled,
     this.failure,
     this.formStatus = FormStatus.initialized,
+    this.id,
     this.firstName,
     this.lastName,
-    this.userName,
+    this.username,
     this.email,
     this.password,
     this.role,
@@ -28,12 +30,13 @@ sealed class WriteUserState extends Equatable {
   @override
   List<Object?> get props => [
         autovalidateMode,
-        roles,
         failure,
         formStatus,
+        roles,
+        id,
         firstName,
         lastName,
-        userName,
+        username,
         email,
         password,
         role,
@@ -43,9 +46,10 @@ sealed class WriteUserState extends Equatable {
     AutovalidateMode? autovalidateMode,
     Failure? failure,
     FormStatus? formStatus,
+    int? id,
     String? firstName,
     String? lastName,
-    String? userName,
+    String? username,
     String? email,
     String? password,
     UserRole? role,
@@ -57,9 +61,10 @@ class WriteUserInitial extends WriteUserState {
     super.autovalidateMode = AutovalidateMode.disabled,
     super.failure,
     super.formStatus = FormStatus.initialized,
+    super.id,
     super.firstName,
     super.lastName,
-    super.userName,
+    super.username,
     super.email,
     super.password,
     super.role,
@@ -68,12 +73,13 @@ class WriteUserInitial extends WriteUserState {
   @override
   List<Object?> get props => [
         autovalidateMode,
+        id,
         roles,
         failure,
         formStatus,
         firstName,
         lastName,
-        userName,
+        username,
         email,
         password,
         role,
@@ -84,9 +90,10 @@ class WriteUserInitial extends WriteUserState {
     AutovalidateMode? autovalidateMode,
     Failure? failure,
     FormStatus? formStatus,
+    int? id,
     String? firstName,
     String? lastName,
-    String? userName,
+    String? username,
     String? email,
     String? password,
     UserRole? role,
@@ -95,9 +102,10 @@ class WriteUserInitial extends WriteUserState {
       autovalidateMode: autovalidateMode ?? this.autovalidateMode,
       failure: failure ?? this.failure,
       formStatus: formStatus ?? this.formStatus,
+      id: id ?? this.id,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
-      userName: userName ?? this.userName,
+      username: username ?? this.username,
       email: email ?? this.email,
       password: password ?? this.password,
       role: role ?? this.role,
