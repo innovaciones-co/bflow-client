@@ -2,6 +2,7 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -41,7 +42,8 @@ class _MaterialsViewBarWidgetState extends State<MaterialsViewBarWidget> {
         Row(
           children: [
             ActionButtonWidget(
-              onPressed: () {},
+              onPressed: () =>
+                  context.read<ItemsBloc>().add(DeleteItemsEvent()),
               type: ButtonType.textButton,
               title: "Delete",
               icon: Icons.delete_outline,
