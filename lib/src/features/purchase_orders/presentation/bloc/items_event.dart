@@ -17,3 +17,9 @@ class GetItemsEvent extends ItemsEvent {
   @override
   List<Object> get props => [jobId];
 }
+
+class ToggleSelectedItem extends ItemsEvent {
+  final Item item;
+
+  const ToggleSelectedItem({required this.item});
+}

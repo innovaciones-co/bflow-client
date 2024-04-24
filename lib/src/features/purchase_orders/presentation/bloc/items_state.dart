@@ -15,16 +15,40 @@ class ItemsLoaded extends ItemsState {
   final List<Category> categories;
   final List<PurchaseOrder> orders;
   final List<Contact> suppliers;
+  final List<Item> selectedItems;
 
   const ItemsLoaded({
     required this.items,
     required this.categories,
     required this.orders,
     required this.suppliers,
+    this.selectedItems = const [],
   });
 
   @override
-  List<Object> get props => [items, categories, orders];
+  List<Object> get props => [
+        items,
+        categories,
+        orders,
+        suppliers,
+        selectedItems,
+      ];
+
+  ItemsLoaded copyWith({
+    List<Item>? items,
+    List<Category>? categories,
+    List<PurchaseOrder>? orders,
+    List<Contact>? suppliers,
+    List<Item>? selectedItems,
+  }) {
+    return ItemsLoaded(
+      items: items ?? this.items,
+      categories: categories ?? this.categories,
+      orders: orders ?? this.orders,
+      suppliers: suppliers ?? this.suppliers,
+      selectedItems: selectedItems ?? this.selectedItems,
+    );
+  }
 }
 
 class ItemsFailed extends ItemsState {

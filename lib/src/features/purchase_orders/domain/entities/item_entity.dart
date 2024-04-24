@@ -31,5 +31,18 @@ class Item extends Equatable {
   });
 
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [
+        id,
+        name,
+        description,
+        unitPrice,
+        vat,
+        price,
+        units,
+        measure,
+        purchaseOrder,
+        supplier,
+        category,
+        job,
+      ];
 }

@@ -30,6 +30,25 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
     on<LoadingItemsEvent>(
       (event, emit) => emit(ItemsLoading()),
     );
+    on<ToggleSelectedItem>(
+      (event, emit) {
+        if (state is ItemsLoaded) {
+          var loadedState = (state as ItemsLoaded);
+          var selectedItems = List<Item>.from(loadedState.selectedItems);
+          var item = event.item;
+
+          if (selectedItems.contains(item)) {
+            selectedItems.remove(item);
+          } else {
+            selectedItems.add(item);
+          }
+
+          emit(
+            loadedState.copyWith(selectedItems: selectedItems),
+          );
+        }
+      },
+    );
     on<GetItemsEvent>((event, emit) async {
       emit(ItemsLoading());
       final params = GetItemsParams(jobId: event.jobId);

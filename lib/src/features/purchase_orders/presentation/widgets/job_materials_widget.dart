@@ -278,11 +278,24 @@ class JobMaterialsWidget extends StatelessWidget {
       ),
       children: [
         _tableCell(const Text("")),
-        _tableCell(Checkbox(
-          value: false,
-          onChanged: null,
-          side: BorderSide(color: AppColor.darkGrey, width: 2),
-        )),
+        _tableCell(
+          BlocBuilder<ItemsBloc, ItemsState>(
+            builder: (context, state) {
+              ItemsBloc itemsBloc = context.read<ItemsBloc>();
+              if (state is! ItemsLoaded) {
+                return const SizedBox.shrink();
+              }
+
+              var itemSelected = state.selectedItems.contains(item);
+              return Checkbox(
+                value: itemSelected,
+                onChanged: (val) =>
+                    itemsBloc.add(ToggleSelectedItem(item: item)),
+                side: BorderSide(color: AppColor.darkGrey, width: 2),
+              );
+            },
+          ),
+        ),
         _tableCell(Text(item.id.toString())),
         _tableCell(
           itemView.order != null
