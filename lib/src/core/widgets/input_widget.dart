@@ -51,12 +51,12 @@ class InputWidget extends StatelessWidget {
             errorBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: AppColor.red,
-              ), // Set border color for invalid input
+              ),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: AppColor.red,
-              ), // Set border color for invalid input when focused
+              ),
             ),
           ),
         ),
