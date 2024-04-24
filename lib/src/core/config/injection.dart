@@ -62,6 +62,7 @@ import 'package:bflow_client/src/features/purchase_orders/domain/repositories/pr
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/purchase_order_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_item_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_purchase_order_use_case.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/usecases/delete_item_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_by_supplier_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_items_use_case.dart';
@@ -148,6 +149,8 @@ class DependencyInjection {
         getOrdersUseCase: sl(),
         getSuppliersUseCase: sl(),
         createPurchaseOrderUseCase: sl(),
+        deleteItemUseCase: sl(),
+        homeBloc: sl(),
       ),
     );
 
@@ -217,6 +220,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => GetItemsUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => DeleteItemUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => GetProductsUseCase(repository: sl()),

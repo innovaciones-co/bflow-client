@@ -11,7 +11,7 @@ class DeleteItemUseCase implements UseCase<void, DeleteItemParams> {
 
   @override
   Future<Either<Failure, void>> execute(params) {
-    return repository.delete(params.id);
+    return repository.deleteItem(params.id);
   }
 }
 

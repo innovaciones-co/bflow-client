@@ -10,5 +10,5 @@ abstract class ItemsRepository {
   Future<Either<Failure, Item>> createItem(Item item);
 
   Future<Either<Failure, Item>> update(Item item);
-  Future<Either<Failure, void>> delete(int id);
+  Future<Either<Failure, void>> deleteItem(int id);
 }

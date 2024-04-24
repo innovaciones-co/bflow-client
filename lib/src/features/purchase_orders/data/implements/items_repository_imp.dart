@@ -32,11 +32,18 @@ class ItemsRepositoryImp implements ItemsRepository {
   }
 
   @override
-  Future<Either<Failure, void>> delete(int id) async {
+  Future<Either<Failure, void>> deleteItem(int id) async {
     try {
       return Right(await remoteDataSource.deleteItem(id));
     } on RemoteDataSourceException catch (e) {
       return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(
+        ClientFailure(
+          message: e.toString(),
+          errorResponse: e.errorResponse,
+        ),
+      );
     }
   }
 

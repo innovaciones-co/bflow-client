@@ -42,7 +42,8 @@ class _MaterialsViewBarWidgetState extends State<MaterialsViewBarWidget> {
         Row(
           children: [
             ActionButtonWidget(
-              onPressed: () {},
+              onPressed: () =>
+                  context.read<ItemsBloc>().add(DeleteItemsEvent()),
               type: ButtonType.textButton,
               title: "Delete",
               icon: Icons.delete_outline,
