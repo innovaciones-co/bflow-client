@@ -32,8 +32,8 @@ class PurchaseOrdersRemoteDataSource extends RemoteDataSource {
 
   Future<PurchaseOrderModel> sendPurchaseOrders(
       List<PurchaseOrder> purchaseOrders) async {
-    final List<PurchaseOrder> purchaseOrderModel =
-        purchaseOrders.map((e) => PurchaseOrderModel.fromEntity(e)).toList();
+    /* final List<PurchaseOrder> purchaseOrderModel =
+        purchaseOrders.map((e) => PurchaseOrderModel.fromEntity(e)).toList(); */
     // TODO: implement sendPurchaseOrders
 
     int purchaseOrderId = await apiService.post(
