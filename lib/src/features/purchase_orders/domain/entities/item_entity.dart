@@ -6,7 +6,7 @@ class Item extends Equatable {
   final String name;
   final String? description;
   final double unitPrice;
-  final int vat;
+  final double vat;
   final double price;
   final int units;
   final Unit? measure;

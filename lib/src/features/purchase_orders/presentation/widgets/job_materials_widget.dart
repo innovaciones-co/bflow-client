@@ -27,8 +27,6 @@ class JobMaterialsWidget extends StatelessWidget {
     super.key,
   });
 
-  int? jobId;
-
   final Map<int, TableColumnWidth> _columnWidths = {
     0: const FixedColumnWidth(100),
     1: const FixedColumnWidth(40),
@@ -97,7 +95,7 @@ class JobMaterialsWidget extends StatelessWidget {
                           children: [
                             _tableHeader(),
                             ...itemsPerCategoryMap.entries.map(
-                              (e) => _categoryTable(context, e.value),
+                              (e) => _categoryTable(context, e.value, jobId),
                             )
                           ],
                         ),
@@ -197,7 +195,8 @@ class JobMaterialsWidget extends StatelessWidget {
     );
   }
 
-  Widget _categoryTable(BuildContext context, List<ItemView> itemsView) {
+  Widget _categoryTable(
+      BuildContext context, List<ItemView> itemsView, int jobId) {
     final double totalPerCategory = itemsView.map((i) => i.item.price).reduce(
           (a, b) => a + b,
         );
@@ -226,7 +225,7 @@ class JobMaterialsWidget extends StatelessWidget {
             _tableCell(const Text("")),
             _tableCell(
               ActionButtonWidget(
-                onPressed: () => _openWriteMaterialWidget(context),
+                onPressed: () => _openWriteMaterialWidget(context, jobId),
                 type: ButtonType.textButton,
                 title: "Add Material",
                 icon: Icons.add,
@@ -343,12 +342,8 @@ class JobMaterialsWidget extends StatelessWidget {
     );
   }
 
-  _openWriteMaterialWidget(BuildContext context) {
-    if (jobId == null) {
-      return;
-    }
-
+  _openWriteMaterialWidget(BuildContext context, int jobId) {
     context.showLeftDialog('New Material',
-        WriteMaterialWidget(itemsBloc: context.read(), jobId: jobId!));
+        WriteMaterialWidget(itemsBloc: context.read(), jobId: jobId));
   }
 }

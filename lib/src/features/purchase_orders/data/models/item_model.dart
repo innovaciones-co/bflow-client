@@ -28,7 +28,7 @@ class ItemModel extends Item {
         name: json["name"],
         description: json["description"],
         unitPrice: json["unitPrice"]?.toDouble(),
-        vat: json["vat"],
+        vat: json["vat"]?.toDouble(),
         price: json["price"]?.toDouble(),
         units: json["units"],
         measure:

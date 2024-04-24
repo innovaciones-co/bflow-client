@@ -11,7 +11,6 @@ import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/product_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/write_item/write_item_cubit.dart';
@@ -20,19 +19,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-const List<String> list = [
-  'One',
-  'Two',
-  'Three',
-  'Four',
-]; // TODO: Delete when DropDown completed
-
 class WriteMaterialWidget extends StatelessWidget with Validator {
   final _formKey = GlobalKey<FormState>();
   final ItemsBloc itemsBloc;
   final int jobId;
-  WriteMaterialWidget(
-      {super.key, required this.itemsBloc, required this.jobId});
+  WriteMaterialWidget({
+    super.key,
+    required this.itemsBloc,
+    required this.jobId,
+  });
 
   @override
   Widget build(BuildContext context) {
