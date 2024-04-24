@@ -2,6 +2,7 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -57,13 +58,36 @@ class _MaterialsViewBarWidgetState extends State<MaterialsViewBarWidget> {
               backgroundColor: AppColor.lightBlue,
             ),
             const SizedBox(width: 12),
-            ActionButtonWidget(
-              onPressed: null,
-              type: ButtonType.elevatedButton,
-              title: "Create purchase order",
-              icon: Icons.monetization_on_outlined,
-              backgroundColor: AppColor.blue,
-              foregroundColor: AppColor.white,
+            BlocBuilder<JobBloc, JobState>(
+              builder: (context, state) {
+                if (state is! JobLoaded) {
+                  return const SizedBox.shrink();
+                }
+
+                var jobId = state.job.id!;
+
+                return BlocBuilder<ItemsBloc, ItemsState>(
+                  builder: (context, state) {
+                    var itemsBloc = context.read<ItemsBloc>();
+
+                    if (state is! ItemsLoaded) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return ActionButtonWidget(
+                      onPressed: state.selectedItems.isEmpty
+                          ? null
+                          : () => itemsBloc
+                              .add(CreatePurchaseOrderEvent(jobId: jobId)),
+                      type: ButtonType.elevatedButton,
+                      title: "Create purchase order",
+                      icon: Icons.monetization_on_outlined,
+                      backgroundColor: AppColor.blue,
+                      foregroundColor: AppColor.white,
+                    );
+                  },
+                );
+              },
             ),
           ],
         ),

@@ -8,8 +8,7 @@ abstract class ItemsRepository {
   Future<Either<Failure, List<Item>>> getItems(int jobId);
   Future<Either<Failure, List<Item>>> getItemsByCategory(int categoryId);
   Future<Either<Failure, Item>> createItem(Item item);
-  Future<Either<Failure, List<PurchaseOrder>>> createPurchaseOrder(
-      List<Item> items);
+
   Future<Either<Failure, Item>> update(Item item);
   Future<Either<Failure, void>> delete(int id);
 }

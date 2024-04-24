@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/usecases/usecases.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
@@ -6,6 +8,7 @@ import 'package:bflow_client/src/features/contacts/domain/usecases/get_contacts_
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/purchase_order_entity.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_purchase_order_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_items_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_orders_by_job_use_case.dart';
@@ -20,17 +23,19 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
   final GetCategoriesUseCase getCategoriesUseCase;
   final GetContactsUseCase getSuppliersUseCase;
   final GetPurchaseOrdersByJobUseCase getOrdersUseCase;
+  final CreatePurchaseOrderUseCase createPurchaseOrderUseCase;
 
   ItemsBloc({
     required this.getCategoriesUseCase,
     required this.getSuppliersUseCase,
     required this.getItemsUseCase,
     required this.getOrdersUseCase,
+    required this.createPurchaseOrderUseCase,
   }) : super(ItemsLoading()) {
     on<LoadingItemsEvent>(
       (event, emit) => emit(ItemsLoading()),
     );
-    on<ToggleSelectedItem>(
+    on<ToggleSelectedItemEvent>(
       (event, emit) {
         if (state is ItemsLoaded) {
           var loadedState = (state as ItemsLoaded);
@@ -49,6 +54,7 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
         }
       },
     );
+    on<CreatePurchaseOrderEvent>(_createPurchaseOrder);
     on<GetItemsEvent>((event, emit) async {
       emit(ItemsLoading());
       final params = GetItemsParams(jobId: event.jobId);
@@ -90,5 +96,27 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
         },
       );
     });
+  }
+
+  _createPurchaseOrder(
+      CreatePurchaseOrderEvent event, Emitter<ItemsState> emit) async {
+    if (state is! ItemsLoaded) {
+      return;
+    }
+
+    var selectedItems = (state as ItemsLoaded).selectedItems;
+    var failureOrOrders = await createPurchaseOrderUseCase.execute(
+      CreatePurchaseOrderParams(
+        jobId: event.jobId,
+        items: selectedItems
+            .where((element) => element.purchaseOrder == null)
+            .toList(),
+      ),
+    );
+
+    failureOrOrders.fold(
+      (l) => print(l.message),
+      (r) => add(GetItemsEvent(jobId: event.jobId)),
+    );
   }
 }

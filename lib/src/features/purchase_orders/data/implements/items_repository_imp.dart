@@ -2,7 +2,6 @@ import 'package:bflow_client/src/core/exceptions/bad_request_exception.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/purchase_order_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/item_repository.dart';
 import 'package:dartz/dartz.dart';
 
@@ -59,13 +58,6 @@ class ItemsRepositoryImp implements ItemsRepository {
     } on BadRequestException catch (e) {
       return Left(ClientFailure(message: e.toString()));
     }
-  }
-
-  @override
-  Future<Either<Failure, List<PurchaseOrder>>> createPurchaseOrder(
-      List<Item> items) {
-    // TODO: implement createPurchaseOrder
-    throw UnimplementedError();
   }
 
   @override
