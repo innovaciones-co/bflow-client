@@ -31,6 +31,7 @@ class ApiConstants {
 
   static String listPurchaseOrdersEndpoint = 'purchaseOrders';
   static String getPurchaseOrderEndpoint = 'purchaseOrders/:id';
+  static String purchaseOrderFromItemsEndpoint = 'purchaseOrders/items';
 
   static String listItemsEndpoint = 'items';
   static String getItemEndpoint = 'items/:id';

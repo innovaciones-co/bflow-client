@@ -290,7 +290,7 @@ class JobMaterialsWidget extends StatelessWidget {
               return Checkbox(
                 value: itemSelected,
                 onChanged: (val) =>
-                    itemsBloc.add(ToggleSelectedItem(item: item)),
+                    itemsBloc.add(ToggleSelectedItemEvent(item: item)),
                 side: BorderSide(color: AppColor.darkGrey, width: 2),
               );
             },

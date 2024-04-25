@@ -20,8 +20,14 @@ class GetItemsEvent extends ItemsEvent {
   List<Object> get props => [jobId];
 }
 
-class ToggleSelectedItem extends ItemsEvent {
+class ToggleSelectedItemEvent extends ItemsEvent {
   final Item item;
 
-  const ToggleSelectedItem({required this.item});
+  const ToggleSelectedItemEvent({required this.item});
+}
+
+class CreatePurchaseOrderEvent extends ItemsEvent {
+  final int jobId;
+
+  const CreatePurchaseOrderEvent({required this.jobId});
 }

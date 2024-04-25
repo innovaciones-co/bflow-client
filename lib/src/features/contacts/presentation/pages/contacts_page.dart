@@ -116,7 +116,7 @@ class ContactsPage extends StatelessWidget {
               children: [
                 _tableData(context, e.name),
                 _tableData(context, e.email),
-                _tableData(context, e.address ?? ''),
+                _tableData(context, e.address),
                 _tableActions(context, e), // TODO: check
               ],
             ),

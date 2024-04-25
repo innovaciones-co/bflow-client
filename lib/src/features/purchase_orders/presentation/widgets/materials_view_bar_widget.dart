@@ -59,13 +59,36 @@ class _MaterialsViewBarWidgetState extends State<MaterialsViewBarWidget> {
               backgroundColor: AppColor.lightBlue,
             ),
             const SizedBox(width: 12),
-            ActionButtonWidget(
-              onPressed: null,
-              type: ButtonType.elevatedButton,
-              title: "Create purchase order",
-              icon: Icons.monetization_on_outlined,
-              backgroundColor: AppColor.blue,
-              foregroundColor: AppColor.white,
+            BlocBuilder<JobBloc, JobState>(
+              builder: (context, state) {
+                if (state is! JobLoaded) {
+                  return const SizedBox.shrink();
+                }
+
+                var jobId = state.job.id!;
+
+                return BlocBuilder<ItemsBloc, ItemsState>(
+                  builder: (context, state) {
+                    var itemsBloc = context.read<ItemsBloc>();
+
+                    if (state is! ItemsLoaded) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return ActionButtonWidget(
+                      onPressed: state.selectedItems.isEmpty
+                          ? null
+                          : () => itemsBloc
+                              .add(CreatePurchaseOrderEvent(jobId: jobId)),
+                      type: ButtonType.elevatedButton,
+                      title: "Create purchase order",
+                      icon: Icons.monetization_on_outlined,
+                      backgroundColor: AppColor.blue,
+                      foregroundColor: AppColor.white,
+                    );
+                  },
+                );
+              },
             ),
           ],
         ),
