@@ -1,3 +1,5 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:flutter/material.dart';
 
 extension BuildContextEntension<T> on BuildContext {
@@ -109,6 +111,26 @@ extension BuildContextEntension<T> on BuildContext {
         content: Text(message),
         behavior: SnackBarBehavior.floating,
         // backgroundColor: primary,
+      ),
+    );
+  }
+
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showAlert(
+      {required String message, AlertType type = AlertType.info}) {
+    Color bgColor = switch (type) {
+      AlertType.info => AppColor.blue,
+      AlertType.success => AppColor.green,
+      AlertType.warning => AppColor.orange,
+      AlertType.error => AppColor.red,
+    };
+
+    return ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: bgColor,
+        margin: EdgeInsets.only(
+            bottom: 40, left: this.width * 0.3, right: this.width * 0.3),
       ),
     );
   }

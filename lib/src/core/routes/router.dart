@@ -57,7 +57,7 @@ final appRouter = GoRouter(
     // LoginScreen
     GoRoute(
       path: RoutesName.login,
-      pageBuilder: (context, state) => const MaterialPage<void>(
+      pageBuilder: (context, state) => MaterialPage<void>(
         key: _pageKey,
         child: LoginPage(
           key: _scaffoldKey,
@@ -85,7 +85,9 @@ final appRouter = GoRouter(
         }
 
         return MaterialPage(
+          key: _pageKey,
           child: HomePage(
+            key: _scaffoldKey,
             currentIndex: homeDestinations
                 .indexWhere((element) => element.route == RoutesName.initial),
             child: const Text("Not found"),

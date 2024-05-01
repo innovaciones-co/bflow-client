@@ -1,8 +1,11 @@
+import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
-
-import '../widgets/adaptive_navigation.dart';
-import '../../../../core/routes/router.dart' as router;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart' as go;
+
+import '../../../../core/routes/router.dart' as router;
+import '../widgets/adaptive_navigation.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key, required this.child, required this.currentIndex});
@@ -14,30 +17,39 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final bloc = BlocProvider.of<HomeBloc>(context);
-    return LayoutBuilder(
-      builder: (context, dimens) {
-        void onSelected(int index) {
-          final destination = router.homeDestinations[index];
-          go.GoRouter.of(context).go(destination.route);
+    return BlocListener<HomeBloc, HomeState>(
+      listener: (context, state) {
+        if (state is AlertMessage) {
+          context.showAlert(
+            message: state.message,
+            type: state.type,
+          );
         }
-
-        return AdaptiveNavigation(
-          key: _navigationRailKey,
-          destinations: router.homeDestinations
-              .map((e) => NavigationDestination(
-                    icon: e.icon,
-                    label: e.label,
-                  ))
-              .toList(),
-          selectedIndex: currentIndex,
-          onDestinationSelected: onSelected,
-          child: _Switcher(
-            key: _switcherKey,
-            child: child,
-          ),
-        );
       },
+      child: LayoutBuilder(
+        builder: (context, dimens) {
+          void onSelected(int index) {
+            final destination = router.homeDestinations[index];
+            go.GoRouter.of(context).go(destination.route);
+          }
+
+          return AdaptiveNavigation(
+            key: _navigationRailKey,
+            destinations: router.homeDestinations
+                .map((e) => NavigationDestination(
+                      icon: e.icon,
+                      label: e.label,
+                    ))
+                .toList(),
+            selectedIndex: currentIndex,
+            onDestinationSelected: onSelected,
+            child: _Switcher(
+              key: _switcherKey,
+              child: child,
+            ),
+          );
+        },
+      ),
     );
   }
 }

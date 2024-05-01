@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 
 class InputWidget extends StatelessWidget {
-  final String title;
+  final String label;
   final bool obscureText;
   final String hintText;
+  final Function(String)? onChanged;
+  final String? Function(String?)? validator;
+  final String? initialValue;
 
   const InputWidget({
     super.key,
-    required this.title,
+    required this.label,
+    this.initialValue,
     this.obscureText = false,
     this.hintText = "",
+    this.onChanged,
+    this.validator,
   });
 
   @override
@@ -19,25 +25,17 @@ class InputWidget extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(title),
+          child: Text(label),
         ),
         const SizedBox(height: 5),
-        TextField(
+        TextFormField(
+          onChanged: onChanged,
+          validator: validator,
           obscureText: obscureText,
+          initialValue: initialValue,
           enableSuggestions: obscureText ? false : true,
           autocorrect: obscureText ? false : true,
           decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.grey, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.grey, width: 1.5),
-            ),
-            isDense: true,
-            filled: true,
-            fillColor: Colors.white,
             hintText: hintText,
           ),
         ),

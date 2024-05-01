@@ -1,4 +1,3 @@
-import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/utils/map_failure_to_error_message.dart';
@@ -18,53 +17,45 @@ class JobsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<JobsBloc>(
-      create: (context) {
-        JobsBloc jobsBloc = DependencyInjection.sl();
-        jobsBloc.add(GetJobsEvent());
-        return jobsBloc;
-      },
-      child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => _dialogBuilder(context),
-          child: const Icon(
-            Icons.add_task_outlined,
-          ),
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _dialogBuilder(context),
+        child: const Icon(
+          Icons.add_task_outlined,
         ),
-        body: PageContainerWidget(
-          title: "Jobs (Construction list)",
+      ),
+      body: PageContainerWidget(
+        title: "Jobs (Construction list)",
+        child: SingleChildScrollView(
           child: Column(
             children: [
               _getJobCards(context),
               const JobsFilterWidget(),
-              Expanded(
-                child: BlocBuilder<JobsBloc, JobsState>(
-                  buildWhen: (previous, current) => true,
-                  builder: (context, state) {
-                    if (state is JobsInitial) {
-                      return const SizedBox.shrink();
-                    }
+              BlocBuilder<JobsBloc, JobsState>(
+                builder: (context, state) {
+                  if (state is JobsInitial) {
+                    return const SizedBox.shrink();
+                  }
 
-                    if (state is JobsError) {
-                      final message = mapFailureToErrorMessage(state.failure);
-                      return Center(
-                        child: Text(message),
-                      );
-                    }
-
-                    if (state is JobsLoaded) {
-                      return ListView.builder(
-                        itemCount: state.jobs.length,
-                        itemBuilder: (_, i) =>
-                            JobItemWidget(job: state.jobs[i]),
-                      );
-                    }
-
-                    return const Center(
-                      child: CircularProgressIndicator(),
+                  if (state is JobsError) {
+                    final message = mapFailureToErrorMessage(state.failure);
+                    return Center(
+                      child: Text(message),
                     );
-                  },
-                ),
+                  }
+
+                  if (state is JobsLoaded) {
+                    return Column(
+                      children: state.jobsFiltered
+                          .map((job) => JobItemWidget(job: job))
+                          .toList(),
+                    );
+                  }
+
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
               )
             ],
           ),
@@ -73,12 +64,14 @@ class JobsPage extends StatelessWidget {
     );
   }
 
-  Widget _jobsTotalCard(BuildContext context,
-      {required Color color,
-      required Color borderColor,
-      required String title,
-      required String total,
-      required String imagePath}) {
+  Widget _jobsTotalCard(
+    BuildContext context, {
+    required Color color,
+    required Color borderColor,
+    required String title,
+    required String total,
+    required String imagePath,
+  }) {
     return Expanded(
       flex: 1,
       child: Row(
@@ -181,7 +174,7 @@ class JobsPage extends StatelessWidget {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return const LeftDialogWidget(
+        return LeftDialogWidget(
           title: "New Job",
           child: CreateJobWidget(),
         );

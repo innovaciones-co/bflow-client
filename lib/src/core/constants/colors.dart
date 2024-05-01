@@ -20,6 +20,7 @@ class AppColor {
   static Color green = const Color(0xff38BB9C);
   static Color lightGreen = const Color(0xffd9f2e0);
   static Color orange = const Color(0xffFF7733);
+  static Color red = const Color(0xfff23d4f);
 
   // To do list Colors
   static List<Color> todoColors = [

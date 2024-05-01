@@ -10,13 +10,13 @@ class UsersRemoteDataSource {
 
   Future<List<UsersModel>> fetchUsers() async {
     List<dynamic> response =
-        await apiService.get(ApiConstants.listUsersEndpoint);
+        await apiService.get(endpoint: ApiConstants.listUsersEndpoint);
     return response.map((e) => UsersModel.fromMap(e)).toList();
   }
 
   Future<List<UsersModel>> fetchSupervisors() async {
     List<dynamic> response =
-        await apiService.get(ApiConstants.listUsersEndpoint);
+        await apiService.get(endpoint: ApiConstants.listUsersEndpoint);
     return response
         .map((e) => UsersModel.fromMap(e))
         .toList()

@@ -2,6 +2,7 @@ import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/users/domain/entities/user_entity.dart';
 import 'package:bflow_client/src/features/users/presentation/bloc/users_bloc.dart';
@@ -34,7 +35,9 @@ class UsersPage extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             }
             if (state is UsersError) {
-              return ErrorWidget(Exception(state.failure.message));
+              return FailureWidget(
+                failure: state.failure,
+              );
             }
             if (state is UsersLoaded) {
               var users = state.users;

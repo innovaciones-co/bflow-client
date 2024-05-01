@@ -3,8 +3,8 @@ import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.da
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:dartz/dartz.dart';
 
+import '../../domain/repositories/job_repository.dart';
 import '../sources/jobs_remote_data_source.dart';
-import '../../domain/repositories/job_reposiroty.dart';
 
 class JobsRepositoryImp implements JobsRepository {
   final JobsRemoteDataSource remoteDataSource;
@@ -32,9 +32,12 @@ class JobsRepositoryImp implements JobsRepository {
   }
 
   @override
-  Future<Either<Failure, Job>> getJob(int id) {
-    // TODO: implement getJob
-    throw UnimplementedError();
+  Future<Either<Failure, Job>> getJob(int id) async {
+    try {
+      return Right(await remoteDataSource.fetchJob(id));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
   }
 
   @override

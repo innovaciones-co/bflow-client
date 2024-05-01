@@ -1,3 +1,4 @@
+import "package:bflow_client/src/core/constants/colors.dart";
 import "package:flutter/material.dart";
 
 class MaterialTheme {
@@ -362,17 +363,19 @@ class MaterialTheme {
   }
 
   ThemeData theme(ColorScheme colorScheme) => ThemeData(
-      useMaterial3: true,
-      brightness: colorScheme.brightness,
-      colorScheme: colorScheme,
-      textTheme: textTheme.apply(
-        bodyColor: colorScheme.onSurface,
-        displayColor: colorScheme.onSurface,
-      ),
-      scaffoldBackgroundColor: colorScheme.background,
-      canvasColor: colorScheme.surface,
-      appBarTheme: _abbBarTheme(),
-      elevatedButtonTheme: _elevatedButtonTheme(colorScheme));
+        useMaterial3: true,
+        brightness: colorScheme.brightness,
+        colorScheme: colorScheme,
+        textTheme: textTheme.apply(
+          bodyColor: colorScheme.onSurface,
+          displayColor: colorScheme.onSurface,
+        ),
+        scaffoldBackgroundColor: colorScheme.background,
+        canvasColor: colorScheme.surface,
+        appBarTheme: _abbBarTheme(),
+        elevatedButtonTheme: _elevatedButtonTheme(colorScheme),
+        inputDecorationTheme: _inputDecorationTheme(colorScheme),
+      );
 
   AppBarTheme _abbBarTheme() {
     return AppBarTheme(
@@ -523,6 +526,23 @@ class MaterialTheme {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       ),
+    );
+  }
+
+  _inputDecorationTheme(ColorScheme colorScheme) {
+    return InputDecorationTheme(
+      contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(6),
+        borderSide: BorderSide(color: AppColor.grey, width: 1),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(6),
+        borderSide: BorderSide(color: AppColor.grey, width: 1.5),
+      ),
+      isDense: true,
+      filled: true,
+      fillColor: AppColor.white,
     );
   }
 }

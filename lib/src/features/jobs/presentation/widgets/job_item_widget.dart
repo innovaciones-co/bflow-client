@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/routes/routes.dart';
@@ -19,7 +20,8 @@ class JobItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey.shade300,
+        color: AppColor.lightGrey,
+        borderRadius: BorderRadius.circular(5),
       ),
       height: 120, // THIS
       margin: const EdgeInsets.symmetric(vertical: 10),
@@ -140,14 +142,18 @@ class JobItemWidget extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Column(
-              //mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ActionButtonWidget(
-                  onPressed: () => _goToDetails(context),
-                  type: ButtonType.elevatedButton,
-                  title: "View details",
-                  backgroundColor: context.background,
-                  foregroundColor: context.primary,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ActionButtonWidget(
+                      onPressed: () => _goToDetails(context),
+                      type: ButtonType.elevatedButton,
+                      title: "View details",
+                      backgroundColor: context.background,
+                      foregroundColor: context.primary,
+                    ),
+                  ],
                 ),
               ],
             ),
