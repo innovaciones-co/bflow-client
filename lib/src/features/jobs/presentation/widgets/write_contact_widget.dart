@@ -162,7 +162,7 @@ class WriteContactWidget extends StatelessWidget with Validator {
                               const SizedBox(width: 15),
                               Expanded(
                                 child: InputWidget(
-                                  label: "Tax number",
+                                  label: "ABN number",
                                   initialValue: state.taxNumber,
                                   onChanged: contactCubit.updateTaxNumber,
                                 ),
