@@ -152,6 +152,7 @@ class ContactsPage extends StatelessWidget {
               ),
               color: AppColor.blue,
               icon: const Icon(Icons.edit_outlined),
+              tooltip: 'Edit',
             ),
             Builder(builder: (context) {
               return IconButton(
@@ -162,8 +163,20 @@ class ContactsPage extends StatelessWidget {
                   Icons.delete_outline_outlined,
                   size: 20,
                 ),
+                tooltip: 'Delete',
               );
-            })
+            }),
+            contact.type == ContactType.supplier
+                ? IconButton(
+                    onPressed: () {},
+                    color: AppColor.blue,
+                    icon: const Icon(
+                      Icons.menu_book_outlined,
+                      size: 20,
+                    ),
+                    tooltip: 'See Catalog',
+                  )
+                : const SizedBox.shrink(),
           ],
         ),
       ),

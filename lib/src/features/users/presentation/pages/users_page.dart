@@ -138,6 +138,7 @@ class UsersPage extends StatelessWidget {
               ),
               color: AppColor.blue,
               icon: const Icon(Icons.edit_outlined),
+              tooltip: 'Edit',
             ),
             IconButton(
               onPressed: () => context
@@ -148,6 +149,7 @@ class UsersPage extends StatelessWidget {
                 Icons.delete_outline_outlined,
                 size: 20,
               ),
+              tooltip: 'Delete',
             ),
           ],
         ),
