@@ -1,4 +1,5 @@
 import 'package:bflow_client/src/core/routes/routes.dart';
+import 'package:bflow_client/src/features/catalog/presentation/pages/catalog_page.dart';
 import 'package:bflow_client/src/features/contacts/presentation/pages/contacts_page.dart';
 import 'package:bflow_client/src/features/home/presentation/pages/home_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/job_page.dart';
@@ -126,6 +127,37 @@ final appRouter = GoRouter(
             key: _scaffoldKey,
             currentIndex: homeDestinations
                 .indexWhere((element) => element.route == RoutesName.initial),
+            child: const Text("Not found"),
+          ),
+        );
+      },
+    ),
+    // Catalog Screen
+    GoRoute(
+      path: RoutesName.catalog,
+      pageBuilder: (context, state) {
+        final idStr = state.pathParameters["id"];
+        final int? supplierId = idStr != null ? int.tryParse(idStr) : null;
+        if (supplierId != null) {
+          return MaterialPage<void>(
+            key: _pageKey,
+            child: HomePage(
+              key: _scaffoldKey,
+              currentIndex: homeDestinations.indexWhere(
+                  (element) => element.route == RoutesName.contacts),
+              child: CatalogPage(
+                supplierId: supplierId,
+              ),
+            ),
+          );
+        }
+
+        return MaterialPage(
+          key: _pageKey,
+          child: HomePage(
+            key: _scaffoldKey,
+            currentIndex: homeDestinations
+                .indexWhere((element) => element.route == RoutesName.contacts),
             child: const Text("Not found"),
           ),
         );
