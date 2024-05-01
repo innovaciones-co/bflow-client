@@ -13,11 +13,28 @@ class TasksLoading extends TasksState {}
 
 class TasksLoaded extends TasksState {
   final List<Task> tasks;
+  final List<Task> selectedTasks;
 
-  const TasksLoaded({required this.tasks});
+  const TasksLoaded({
+    required this.tasks,
+    this.selectedTasks = const [],
+  });
 
   @override
-  List<Object> get props => [tasks];
+  List<Object> get props => [
+        tasks,
+        selectedTasks,
+      ];
+
+  TasksLoaded copyWith({
+    List<Task>? tasks,
+    List<Task>? selectedTasks,
+  }) {
+    return TasksLoaded(
+      tasks: tasks ?? this.tasks,
+      selectedTasks: selectedTasks ?? this.selectedTasks,
+    );
+  }
 }
 
 class TasksError extends TasksState {

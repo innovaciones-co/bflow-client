@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -44,6 +45,19 @@ class InputWidget extends StatelessWidget {
           inputFormatters: inputFormatters,
           decoration: InputDecoration(
             hintText: hintText,
+            hintStyle: TextStyle(
+              color: AppColor.grey,
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColor.red,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColor.red,
+              ),
+            ),
           ),
         ),
       ],

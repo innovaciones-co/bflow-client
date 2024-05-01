@@ -163,29 +163,33 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     );
   }
 
-  TableRow _tableRow(
-      {required Task task, required int index, required bool parent}) {
+  TableRow _tableRow({
+    required Task task,
+    required int index,
+    required bool parent,
+  }) {
     return TableRow(
       decoration: BoxDecoration(color: task.backgroundStatusColor),
       children: [
         _tableCell(
           parent
-              ? Checkbox(
-                  value: _tasksSelected.contains(task),
-                  onChanged: (bool? value) {
-                    if (value == true) {
-                      setState(() {
-                        _tasksSelected.add(task);
-                      });
-                    } else {
-                      setState(() {
-                        _tasksSelected.remove(task);
-                      });
+              ? BlocBuilder<TasksBloc, TasksState>(
+                  builder: (context, state) {
+                    TasksBloc tasksBloc = context.read<TasksBloc>();
+                    if (state is! TasksLoaded) {
+                      return const SizedBox.shrink();
                     }
+
+                    var taskSelected = state.selectedTasks.contains(task);
+                    return Checkbox(
+                      value: taskSelected,
+                      onChanged: (val) =>
+                          tasksBloc.add(ToggleSelectedTask(task: task)),
+                      side: BorderSide(color: AppColor.darkGrey, width: 2),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(3)),
+                    );
                   },
-                  side: BorderSide(color: AppColor.darkGrey, width: 2),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(3)),
                 )
               : const SizedBox.shrink(),
         ),

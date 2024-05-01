@@ -30,6 +30,13 @@ class TasksRepositoryImp implements TasksRepository {
       return Right(await remoteDataSource.deleteTask(id));
     } on RemoteDataSourceException catch (e) {
       return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(
+        ClientFailure(
+          message: e.toString(),
+          errorResponse: e.errorResponse,
+        ),
+      );
     }
   }
 

@@ -3,6 +3,7 @@ import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/tasks_filter_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_task_widget.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,8 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
         Row(
           children: [
             ActionButtonWidget(
-              onPressed: () {},
+              onPressed: () =>
+                  context.read<TasksBloc>().add(DeleteTasksEvent()),
               type: ButtonType.textButton,
               title: "Delete",
               icon: Icons.delete_outline,

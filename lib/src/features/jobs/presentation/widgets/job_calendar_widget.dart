@@ -156,7 +156,7 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
           ),
           children: [
             _tableCell(Checkbox(
-              // Fix Checkbox
+              // TODO: Implement Checkbox for all
               value: isSelected,
               onChanged: (bool? value) {
                 isSelected;
@@ -174,13 +174,27 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
         ...tasks.asMap().entries.map(
               (e) => TableRow(
                 children: [
-                  _tableCell(Checkbox(
-                    value: isSelected,
-                    onChanged: (bool? value) {
-                      isSelected;
-                    },
-                    side: BorderSide(color: AppColor.darkGrey, width: 2),
-                  )),
+                  _tableCell(
+                    BlocBuilder<TasksBloc, TasksState>(
+                      builder: (context, state) {
+                        TasksBloc tasksBloc = context.read<TasksBloc>();
+                        if (state is! TasksLoaded) {
+                          return const SizedBox.shrink();
+                        }
+
+                        var taskSelected =
+                            state.selectedTasks.contains(e.value);
+                        return Checkbox(
+                          value: taskSelected,
+                          onChanged: (val) =>
+                              tasksBloc.add(ToggleSelectedTask(task: e.value)),
+                          side: BorderSide(color: AppColor.darkGrey, width: 2),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(3)),
+                        );
+                      },
+                    ),
+                  ),
                   _tableCell(Container(
                     height: rowsHeight,
                     alignment: Alignment.center,

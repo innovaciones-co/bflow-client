@@ -18,7 +18,7 @@ class User extends Equatable {
   final UserRole? role;
 
   const User({
-    required this.id,
+    this.id,
     required this.firstName,
     required this.lastName,
     required this.username,

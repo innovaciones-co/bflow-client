@@ -124,11 +124,14 @@ class CreateJobCubit extends Cubit<CreateJobState> {
         address: state.address,
         user: state.owner!,
         //TODO: Use client
-        client: Contact(
-            id: 10000,
-            name: "Jhon Dow",
-            email: "test",
-            type: ContactType.client),
+        client: const Contact(
+          id: 10000,
+          name: "Jhon Dow",
+          email: "test",
+          type: ContactType.client,
+          address: 'Cll 123',
+          phone: '+123',
+        ),
         supervisor: state.supervisor!,
       ),
     );
@@ -164,11 +167,14 @@ class CreateJobCubit extends Cubit<CreateJobState> {
         address: state.address,
         user: state.owner!,
         //TODO: Use client
-        client: Contact(
-            id: 10000,
-            name: "Jhon Dow",
-            email: "test",
-            type: ContactType.client),
+        client: const Contact(
+          id: 10000,
+          name: "Jhon Dow",
+          email: "test",
+          type: ContactType.client,
+          address: 'Cll 123',
+          phone: '+123',
+        ),
         supervisor: state.supervisor!,
       ),
     );

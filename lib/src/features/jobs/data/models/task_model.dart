@@ -54,7 +54,7 @@ class TaskModel extends Task {
         endDate:
             json["endDate"] == null ? null : DateTime.parse(json["endDate"]),
         comments: json["description"],
-        progress: json["progress"],
+        progress: (json["progress"] as double).round(),
         status: TaskStatus.fromString(json["status"]),
         stage: TaskStage.fromString(json["stage"]),
         parentTask: json["parentTask"],

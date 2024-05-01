@@ -1,4 +1,6 @@
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/users/domain/entities/user_entity.dart';
+import 'package:bflow_client/src/features/users/domain/entities/user_role.dart';
 
 mixin Validator {
   // Email validation
@@ -36,6 +38,39 @@ mixin Validator {
   String? validateName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Name is required';
+    }
+    return null;
+  }
+
+  String? validateFirstName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'First name is required';
+    }
+    return null;
+  }
+
+  String? validateLastName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Last name is required';
+    }
+    return null;
+  }
+
+  String? validateUsername(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Last name is required';
+    }
+
+    if (value.length < 6) {
+      return 'Username must be at least 6 characters';
+    }
+
+    return null;
+  }
+
+  String? validateRole(UserRole? value) {
+    if (value == null) {
+      return 'Role is required';
     }
     return null;
   }
@@ -126,6 +161,41 @@ mixin Validator {
     if (object == null) {
       return "Required";
     }
+    return null;
+  }
+
+  // Phone validation
+  String? validatePhone(String? value) {
+    RegExp regExp = RegExp(r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$');
+
+    if (value != null && !regExp.hasMatch(value)) {
+      return 'Invalid phone number';
+    }
+    return null;
+  }
+
+  String? validateContactType(ContactType? value) {
+    if (value == null) {
+      return 'Type is required';
+    }
+    return null;
+  }
+
+  String? validateQuantity(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Quantity is required";
+    }
+
+    int? quantity = int.tryParse(value);
+
+    if (quantity == null) {
+      return "Quantity shoudl be a valid number";
+    }
+
+    if (quantity < 0) {
+      return "Quantity should be a positive integer";
+    }
+
     return null;
   }
 }

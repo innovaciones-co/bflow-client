@@ -37,6 +37,16 @@ class UsersModel extends User {
         "username": username,
         "password": password,
         "email": email,
-        "role": role,
+        "role": role?.toJson(),
       };
+
+  factory UsersModel.fromEntity(User user) => UsersModel(
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        password: user.password,
+        email: user.email,
+        role: user.role,
+      );
 }

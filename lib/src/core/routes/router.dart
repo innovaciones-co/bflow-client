@@ -1,9 +1,9 @@
 import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:bflow_client/src/features/contacts/presentation/pages/contacts_page.dart';
 import 'package:bflow_client/src/features/home/presentation/pages/home_page.dart';
-import 'package:bflow_client/src/features/jobs/presentation/pages/task_confirmation_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/job_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/jobs_page.dart';
+import 'package:bflow_client/src/features/jobs/presentation/pages/task_confirmation_page.dart';
 import 'package:bflow_client/src/features/login/presentation/pages/login_page.dart';
 import 'package:bflow_client/src/features/users/presentation/pages/users_page.dart';
 import 'package:flutter/material.dart';
@@ -94,8 +94,9 @@ final appRouter = GoRouter(
             child: TaskConfirmationPage(
               key: _scaffoldKey,
               taskId: taskId,
-              action:
-                  TaskAction.fromString(state.uri.queryParameters['action']),
+              action: TaskAction.fromString(
+                state.uri.queryParameters['action'],
+              ),
             ),
           );
         }),

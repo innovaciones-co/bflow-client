@@ -4,11 +4,12 @@ import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/write_user_widget.dart';
 import 'package:bflow_client/src/features/users/domain/entities/user_entity.dart';
 import 'package:bflow_client/src/features/users/presentation/bloc/users_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../widgets/write_user_widget.dart';
 
 class UsersPage extends StatelessWidget {
   const UsersPage({super.key});
@@ -16,23 +17,28 @@ class UsersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<UsersBloc>(
-      create: (context) {
-        UsersBloc usersBloc = DependencyInjection.sl();
-        usersBloc.add(GetUsersEvent());
-        return usersBloc;
-      },
+      create: (_) => DependencyInjection.sl()..add(GetUsersEvent()),
       child: PageContainerWidget(
         title: 'Users',
         actions: [
-          ActionButtonWidget(
-            onPressed: () =>
-                context.showLeftDialog('New User', WriteUserWidget()),
-            icon: Icons.add,
-            type: ButtonType.elevatedButton,
-            title: "New user",
-            backgroundColor: AppColor.blue,
-            foregroundColor: AppColor.white,
-          ),
+          Builder(builder: (context) {
+            return ActionButtonWidget(
+              onPressed: () {
+                UsersBloc usersBloc = context.read<UsersBloc>();
+                return context.showLeftDialog(
+                  'New User',
+                  WriteUserWidget(
+                    usersBloc: usersBloc,
+                  ),
+                );
+              },
+              icon: Icons.add,
+              type: ButtonType.elevatedButton,
+              title: "New user",
+              backgroundColor: AppColor.blue,
+              foregroundColor: AppColor.white,
+            );
+          }),
         ],
         child: BlocBuilder<UsersBloc, UsersState>(
           builder: (context, state) {
@@ -86,7 +92,7 @@ class UsersPage extends StatelessWidget {
               _tableData(context, e.lastName),
               _tableData(context, e.email),
               _tableData(context, e.role.toString()),
-              _tableActions(context),
+              _tableActions(context, e),
             ],
           ),
         )
@@ -115,16 +121,34 @@ class UsersPage extends StatelessWidget {
     );
   }
 
-  _tableActions(BuildContext context) {
+  _tableActions(BuildContext context, User user) {
     return TableCell(
       child: Container(
         padding: const EdgeInsets.all(10),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(onPressed: null, icon: Icon(Icons.edit_outlined)),
             IconButton(
-                onPressed: null, icon: Icon(Icons.delete_outline_outlined))
+              onPressed: () => context.showLeftDialog(
+                "Edit Contact",
+                WriteUserWidget(
+                  usersBloc: context.read(),
+                  user: user,
+                ),
+              ),
+              color: AppColor.blue,
+              icon: const Icon(Icons.edit_outlined),
+            ),
+            IconButton(
+              onPressed: () => context
+                  .read<UsersBloc>()
+                  .add(DeleteUserEvent(userId: user.id!)),
+              color: AppColor.blue,
+              icon: const Icon(
+                Icons.delete_outline_outlined,
+                size: 20,
+              ),
+            ),
           ],
         ),
       ),
