@@ -38,26 +38,18 @@ class WriteProductWidget extends StatelessWidget with Validator {
                   ),
                 )
               : const SizedBox.shrink(), */
-          InputWidget(
-            label: "Trade code",
-            validator: validateName,
-            keyboardType: TextInputType.name,
-            initialValue: "",
-            onChanged: null,
-          ),
-          const SizedBox(height: 20),
-          InputWidget(
+          DropdownWidget<String>(
             label: "Category name",
-            validator: validateName,
-            keyboardType: TextInputType.name,
-            initialValue: "",
+            items: list,
+            getLabel: (s) => s,
             onChanged: null,
+            initialValue: list.first,
           ),
           const SizedBox(height: 20),
           InputWidget(
             label: "Sku",
             validator: validateName,
-            keyboardType: TextInputType.name,
+            keyboardType: TextInputType.text,
             initialValue: "",
             onChanged: null,
           ),
@@ -65,7 +57,7 @@ class WriteProductWidget extends StatelessWidget with Validator {
           InputWidget(
             label: "Prduct name",
             validator: validateName,
-            keyboardType: TextInputType.name,
+            keyboardType: TextInputType.text,
             initialValue: "",
             onChanged: null,
           ),
@@ -73,7 +65,7 @@ class WriteProductWidget extends StatelessWidget with Validator {
           InputWidget(
             label: "Description",
             validator: validateName,
-            keyboardType: TextInputType.name,
+            keyboardType: TextInputType.text,
             initialValue: "",
             onChanged: null,
           ),
@@ -89,7 +81,7 @@ class WriteProductWidget extends StatelessWidget with Validator {
           InputWidget(
             label: "Rate",
             validator: validateName,
-            keyboardType: TextInputType.name,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             initialValue: "",
             onChanged: null,
           ),
@@ -97,7 +89,7 @@ class WriteProductWidget extends StatelessWidget with Validator {
           InputWidget(
             label: "Url",
             validator: validateName,
-            keyboardType: TextInputType.name,
+            keyboardType: TextInputType.url,
             initialValue: "",
             onChanged: null,
           ),
