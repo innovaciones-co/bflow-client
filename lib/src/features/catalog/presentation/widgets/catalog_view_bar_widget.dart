@@ -1,6 +1,7 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/features/catalog/presentation/widgets/write_category_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/write_product_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -67,7 +68,10 @@ class CatalogViewBarWidget extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             ActionButtonWidget(
-              onPressed: () {},
+              onPressed: () => context.showLeftDialog(
+                "New Category",
+                WriteCategorytWidget(),
+              ),
               type: ButtonType.elevatedButton,
               title: "New Category",
               icon: Icons.add,
