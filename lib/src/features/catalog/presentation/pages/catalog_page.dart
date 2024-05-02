@@ -1,10 +1,10 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
-import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/catalog_view_bar_widget.dart';
+import 'package:bflow_client/src/features/catalog/presentation/widgets/write_product_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/cross_scroll_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CatalogPage extends StatelessWidget {
   final int supplierId;
@@ -40,9 +40,9 @@ class CatalogPage extends StatelessWidget {
               child: Column(
                 children: [
                   _tableHeader(),
-                  _categoryTable(),
-                  _categoryTable(),
-                  _categoryTable(),
+                  _categoryTable(context),
+                  _categoryTable(context),
+                  _categoryTable(context),
                 ],
               ),
             ),
@@ -102,7 +102,7 @@ class CatalogPage extends StatelessWidget {
     );
   }
 
-  Widget _categoryTable() {
+  Widget _categoryTable(BuildContext context) {
     return Table(
       columnWidths: _columnWidths,
       border: TableBorder(
@@ -114,42 +114,18 @@ class CatalogPage extends StatelessWidget {
         verticalInside: BorderSide(width: 1.0, color: AppColor.lightPurple),
       ),
       children: [
-        _tableHeaderRow(
+        _tableCategoryRow(
           "123",
           "Category",
         ),
-        _tableItemRow(),
-        _tableItemRow(),
-        _tableItemRow(),
-        TableRow(
-          decoration: BoxDecoration(
-            color: AppColor.white,
-          ),
-          children: [
-            _tableCell(const Text("")),
-            _tableCell(const Text("")),
-            _tableCell(
-              ActionButtonWidget(
-                onPressed: () {}, // TODO: create WriteProductWidget
-                type: ButtonType.textButton,
-                title: "Add Product",
-                icon: Icons.add,
-              ),
-            ),
-            _tableCell(const Text("")),
-            _tableCell(const Text("")),
-            _tableCell(const Text("")),
-            _tableCell(const Text("")),
-            _tableCell(const Text("")),
-            _tableCell(const Text("")),
-            _tableCell(const Text("")),
-          ],
-        ),
+        _tableItemRow(context),
+        _tableItemRow(context),
+        _tableItemRow(context),
       ],
     );
   }
 
-  TableRow _tableHeaderRow(String code, String name) {
+  TableRow _tableCategoryRow(String code, String name) {
     return TableRow(
       decoration: BoxDecoration(
         color: AppColor.lightPurple,
@@ -170,7 +146,7 @@ class CatalogPage extends StatelessWidget {
     );
   }
 
-  TableRow _tableItemRow() {
+  TableRow _tableItemRow(BuildContext context) {
     return TableRow(
       decoration: BoxDecoration(
         color: AppColor.white,
@@ -184,13 +160,13 @@ class CatalogPage extends StatelessWidget {
             side: BorderSide(color: AppColor.darkGrey, width: 2),
           ),
         ),
-        _tableCell(Text('Sku')),
-        _tableCell(Text('Product name')),
-        _tableCell(Text('Description')),
-        _tableCell(Text("Measure")),
-        _tableCell(Text("Rate")),
-        _tableCell(Text('Increment')),
-        _tableCell(Text('Data created')),
+        _tableCell(const Text('Sku')),
+        _tableCell(const Text('Product name')),
+        _tableCell(const Text('Description')),
+        _tableCell(const Text("Measure")),
+        _tableCell(const Text("Rate")),
+        _tableCell(const Text('Increment')),
+        _tableCell(const Text('Data created')),
         _tableCell(
           Container(
             padding: const EdgeInsets.all(10),
@@ -198,7 +174,10 @@ class CatalogPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                  onPressed: () {}, // TODO: Implement edit
+                  onPressed: () => context.showLeftDialog(
+                    "Edit Product",
+                    WriteProductWidget(),
+                  ), // TODO: Implement edit
                   color: AppColor.blue,
                   icon: const Icon(Icons.edit_outlined),
                   tooltip: 'Edit',
