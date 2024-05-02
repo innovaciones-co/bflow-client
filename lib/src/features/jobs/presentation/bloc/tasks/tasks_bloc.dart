@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 
+import 'package:bflow_client/src/core/api/api.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
@@ -19,6 +20,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   final GetTasksUseCase getTasksUseCase;
   final DeleteTaskUseCase deleteTaskUseCase;
   final HomeBloc? homeBloc;
+  final SocketService socketService;
   List<Task> tasks = [];
 
   TasksBloc({
@@ -26,7 +28,20 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     required this.getTasksUseCase,
     required this.deleteTaskUseCase,
     required this.homeBloc,
+    required this.socketService,
   }) : super(TasksInitial()) {
+    socketService.init();
+    socketService.addSubscription(
+      SocketSubscription(
+        topic: SocketConstants.tasksTopic,
+        callback: (_) {
+          if (jobBloc.state is JobLoaded) {
+            add(GetTasksEvent(jobId: (jobBloc.state as JobLoaded).job.id));
+          }
+        },
+      ),
+    );
+
     on<DeleteTasksEvent>(
       (event, emit) async {
         if (state is TasksLoaded) {
