@@ -8,7 +8,7 @@ import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/contacts/presentation/cubit/contacts_cubit.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/write_contact_widget.dart';
+import 'package:bflow_client/src/features/contacts/presentation/widgets/write_contact_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/table_header_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
