@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bflow_client/src/features/jobs/domain/entities/template_entity.dart';
+import 'package:bflow_client/src/features/templates/domain/entities/template_entity.dart';
 
 class TemplateModel extends TemplateEntity {
   final String? template;

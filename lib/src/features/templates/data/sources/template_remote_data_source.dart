@@ -1,7 +1,7 @@
 import 'package:bflow_client/src/core/api/api.dart';
 import 'package:bflow_client/src/core/data/sources/remote_data_source.dart';
-import 'package:bflow_client/src/features/jobs/data/models/template_model.dart';
-import 'package:bflow_client/src/features/jobs/domain/entities/template_type.dart';
+import 'package:bflow_client/src/features/templates/data/models/template_model.dart';
+import 'package:bflow_client/src/features/templates/domain/entities/template_type.dart';
 
 class TemplateRemoteDataSource extends RemoteDataSource {
   TemplateRemoteDataSource({required super.apiService});
