@@ -1,7 +1,7 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
-import 'package:bflow_client/src/features/jobs/domain/entities/template_type.dart';
+import 'package:bflow_client/src/features/templates/domain/entities/template_type.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:bflow_client/src/features/templates/presentation/widgets/create_from_template.dart';
 import 'package:flutter/material.dart';
