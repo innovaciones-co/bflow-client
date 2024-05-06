@@ -39,8 +39,9 @@ class ContactsCubit extends Cubit<ContactsState> {
     response.fold(
       (failure) => homeBloc?.add(
         ShowMessageEvent(
-            message: "Contact couldn't be deleted: ${failure.message}",
-            type: AlertType.error),
+          message: "Contact couldn't be deleted: ${failure.message}",
+          type: AlertType.error,
+        ),
       ),
       (_) {
         loadContacts(null);

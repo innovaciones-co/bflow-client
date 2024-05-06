@@ -154,7 +154,7 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
         emit(state.copyWith(formStatus: FormStatus.success));
         tasksBloc.add(GetTasksEvent(jobId: task.job));
         homeBloc.add(ShowMessageEvent(
-          message: "Task added!",
+          message: "The task was added successfully!",
           type: AlertType.success,
         ));
       },

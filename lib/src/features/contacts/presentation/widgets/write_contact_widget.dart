@@ -1,5 +1,6 @@
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/domain/entities/form_status.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/utils/mixins/validator.dart';
@@ -34,7 +35,9 @@ class WriteContactWidget extends StatelessWidget with Validator {
       child: BlocConsumer<WriteContactCubit, WriteContactState>(
         listener: (context, state) {
           if (state.formStatus == FormStatus.success) {
-            context.showAlert(message: "The user was created successfully");
+            context.showAlert(
+                message: "The user was created successfully!",
+                type: AlertType.success);
 
             if (context.canPop()) {
               context.pop();

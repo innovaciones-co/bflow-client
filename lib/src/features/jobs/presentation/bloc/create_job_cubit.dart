@@ -144,7 +144,7 @@ class CreateJobCubit extends Cubit<CreateJobState> {
         emit(state.copyWith(formStatus: FormStatus.success));
         jobsBloc.add(GetJobsEvent());
         homeBloc.add(ShowMessageEvent(
-          message: "Job added!",
+          message: "The job was added successfully!",
           type: AlertType.success,
         ));
       },

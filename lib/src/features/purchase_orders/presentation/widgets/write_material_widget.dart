@@ -45,7 +45,7 @@ class WriteMaterialWidget extends StatelessWidget with Validator {
         listener: (context, state) {
           if (state.formStatus == FormStatus.success) {
             context.showAlert(
-              message: "The item was added successfully",
+              message: "The item was added successfully!",
               type: AlertType.success,
             );
 
