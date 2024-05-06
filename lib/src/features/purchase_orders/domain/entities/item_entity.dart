@@ -1,4 +1,4 @@
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/units.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/units.dart';
 import 'package:equatable/equatable.dart';
 
 class Item extends Equatable {

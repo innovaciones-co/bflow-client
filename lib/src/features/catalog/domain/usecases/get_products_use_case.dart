@@ -3,8 +3,8 @@
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/usecases/usecases.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/product_entity.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/repositories/product_repository.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/product_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/repositories/product_repository.dart';
 import 'package:dartz/dartz.dart';
 
 class GetProductsUseCase implements UseCase<List<Product>, GetProductsParams> {
@@ -13,16 +13,20 @@ class GetProductsUseCase implements UseCase<List<Product>, GetProductsParams> {
   GetProductsUseCase({required this.repository});
 
   @override
-  Future<Either<Failure, List<Product>>> execute(params) {
+  Future<Either<Failure, List<Product>>> execute(GetProductsParams params) {
     if (params.categoryId != null) {
-      return repository.getProducts(params.categoryId!);
+      return repository.getProductsByCategory(params.categoryId!);
     }
-    return repository.getProducts(null);
+    if (params.supplierId != null) {
+      return repository.getProductsBySupplier(params.supplierId!);
+    }
+    return repository.getProducts();
   }
 }
 
 class GetProductsParams {
   final int? categoryId;
+  final int? supplierId;
 
-  GetProductsParams({this.categoryId});
+  GetProductsParams({this.categoryId, this.supplierId});
 }

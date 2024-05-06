@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/product_entity.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/units.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/product_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/units.dart';
 
 class ProductModel extends Product {
   ProductModel({
@@ -10,6 +10,7 @@ class ProductModel extends Product {
     super.description,
     required super.sku,
     required super.unitPrice,
+    super.vat,
     required super.unitOfMeasure,
     super.uomOrderIncrement,
     super.url,
@@ -27,6 +28,7 @@ class ProductModel extends Product {
         sku: json["sku"],
         description: json["description"],
         unitPrice: json["unitPrice"]?.toDouble(),
+        vat: json["vat"],
         unitOfMeasure: Unit.fromString(json["unitOfMeasure"]),
         uomOrderIncrement: json["uomOrderIncrement"],
         url: json["url"],
@@ -39,6 +41,7 @@ class ProductModel extends Product {
         "sku": sku,
         "description": description,
         "unitPrice": unitPrice,
+        "vat": vat,
         "unitOfMeasure": unitOfMeasure.toJSON(),
         "uomOrderIncrement": uomOrderIncrement,
         "url": url,

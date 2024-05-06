@@ -1,6 +1,6 @@
 import 'package:bflow_client/src/core/api/api.dart';
 import 'package:bflow_client/src/core/data/sources/remote_data_source.dart';
-import 'package:bflow_client/src/features/purchase_orders/data/models/product_model.dart';
+import 'package:bflow_client/src/features/catalog/data/models/product_model.dart';
 
 class ProductsRemoteDataSource extends RemoteDataSource {
   ProductsRemoteDataSource({required super.apiService});

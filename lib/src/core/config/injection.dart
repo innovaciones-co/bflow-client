@@ -50,15 +50,15 @@ import 'package:bflow_client/src/features/login/domain/usecases/login_use_case.d
 import 'package:bflow_client/src/features/login/presentation/bloc/login_bloc.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/implements/categories_repository_imp.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/implements/items_repository_imp.dart';
-import 'package:bflow_client/src/features/purchase_orders/data/implements/products_repository_imp.dart';
+import 'package:bflow_client/src/features/catalog/data/implements/products_repository_imp.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/implements/purchase_orders_repository_imp.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/sources/categories_remote_data_source.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/sources/items_remote_data_source.dart';
-import 'package:bflow_client/src/features/purchase_orders/data/sources/products_remote_data_source.dart';
+import 'package:bflow_client/src/features/catalog/data/sources/products_remote_data_source.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/sources/purchase_orders_remote_data_source.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/category_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/item_repository.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/repositories/product_repository.dart';
+import 'package:bflow_client/src/features/catalog/domain/repositories/product_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/purchase_order_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_item_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_purchase_order_use_case.dart';
@@ -66,7 +66,7 @@ import 'package:bflow_client/src/features/purchase_orders/domain/usecases/delete
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_by_supplier_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_items_use_case.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_products_use_case.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/get_products_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_order_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_orders_by_job_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';

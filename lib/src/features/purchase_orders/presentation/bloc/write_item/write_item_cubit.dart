@@ -4,11 +4,11 @@ import 'package:bflow_client/src/features/contacts/domain/entities/contact_entit
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/get_suppliers_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/product_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/product_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_item_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_by_supplier_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_items_use_case.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_products_use_case.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/get_products_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
