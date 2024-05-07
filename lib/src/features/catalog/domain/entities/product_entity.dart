@@ -12,6 +12,7 @@ class Product extends Equatable {
   final int? uomOrderIncrement;
   final String? url;
   final int category;
+  final int supplier;
 
   const Product({
     this.id,
@@ -24,6 +25,7 @@ class Product extends Equatable {
     this.uomOrderIncrement,
     this.url,
     required this.category,
+    required this.supplier,
   });
 
   @override
@@ -38,6 +40,7 @@ class Product extends Equatable {
         uomOrderIncrement ?? '',
         url ?? '',
         category,
+        supplier,
       ];
 
   @override

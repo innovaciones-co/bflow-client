@@ -15,6 +15,7 @@ class ProductModel extends Product {
     super.uomOrderIncrement,
     super.url,
     required super.category,
+    required super.supplier,
   });
 
   factory ProductModel.fromJson(String str) =>
@@ -33,6 +34,7 @@ class ProductModel extends Product {
         uomOrderIncrement: json["uomOrderIncrement"],
         url: json["url"],
         category: json["category"],
+        supplier: json["supplier"],
       );
 
   Map<String, dynamic> toMap() => {
@@ -46,5 +48,6 @@ class ProductModel extends Product {
         "uomOrderIncrement": uomOrderIncrement,
         "url": url,
         "category": category,
+        "supplier": supplier,
       };
 }

@@ -1,10 +1,15 @@
+import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/product_entity.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/catalog_view_bar_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/write_product_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/cross_scroll_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CatalogPage extends StatelessWidget {
   final int supplierId;
@@ -29,26 +34,50 @@ class CatalogPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageContainerWidget(
-      title: 'Supplier catalog',
-      child: Column(
-        children: [
-          const CatalogViewBarWidget(),
-          const SizedBox(height: 15),
-          Expanded(
-            child: CrossScrollWidget(
+    return BlocProvider<ProductsCubit>(
+      create: (context) =>
+          DependencyInjection.sl()..loadSupplierProducts(supplierId),
+      child: BlocBuilder<ProductsCubit, ProductsState>(
+        builder: (context, state) {
+          if (state is ProductsLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (state is ProductsError) {
+            return FailureWidget(
+              failure: state.failure,
+            );
+          }
+          if (state is ProductsLoaded) {
+            final Map<int, List<Product>> catalogProducts =
+                _productsPerCategoryMap(state.products);
+
+            return PageContainerWidget(
+              title: '${state.supplier.name} catalog',
               child: Column(
                 children: [
-                  _tableHeader(),
-                  _categoryTable(context),
-                  _categoryTable(context),
-                  _categoryTable(context),
+                  const CatalogViewBarWidget(),
+                  const SizedBox(height: 15),
+                  Expanded(
+                    child: CrossScrollWidget(
+                      child: Column(
+                        children: [
+                          _tableHeader(),
+                          ...catalogProducts.entries
+                              .map((e) => _categoryTable(context, e.value))
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                 ],
               ),
-            ),
-          ),
-          const SizedBox(height: 10),
-        ],
+            );
+          }
+
+          return const SizedBox();
+        },
       ),
     );
   }
@@ -102,26 +131,36 @@ class CatalogPage extends StatelessWidget {
     );
   }
 
-  Widget _categoryTable(BuildContext context) {
-    return Table(
-      columnWidths: _columnWidths,
-      border: TableBorder(
-        top: BorderSide(width: 0.5, color: AppColor.lightPurple),
-        right: BorderSide(width: 1.0, color: AppColor.lightPurple),
-        bottom: BorderSide(width: 0.5, color: AppColor.lightPurple),
-        left: BorderSide(width: 1.0, color: AppColor.lightPurple),
-        horizontalInside: BorderSide(width: 1.0, color: AppColor.lightPurple),
-        verticalInside: BorderSide(width: 1.0, color: AppColor.lightPurple),
-      ),
-      children: [
-        _tableCategoryRow(
-          "123",
-          "Category",
-        ),
-        _tableItemRow(context),
-        _tableItemRow(context),
-        _tableItemRow(context),
-      ],
+  Widget _categoryTable(BuildContext context, List<Product> catalogProducts) {
+    return BlocBuilder<ProductsCubit, ProductsState>(
+      builder: (context, state) {
+        if (state is! ProductsLoaded) return const SizedBox.shrink();
+
+        return Table(
+          columnWidths: _columnWidths,
+          border: TableBorder(
+            top: BorderSide(width: 0.5, color: AppColor.lightPurple),
+            right: BorderSide(width: 1.0, color: AppColor.lightPurple),
+            bottom: BorderSide(width: 0.5, color: AppColor.lightPurple),
+            left: BorderSide(width: 1.0, color: AppColor.lightPurple),
+            horizontalInside:
+                BorderSide(width: 1.0, color: AppColor.lightPurple),
+            verticalInside: BorderSide(width: 1.0, color: AppColor.lightPurple),
+          ),
+          children: [
+            _tableCategoryRow(
+              catalogProducts.first.category.toString(),
+              state.categories
+                  .where(
+                      (element) => element.id == catalogProducts.first.category)
+                  .first
+                  .name,
+            ),
+            for (int index = 0; index < catalogProducts.length; index += 1)
+              _tableItemRow(context, catalogProducts[index]),
+          ],
+        );
+      },
     );
   }
 
@@ -146,7 +185,7 @@ class CatalogPage extends StatelessWidget {
     );
   }
 
-  TableRow _tableItemRow(BuildContext context) {
+  TableRow _tableItemRow(BuildContext context, Product product) {
     return TableRow(
       decoration: BoxDecoration(
         color: AppColor.white,
@@ -160,13 +199,13 @@ class CatalogPage extends StatelessWidget {
             side: BorderSide(color: AppColor.darkGrey, width: 2),
           ),
         ),
-        _tableCell(const Text('Sku')),
-        _tableCell(const Text('Product name')),
-        _tableCell(const Text('Description')),
-        _tableCell(const Text("Measure")),
-        _tableCell(const Text("Rate")),
-        _tableCell(const Text('Increment')),
-        _tableCell(const Text('Data created')),
+        _tableCell(Text(product.sku)),
+        _tableCell(Text(product.name)),
+        _tableCell(Text(product.description ?? '')),
+        _tableCell(Text(product.unitOfMeasure.toString())),
+        _tableCell(Text(product.unitPrice.toString())),
+        _tableCell(Text(product.uomOrderIncrement?.toString() ?? '')),
+        _tableCell(Text('date_created')), // TODO: Replace
         _tableCell(
           Container(
             padding: const EdgeInsets.all(10),
@@ -206,5 +245,17 @@ class CatalogPage extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  _productsPerCategoryMap(List<Product> products) {
+    final groupedProducts = <int, List<Product>>{};
+
+    for (final product in products) {
+      groupedProducts[product.category] =
+          groupedProducts[product.category] ?? [];
+      groupedProducts[product.category]!.add(product);
+    }
+
+    return groupedProducts;
   }
 }

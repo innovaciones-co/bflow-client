@@ -11,26 +11,14 @@ class ProductsRepositoryImp implements ProductsRepository {
   ProductsRepositoryImp({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<Product>>> getProductsByCategory(
-      int? categoryId) async {
+  Future<Either<Failure, List<Product>>> getProducts(
+      int? categoryId, int? supplierId) async {
     try {
-      return Right(await remoteDataSource.fetchProducts(categoryId));
+      return Right(
+          await remoteDataSource.fetchProducts(categoryId, supplierId));
     } on RemoteDataSourceException catch (e) {
       return Left(ServerFailure(message: e.message));
     }
-  }
-
-  @override
-  Future<Either<Failure, List<Product>>> getProductsBySupplier(
-      int? supplierId) {
-    // TODO: implement getProductsBySupplier
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<Failure, List<Product>>> getProducts() {
-    // TODO: implement getProducts
-    throw UnimplementedError();
   }
 
   @override

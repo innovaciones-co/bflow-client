@@ -170,7 +170,7 @@ class ContactsPage extends StatelessWidget {
             }),
             contact.type == ContactType.supplier
                 ? IconButton(
-                    onPressed: () => _goToDetails(context),
+                    onPressed: () => _goToDetails(context, contact.id!),
                     color: AppColor.blue,
                     icon: const Icon(
                       Icons.menu_book_outlined,
@@ -185,8 +185,7 @@ class ContactsPage extends StatelessWidget {
     );
   }
 
-  void _goToDetails(BuildContext context) {
-    context.go(
-        RoutesName.catalog.replaceAll(":id", '0')); //supplier.id.toString()));
+  void _goToDetails(BuildContext context, int supplierId) {
+    context.go(RoutesName.catalog.replaceAll(":id", supplierId.toString()));
   }
 }

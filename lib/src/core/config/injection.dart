@@ -1,6 +1,7 @@
 library dependency_injection;
 
 import 'package:bflow_client/src/core/api/api_service.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
 import 'package:bflow_client/src/features/contacts/data/implements/contacts_repository_imp.dart';
 import 'package:bflow_client/src/features/contacts/data/sources/sources.dart';
 import 'package:bflow_client/src/features/contacts/domain/repositories/contacts_repository.dart';
@@ -156,6 +157,13 @@ class DependencyInjection {
         createPurchaseOrderUseCase: sl(),
         deleteItemUseCase: sl(),
         homeBloc: sl(),
+      ),
+    );
+    sl.registerFactory<ProductsCubit>(
+      () => ProductsCubit(
+        getProductsUseCase: sl(),
+        getCategoriesUseCase: sl(),
+        getContactUseCase: sl(),
       ),
     );
 

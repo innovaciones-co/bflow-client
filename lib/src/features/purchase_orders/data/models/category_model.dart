@@ -6,7 +6,7 @@ class CategoryModel extends Category {
   const CategoryModel({
     required super.id,
     required super.name,
-    required super.contact,
+    required super.tradeCode,
     required super.parentCategory,
   });
 
@@ -18,21 +18,21 @@ class CategoryModel extends Category {
   factory CategoryModel.fromMap(Map<String, dynamic> json) => CategoryModel(
         id: json["id"],
         name: json["name"],
-        contact: json["contact"],
+        tradeCode: json["tradeCode"],
         parentCategory: json["parentCategory"],
       );
 
   Map<String, dynamic> toMap() => {
         "id": id,
         "name": name,
-        "contact": contact,
+        "tradeCode": tradeCode,
         "parentCategory": parentCategory,
       };
 
   factory CategoryModel.fromEntity(Category category) => CategoryModel(
         id: category.id,
         name: category.name,
-        contact: category.contact,
+        tradeCode: category.tradeCode,
         parentCategory: category.parentCategory,
       );
 }

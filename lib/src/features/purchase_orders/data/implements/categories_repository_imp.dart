@@ -55,7 +55,7 @@ class CategoriesRepositoryImp implements CategoriesRepository {
     try {
       var categories = await remoteDataSource.fetchCategories();
       return Right(categories
-          .where((element) => element.contact == supplierId)
+          .where((element) => element.tradeCode == supplierId)
           .toList());
     } on RemoteDataSourceException catch (e) {
       return Left(ServerFailure(message: e.message));

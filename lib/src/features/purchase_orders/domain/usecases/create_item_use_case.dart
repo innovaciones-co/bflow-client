@@ -25,7 +25,7 @@ class CreateItemUseCase implements UseCase<Item, CreateItemParams> {
       Item item = Item(
         name: product.name,
         description: product.description,
-        supplier: category.contact,
+        supplier: category.tradeCode,
         category: product.category,
         job: params.jobId,
         unitPrice: product.unitPrice,

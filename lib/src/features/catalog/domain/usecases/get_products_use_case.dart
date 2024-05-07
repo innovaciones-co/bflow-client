@@ -14,13 +14,7 @@ class GetProductsUseCase implements UseCase<List<Product>, GetProductsParams> {
 
   @override
   Future<Either<Failure, List<Product>>> execute(GetProductsParams params) {
-    if (params.categoryId != null) {
-      return repository.getProductsByCategory(params.categoryId!);
-    }
-    if (params.supplierId != null) {
-      return repository.getProductsBySupplier(params.supplierId!);
-    }
-    return repository.getProducts();
+    return repository.getProducts(params.categoryId, params.supplierId);
   }
 }
 
