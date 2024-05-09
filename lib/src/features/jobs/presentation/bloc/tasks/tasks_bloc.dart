@@ -66,31 +66,33 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
         }
       },
     );
-    on<ToggleSelectedTask>(
-      (event, emit) {
-        if (state is TasksLoaded) {
-          var loadedState = (state as TasksLoaded);
-          var selectedTasks = List<Task>.from(loadedState.selectedTasks);
-          var task = event.task;
-
-          if (selectedTasks.contains(task)) {
-            selectedTasks.remove(task);
-          } else {
-            selectedTasks.add(task);
-          }
-
-          emit(
-            loadedState.copyWith(selectedTasks: selectedTasks),
-          );
-        }
-      },
-    );
+    on<ToggleSelectedTask>(_toggleSelectdTask);
+    on<AddSelectedTask>(_addSelectdTask);
+    on<RemoveSelectedTask>(_removeSelectedTask);
     on<TasksEvent>((event, emit) {});
     on<LoadingTasksEvent>(_loadingTasks);
     on<GetTasksEvent>(_getTasks);
 
     if (jobBloc.state is JobLoaded) {
       add(GetTasksEvent(jobId: (jobBloc.state as JobLoaded).job.id));
+    }
+  }
+
+  FutureOr<void> _toggleSelectdTask(event, emit) {
+    if (state is TasksLoaded) {
+      var loadedState = (state as TasksLoaded);
+      var selectedTasks = List<Task>.from(loadedState.selectedTasks);
+      var task = event.task;
+
+      if (selectedTasks.contains(task)) {
+        selectedTasks.remove(task);
+      } else {
+        selectedTasks.add(task);
+      }
+
+      emit(
+        loadedState.copyWith(selectedTasks: selectedTasks),
+      );
     }
   }
 
@@ -111,5 +113,31 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   FutureOr<void> _loadingTasks(
       LoadingTasksEvent event, Emitter<TasksState> emit) {
     emit(TasksLoading());
+  }
+
+  FutureOr<void> _removeSelectedTask(
+      RemoveSelectedTask event, Emitter<TasksState> emit) {
+    var loadedState = (state as TasksLoaded);
+    var selectedTasks = List<Task>.from(loadedState.selectedTasks);
+    var task = event.task;
+
+    selectedTasks.remove(task);
+
+    emit(
+      loadedState.copyWith(selectedTasks: selectedTasks),
+    );
+  }
+
+  FutureOr<void> _addSelectdTask(
+      AddSelectedTask event, Emitter<TasksState> emit) {
+    var loadedState = (state as TasksLoaded);
+    var selectedTasks = List<Task>.from(loadedState.selectedTasks);
+    var task = event.task;
+
+    selectedTasks.add(task);
+
+    emit(
+      loadedState.copyWith(selectedTasks: selectedTasks),
+    );
   }
 }
