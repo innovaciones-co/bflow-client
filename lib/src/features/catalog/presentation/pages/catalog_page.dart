@@ -57,7 +57,7 @@ class CatalogPage extends StatelessWidget {
               title: '${state.supplier.name} catalog',
               child: Column(
                 children: [
-                  const CatalogViewBarWidget(),
+                  CatalogViewBarWidget(supplierId: supplierId),
                   const SizedBox(height: 15),
                   Expanded(
                     child: CrossScrollWidget(
@@ -215,7 +215,9 @@ class CatalogPage extends StatelessWidget {
                 IconButton(
                   onPressed: () => context.showLeftDialog(
                     "Edit Product",
-                    WriteProductWidget(),
+                    WriteProductWidget(
+                        productCubit: context.read(),
+                        supplierId: product.supplier),
                   ), // TODO: Implement edit
                   color: AppColor.blue,
                   icon: const Icon(Icons.edit_outlined),

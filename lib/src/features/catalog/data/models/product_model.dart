@@ -23,6 +23,20 @@ class ProductModel extends Product {
 
   String toJson() => json.encode(toMap());
 
+  factory ProductModel.fromEntity(Product product) => ProductModel(
+        id: product.id,
+        name: product.name,
+        sku: product.sku,
+        description: product.description,
+        unitPrice: product.unitPrice,
+        vat: product.vat,
+        unitOfMeasure: product.unitOfMeasure,
+        uomOrderIncrement: product.uomOrderIncrement,
+        url: product.url,
+        category: product.category,
+        supplier: product.supplier,
+      );
+
   factory ProductModel.fromMap(Map<String, dynamic> json) => ProductModel(
         id: json["id"],
         name: json["name"],

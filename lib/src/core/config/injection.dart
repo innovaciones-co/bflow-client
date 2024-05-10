@@ -1,6 +1,7 @@
 library dependency_injection;
 
 import 'package:bflow_client/src/core/api/api_service.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/create_product_usecase.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
 import 'package:bflow_client/src/features/contacts/data/implements/contacts_repository_imp.dart';
 import 'package:bflow_client/src/features/contacts/data/sources/sources.dart';
@@ -276,6 +277,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => DeleteUserUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => CreateProductUseCase(repository: sl()),
     );
 
     // Repository

@@ -4,10 +4,14 @@ import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/write_category_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/write_product_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CatalogViewBarWidget extends StatelessWidget {
+  final int supplierId;
+
   const CatalogViewBarWidget({
     super.key,
+    required this.supplierId,
   });
 
   @override
@@ -81,7 +85,10 @@ class CatalogViewBarWidget extends StatelessWidget {
             ActionButtonWidget(
               onPressed: () => context.showLeftDialog(
                 "New Product",
-                WriteProductWidget(),
+                WriteProductWidget(
+                  productCubit: context.read(),
+                  supplierId: supplierId,
+                ),
               ),
               type: ButtonType.elevatedButton,
               title: "New Product",
