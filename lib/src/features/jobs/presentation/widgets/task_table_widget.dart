@@ -35,8 +35,6 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     11: const FixedColumnWidth(40),
   };
 
-  bool _allTaskSelected = false;
-
   final List<Task> parentTasks = [];
   late final Map<int, List<Task>> childrenTasksMap;
 
@@ -183,10 +181,6 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
         bloc.add(RemoveSelectedTask(task: task));
       }
     }
-
-    setState(() {
-      _allTaskSelected = selected;
-    });
   }
 
   TableRow _tableRow({
