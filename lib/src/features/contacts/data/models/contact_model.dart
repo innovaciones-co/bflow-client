@@ -2,7 +2,7 @@ import 'package:bflow_client/src/features/contacts/domain/entities/contact_entit
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 
 class ContactModel extends Contact {
-  ContactModel({
+  const ContactModel({
     super.id,
     required super.name,
     required super.address,

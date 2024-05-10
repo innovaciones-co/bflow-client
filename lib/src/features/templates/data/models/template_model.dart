@@ -5,7 +5,7 @@ import 'package:bflow_client/src/features/templates/domain/entities/template_ent
 class TemplateModel extends TemplateEntity {
   final String? template;
 
-  TemplateModel({
+  const TemplateModel({
     required super.id,
     required super.name,
     this.template,

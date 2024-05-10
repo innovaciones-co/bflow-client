@@ -10,6 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'src/core/routes/router.dart';
 import 'src/core/routes/routes.dart';
 
+void onWebSockerError(dynamic error) => debugPrint("Error connecting: $error");
+
 class BflowApp extends StatelessWidget {
   const BflowApp({super.key});
 

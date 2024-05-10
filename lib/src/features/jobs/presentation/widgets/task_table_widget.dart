@@ -35,9 +35,6 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     11: const FixedColumnWidth(40),
   };
 
-  bool _allTaskSelected = false;
-  final List<Task?> _tasksSelected = [];
-
   final List<Task> parentTasks = [];
   late final Map<int, List<Task>> childrenTasksMap;
 
@@ -86,18 +83,27 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                   color: AppColor.grey,
                 ),
                 children: [
-                  _tableCell(Checkbox(
-                    value: _allTaskSelected,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _allTaskSelected = value ?? false;
+                  _tableCell(BlocSelector<TasksBloc, TasksState, List<Task>>(
+                    selector: (state) {
+                      if (state is TasksLoaded) {
+                        return state.selectedTasks;
+                      }
 
-                        _allTaskSelected
-                            ? _tasksSelected.addAll(widget.tasks)
-                            : _tasksSelected.removeWhere((element) => true);
-                      });
+                      return [];
                     },
-                    side: BorderSide(color: AppColor.darkGrey, width: 2),
+                    builder: (context, selectedTasks) {
+                      TasksBloc tasksBloc = context.read();
+                      return Checkbox(
+                        tristate: true,
+                        value: _checkIfAllTasksSelected(selectedTasks),
+                        onChanged: (val) => _toggleSelectedTasks(
+                          selected: val ?? false,
+                          bloc: tasksBloc,
+                          selectedTasks: selectedTasks,
+                        ),
+                        side: BorderSide(color: AppColor.darkGrey, width: 2),
+                      );
+                    },
                   )),
                   _tableCell(
                     const Center(
@@ -163,6 +169,20 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     );
   }
 
+  void _toggleSelectedTasks({
+    bool selected = false,
+    required TasksBloc bloc,
+    required List<Task> selectedTasks,
+  }) {
+    for (var task in widget.tasks) {
+      if (selected) {
+        bloc.add(AddSelectedTask(task: task));
+      } else {
+        bloc.add(RemoveSelectedTask(task: task));
+      }
+    }
+  }
+
   TableRow _tableRow({
     required Task task,
     required int index,
@@ -201,23 +221,15 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
               : const SizedBox.shrink(),
         ),
         _tableCell(
-          Row(
-            children: [
-              // TODO: show arrow only when parent has children
-              parent
-                  ? const Icon(
-                      Icons.arrow_drop_down_rounded,
-                      size: 20,
-                    )
-                  : const SizedBox(width: 30),
-              Expanded(
-                child: Text(
-                  task.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+          Expanded(
+            child: Tooltip(
+              message: task.name,
+              child: Text(
+                task.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-            ],
+            ),
           ),
           paddingLeft: 0,
         ),
@@ -331,6 +343,15 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     }
 
     return childrenTasksMap;
+  }
+
+  bool? _checkIfAllTasksSelected(List<Task> selectedTasks) {
+    if (widget.tasks.every((task) => selectedTasks.contains(task))) {
+      return true;
+    } else if (widget.tasks.every((task) => !selectedTasks.contains(task))) {
+      return false;
+    }
+    return null;
   }
 }
 

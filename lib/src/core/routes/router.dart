@@ -1,5 +1,6 @@
 import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:bflow_client/src/features/catalog/presentation/pages/catalog_page.dart';
+import 'package:bflow_client/src/features/catalog/presentation/pages/catalogs_paget.dart';
 import 'package:bflow_client/src/features/contacts/presentation/pages/contacts_page.dart';
 import 'package:bflow_client/src/features/home/presentation/pages/home_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/job_page.dart';
@@ -31,6 +32,12 @@ const List<CustomNavigationDestination> homeDestinations = [
     icon: Icon(Icons.contact_page_outlined),
     route: RoutesName.contacts,
     child: ContactsPage(),
+  ),
+  CustomNavigationDestination(
+    label: 'Contacts',
+    icon: Icon(Icons.menu_book_outlined),
+    route: RoutesName.catalogs,
+    child: CatalogsPage(),
   ),
 ];
 
@@ -144,7 +151,7 @@ final appRouter = GoRouter(
             child: HomePage(
               key: _scaffoldKey,
               currentIndex: homeDestinations.indexWhere(
-                  (element) => element.route == RoutesName.contacts),
+                  (element) => element.route == RoutesName.catalogs),
               child: CatalogPage(
                 supplierId: supplierId,
               ),
