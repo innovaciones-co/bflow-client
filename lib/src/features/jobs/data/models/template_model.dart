@@ -5,7 +5,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/template_entity.d
 class TemplateModel extends TemplateEntity {
   final String? template;
 
-  TemplateModel({
+  const TemplateModel({
     required super.id,
     required super.name,
     this.template,
