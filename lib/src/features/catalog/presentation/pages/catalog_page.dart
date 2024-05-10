@@ -214,8 +214,10 @@ class CatalogPage extends StatelessWidget {
                   onPressed: () => context.showLeftDialog(
                     "Edit Product",
                     WriteProductWidget(
-                        productCubit: context.read(),
-                        supplierId: product.supplier),
+                      productCubit: context.read(),
+                      supplierId: product.supplier,
+                      product: product,
+                    ),
                   ), // TODO: Implement edit
                   color: AppColor.blue,
                   icon: const Icon(Icons.edit_outlined),

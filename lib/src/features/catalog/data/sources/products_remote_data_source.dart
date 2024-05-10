@@ -40,4 +40,15 @@ class ProductsRemoteDataSource extends RemoteDataSource {
 
     return fetchProduct(productId);
   }
+
+  Future<ProductModel> updateProduct(Product product) async {
+    final productModel = ProductModel.fromEntity(product);
+    int productId = await apiService.put(
+      endpoint: ApiConstants.productEndpoint
+          .replaceAll(':id', productModel.id!.toString()),
+      data: productModel.toMap(),
+    );
+
+    return fetchProduct(productId);
+  }
 }

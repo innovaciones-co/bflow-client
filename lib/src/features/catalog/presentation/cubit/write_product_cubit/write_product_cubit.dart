@@ -4,6 +4,7 @@ import 'package:bflow_client/src/core/usecases/usecases.dart';
 import 'package:bflow_client/src/features/catalog/domain/entities/product_entity.dart';
 import 'package:bflow_client/src/features/catalog/domain/entities/units.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/create_product_usecase.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/update_product_usecase.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_use_case.dart';
@@ -17,11 +18,13 @@ class WriteProductCubit extends Cubit<WriteProductState> {
   final ProductsCubit productsCubit;
   final CreateProductUseCase createProductUseCase;
   final GetCategoriesUseCase getCategoriesUseCase;
+  final UpdateProductUseCase updateProductUseCase;
 
   WriteProductCubit({
     required this.productsCubit,
     required this.createProductUseCase,
     required this.getCategoriesUseCase,
+    required this.updateProductUseCase,
   }) : super(WriteProductValidator());
 
   Future<void> initForm({
@@ -29,7 +32,7 @@ class WriteProductCubit extends Cubit<WriteProductState> {
     final String name = '',
     final String sku = '',
     final String description = '',
-    final double? unitPrice,
+    final double? unitPrice = 0.0,
     final int? vat,
     final Unit? unitOfMeasure,
     final int? uomOrderIncrement,
@@ -60,8 +63,9 @@ class WriteProductCubit extends Cubit<WriteProductState> {
     );
   }
 
-  void initFormFromProduct(Product? product) {
+  void initFormFromProduct(Product? product, int? suppliedId) {
     if (product == null) {
+      initForm(supplier: suppliedId);
       return;
     }
     initForm(
@@ -97,6 +101,37 @@ class WriteProductCubit extends Cubit<WriteProductState> {
 
     final failureOrProduct = await createProductUseCase.execute(
       CreateProductParams(product: product),
+    );
+
+    failureOrProduct.fold(
+      (failure) =>
+          emit(state.copyWith(failure: failure, formStatus: FormStatus.failed)),
+      (product) {
+        emit(state.copyWith(formStatus: FormStatus.success));
+        productsCubit.loadSupplierProducts(state.supplier!);
+      },
+    );
+  }
+
+  Future<void> updateProduct() async {
+    emit(state.copyWith(formStatus: FormStatus.inProgress));
+
+    Product product = Product(
+      id: state.id,
+      name: state.name!,
+      sku: state.sku!,
+      description: state.description,
+      unitPrice: state.unitPrice!,
+      vat: state.vat,
+      unitOfMeasure: state.unitOfMeasure!,
+      uomOrderIncrement: state.uomOrderIncrement,
+      url: state.url,
+      category: state.category!,
+      supplier: state.supplier!,
+    );
+
+    final failureOrProduct = await updateProductUseCase.execute(
+      UpdateProductParams(product: product),
     );
 
     failureOrProduct.fold(

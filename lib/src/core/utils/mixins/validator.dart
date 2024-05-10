@@ -227,7 +227,7 @@ mixin Validator {
       return "Rate should be a valid number";
     }
 
-    if (quantity < 0) {
+    if (quantity <= 0) {
       return "Rate should be a positive number";
     }
 

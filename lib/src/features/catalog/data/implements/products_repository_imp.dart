@@ -51,8 +51,18 @@ class ProductsRepositoryImp implements ProductsRepository {
   }
 
   @override
-  Future<Either<Failure, Product>> updateProduct(Product product) {
-    // TODO: implement updateProduct
-    throw UnimplementedError();
+  Future<Either<Failure, Product>> updateProduct(Product product) async {
+    try {
+      return Right(await remoteDataSource.updateProduct(product));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(
+        ClientFailure(
+          message: e.toString(),
+          errorResponse: e.errorResponse,
+        ),
+      );
+    }
   }
 }
