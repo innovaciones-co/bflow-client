@@ -16,6 +16,7 @@ class ProductModel extends Product {
     super.url,
     required super.category,
     required super.supplier,
+    super.dateUpdated,
   });
 
   factory ProductModel.fromJson(String str) =>
@@ -35,6 +36,7 @@ class ProductModel extends Product {
         url: product.url,
         category: product.category,
         supplier: product.supplier,
+        dateUpdated: product.dateUpdated,
       );
 
   factory ProductModel.fromMap(Map<String, dynamic> json) => ProductModel(
@@ -49,6 +51,7 @@ class ProductModel extends Product {
         url: json["url"],
         category: json["category"],
         supplier: json["supplier"],
+        dateUpdated: DateTime.parse(json["dateUpdated"]),
       );
 
   Map<String, dynamic> toMap() => {
@@ -63,5 +66,6 @@ class ProductModel extends Product {
         "url": url,
         "category": category,
         "supplier": supplier,
+        "dateUpdated": dateUpdated?.toIso8601String(),
       };
 }

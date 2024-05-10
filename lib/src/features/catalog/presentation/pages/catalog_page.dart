@@ -2,6 +2,7 @@ import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
+import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/catalog/domain/entities/product_entity.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
@@ -26,10 +27,9 @@ class CatalogPage extends StatelessWidget {
     3: const FixedColumnWidth(250),
     4: const FixedColumnWidth(350),
     5: const FixedColumnWidth(80),
-    6: const FixedColumnWidth(60),
-    7: const FixedColumnWidth(95),
-    8: const FixedColumnWidth(110),
-    9: const FixedColumnWidth(180),
+    6: const FixedColumnWidth(70),
+    7: const FixedColumnWidth(120),
+    8: const FixedColumnWidth(180),
   };
 
   @override
@@ -108,8 +108,7 @@ class CatalogPage extends StatelessWidget {
             _tableCell(const Text("Description")),
             _tableCell(const Text("Measure")),
             _tableCell(const Text("Rate")),
-            _tableCell(const Text("Increment")),
-            _tableCell(const Text("Date Created")),
+            _tableCell(const Text("Date Modified")),
             _tableCell(const Text("Actions")),
           ],
         ),
@@ -178,7 +177,7 @@ class CatalogPage extends StatelessWidget {
         )),
         _tableCell(Text(name)),
         ...List.generate(
-          7,
+          6,
           (index) => _tableCell(const Text("")),
         ),
       ],
@@ -204,8 +203,7 @@ class CatalogPage extends StatelessWidget {
         _tableCell(Text(product.description ?? '')),
         _tableCell(Text(product.unitOfMeasure.toString())),
         _tableCell(Text(product.unitPrice.toString())),
-        _tableCell(Text(product.uomOrderIncrement?.toString() ?? '')),
-        _tableCell(Text('date_created')), // TODO: Replace
+        _tableCell(Text(product.dateUpdated?.toDateFormat())),
         _tableCell(
           Container(
             padding: const EdgeInsets.all(10),

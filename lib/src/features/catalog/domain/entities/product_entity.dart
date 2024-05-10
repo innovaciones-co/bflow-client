@@ -13,6 +13,7 @@ class Product extends Equatable {
   final String? url;
   final int category;
   final int supplier;
+  final DateTime? dateUpdated;
 
   const Product({
     this.id,
@@ -26,6 +27,7 @@ class Product extends Equatable {
     this.url,
     required this.category,
     required this.supplier,
+    this.dateUpdated,
   });
 
   @override
@@ -41,6 +43,7 @@ class Product extends Equatable {
         url ?? '',
         category,
         supplier,
+        dateUpdated ?? '',
       ];
 
   @override
