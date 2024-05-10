@@ -289,6 +289,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                   Icons.edit_outlined,
                   size: 20,
                 ),
+                tooltip: 'Edit',
               ),
               IconButton(
                 onPressed: () => context
@@ -304,6 +305,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                   Icons.delete_outline_outlined,
                   size: 20,
                 ),
+                tooltip: 'Delete',
               ),
             ],
           ),

@@ -1,6 +1,6 @@
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/product_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/product_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/category_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/item_repository.dart';
 import 'package:dartz/dartz.dart';
@@ -25,7 +25,7 @@ class CreateItemUseCase implements UseCase<Item, CreateItemParams> {
       Item item = Item(
         name: product.name,
         description: product.description,
-        supplier: category.contact,
+        supplier: category.tradeCode,
         category: product.category,
         job: params.jobId,
         unitPrice: product.unitPrice,

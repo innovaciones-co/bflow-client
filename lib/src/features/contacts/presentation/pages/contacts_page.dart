@@ -1,16 +1,18 @@
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/contacts/presentation/cubit/contacts_cubit.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/write_contact_widget.dart';
+import 'package:bflow_client/src/features/contacts/presentation/widgets/write_contact_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/table_header_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class ContactsPage extends StatelessWidget {
   const ContactsPage({super.key});
@@ -152,6 +154,7 @@ class ContactsPage extends StatelessWidget {
               ),
               color: AppColor.blue,
               icon: const Icon(Icons.edit_outlined),
+              tooltip: 'Edit',
             ),
             Builder(builder: (context) {
               return IconButton(
@@ -162,11 +165,27 @@ class ContactsPage extends StatelessWidget {
                   Icons.delete_outline_outlined,
                   size: 20,
                 ),
+                tooltip: 'Delete',
               );
-            })
+            }),
+            contact.type == ContactType.supplier
+                ? IconButton(
+                    onPressed: () => _goToDetails(context, contact.id!),
+                    color: AppColor.blue,
+                    icon: const Icon(
+                      Icons.menu_book_outlined,
+                      size: 20,
+                    ),
+                    tooltip: 'See Catalog',
+                  )
+                : const SizedBox.shrink(),
           ],
         ),
       ),
     );
+  }
+
+  void _goToDetails(BuildContext context, int supplierId) {
+    context.go(RoutesName.catalog.replaceAll(":id", supplierId.toString()));
   }
 }

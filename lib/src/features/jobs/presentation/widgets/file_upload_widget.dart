@@ -157,7 +157,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
 
           context.showAlert(
             message: state.failure.message ??
-                "Couln't upload files, please try again later.",
+                "Couldn't upload files, please try again later.",
             type: AlertType.error,
           );
         }

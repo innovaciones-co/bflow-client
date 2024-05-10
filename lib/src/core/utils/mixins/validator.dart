@@ -189,13 +189,73 @@ mixin Validator {
     int? quantity = int.tryParse(value);
 
     if (quantity == null) {
-      return "Quantity shoudl be a valid number";
+      return "Quantity should be a valid number";
     }
 
     if (quantity < 0) {
       return "Quantity should be a positive integer";
     }
 
+    return null;
+  }
+
+  // Product name validation
+  String? validateProductName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Product name is required';
+    }
+    return null;
+  }
+
+  // SKU validation
+  String? validateSku(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'SKU is required';
+    }
+    return null;
+  }
+
+  // UnitPrice validation
+  String? validateUnitPrice(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Rate is required";
+    }
+
+    double? quantity = double.tryParse(value);
+
+    if (quantity == null) {
+      return "Rate should be a valid number";
+    }
+
+    if (quantity < 0) {
+      return "Rate should be a positive number";
+    }
+
+    return null;
+  }
+
+  // Description validation
+  String? validateDescription(String? value) {
+    if (value == null || value.isEmpty) return null;
+
+    if (value.length < 3) {
+      return 'Description must contain more than 3 characters';
+    }
+    return null;
+  }
+
+  // URL validation
+  String? validateUrl(String? value) {
+    if (value == null || value.isEmpty) return null;
+
+    RegExp regex = RegExp(
+      r'[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)',
+      caseSensitive: false,
+    );
+
+    if (!regex.hasMatch(value)) {
+      return 'Invalid URL format';
+    }
     return null;
   }
 }

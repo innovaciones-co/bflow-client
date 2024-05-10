@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/units.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/units.dart';
 
 class ItemModel extends Item {
   const ItemModel({

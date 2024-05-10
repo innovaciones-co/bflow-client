@@ -8,4 +8,5 @@ class RoutesName {
   static const jobs = '/jobs';
   static const job = '/job/:id';
   static const taskConfirmation = '/tasks/:id';
+  static const catalog = '/catalog/:id';
 }

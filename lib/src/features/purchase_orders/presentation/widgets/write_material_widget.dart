@@ -11,7 +11,7 @@ import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/product_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/product_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/write_item/write_item_cubit.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +45,7 @@ class WriteMaterialWidget extends StatelessWidget with Validator {
         listener: (context, state) {
           if (state.formStatus == FormStatus.success) {
             context.showAlert(
-              message: "The item was added successfully",
+              message: "The item was added successfully!",
               type: AlertType.success,
             );
 

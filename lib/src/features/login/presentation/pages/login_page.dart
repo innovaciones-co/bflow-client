@@ -28,7 +28,7 @@ class LoginPage extends StatelessWidget with Validator {
           if (state.status == FormStatus.failed) {
             context.read<LoginCubit>().updateStatus(FormStatus.initialized);
             context.showAlert(
-              message: state.errorMessage ?? "Unexpected error",
+              message: state.errorMessage ?? "Unexpected error.",
               type: AlertType.error,
             );
           }

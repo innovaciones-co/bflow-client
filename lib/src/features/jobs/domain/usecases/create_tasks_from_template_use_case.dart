@@ -1,6 +1,6 @@
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/usecases/usecases.dart';
-import 'package:bflow_client/src/features/jobs/domain/repositories/template_repository.dart';
+import 'package:bflow_client/src/features/templates/domain/repositories/template_repository.dart';
 import 'package:dartz/dartz.dart';
 
 class CreateTasksFromTemplateUseCase
