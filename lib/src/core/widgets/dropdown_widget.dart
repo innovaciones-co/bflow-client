@@ -1,17 +1,46 @@
-import 'package:bflow_client/src/features/jobs/presentation/widgets/create_job_widget.dart';
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 
-class DropdownWidget extends StatefulWidget {
+class DropdownWidget<T> extends StatefulWidget {
   final String? label;
+  final EdgeInsets labelPadding;
+  final List<T> items;
+  final ValueChanged<T>? onChanged;
+  final String Function(T) getLabel;
+  final String? Function(T?)? validator;
+  final T? initialValue;
 
-  const DropdownWidget({super.key, this.label});
+  const DropdownWidget({
+    super.key,
+    this.label,
+    this.items = const [],
+    this.onChanged,
+    required this.getLabel,
+    this.validator,
+    this.initialValue,
+    this.labelPadding = const EdgeInsets.symmetric(horizontal: 8),
+  });
 
   @override
-  State<DropdownWidget> createState() => _DropdownWidgetState();
+  State<DropdownWidget<T>> createState() => _DropdownWidgetState<T>();
 }
 
-class _DropdownWidgetState extends State<DropdownWidget> {
-  String dropdownValue = list.first;
+class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
+  T? dropdownValue;
+  final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      if (widget.items.isNotEmpty) {
+        dropdownValue = widget.initialValue ?? widget.items.first;
+        if (widget.onChanged != null && dropdownValue != null) {
+          widget.onChanged!(dropdownValue as T);
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,30 +49,44 @@ class _DropdownWidgetState extends State<DropdownWidget> {
       children: [
         widget.label != null
             ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: widget.labelPadding,
                 child: Text(widget.label!),
               )
             : const SizedBox.shrink(),
         widget.label != null
             ? const SizedBox(height: 5)
             : const SizedBox.shrink(),
-        DropdownMenu(
+        DropdownMenu<T>(
+          controller: _controller,
           menuStyle: MenuStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.white),
-            surfaceTintColor: MaterialStateProperty.all(Colors.grey),
+            backgroundColor: MaterialStateProperty.all(AppColor.white),
+            surfaceTintColor: MaterialStateProperty.all(AppColor.grey),
           ),
           expandedInsets: EdgeInsets.zero,
           trailingIcon: const Icon(Icons.keyboard_arrow_down_outlined),
           selectedTrailingIcon: const Icon(Icons.keyboard_arrow_up_outlined),
-          initialSelection: "",
-          onSelected: (String? value) {
+          initialSelection: dropdownValue,
+          onSelected: (T? value) {
+            if (widget.onChanged != null && value != null) {
+              widget.onChanged!(value);
+            }
             setState(() {
-              dropdownValue = value!;
+              if (value != null) {
+                dropdownValue = value;
+              }
             });
           },
-          dropdownMenuEntries: list.map((String value) {
-            return DropdownMenuEntry(value: value, label: value);
+          dropdownMenuEntries: widget.items.map((T value) {
+            String label = widget.getLabel(value);
+
+            return DropdownMenuEntry<T>(
+              value: value,
+              label: label,
+            );
           }).toList(),
+          errorText: widget.validator != null
+              ? widget.validator!(dropdownValue)
+              : null,
         ),
       ],
     );

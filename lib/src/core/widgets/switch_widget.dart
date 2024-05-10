@@ -1,11 +1,16 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 
 class SwitchWidget extends StatelessWidget {
   final String? title;
+  final bool value;
+  final void Function(bool) onChanged;
 
   const SwitchWidget({
     super.key,
     this.title,
+    required this.value,
+    required this.onChanged,
   });
 
   @override
@@ -17,12 +22,12 @@ class SwitchWidget extends StatelessWidget {
           child: FittedBox(
             fit: BoxFit.fill,
             child: Switch.adaptive(
-              activeColor: Colors.blue,
-              activeTrackColor: Colors.blue,
-              inactiveThumbColor: Colors.white,
-              inactiveTrackColor: Colors.grey.shade300,
-              value: false,
-              onChanged: null,
+              activeColor: AppColor.blue,
+              activeTrackColor: AppColor.blue,
+              inactiveThumbColor: AppColor.white,
+              inactiveTrackColor: AppColor.grey,
+              value: value,
+              onChanged: onChanged,
             ),
           ),
         ),

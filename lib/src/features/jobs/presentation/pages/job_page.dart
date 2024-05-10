@@ -1,13 +1,16 @@
 import 'package:bflow_client/src/core/config/config.dart';
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
-import 'package:bflow_client/src/core/widgets/switch_widget.dart';
+import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/tasks_filter_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/job_calendar_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_widget.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/job_tasks_calendar_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_tasks_widget.dart';
+import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/job_materials_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,20 +24,32 @@ class JobPage extends StatefulWidget {
   State<JobPage> createState() => _JobPageState();
 }
 
-class _JobPageState extends State<JobPage> {
-  late Widget _body;
+class PageSelector {
+  final Widget child;
+  final String title;
 
-  final List<Widget> _content = [
-    const JobFilesWidget(),
-    const JobTasksWidget(),
-    const JobTasksCalendarWidget(),
+  PageSelector({required this.child, required this.title});
+}
+
+class _JobPageState extends State<JobPage> {
+  bool _viewJobInfo = false;
+  late Widget _body;
+  late String _pageTitle;
+  int _selectedIndex = 3;
+
+  final List<PageSelector> _content = [
+    PageSelector(child: const JobFilesWidget(), title: "Documents"),
+    PageSelector(child: const JobTasksWidget(), title: "Call forward"),
+    PageSelector(child: const JobCalendarWidget(), title: "Call forward"),
+    PageSelector(child: JobMaterialsWidget(), title: "Bill of Materials"),
   ];
 
   @override
   void initState() {
     super.initState();
 
-    _body = _content.first;
+    _pageTitle = _content[_selectedIndex].title;
+    _body = _content[_selectedIndex].child;
   }
 
   @override
@@ -46,27 +61,40 @@ class _JobPageState extends State<JobPage> {
               DependencyInjection.sl()..add(GetJobEvent(id: widget.jobId)),
         ),
         BlocProvider<TasksBloc>(
-            create: (context) =>
-                TasksBloc(context.read<JobBloc>(), DependencyInjection.sl())),
+          create: (context) => TasksBloc(
+            jobBloc: context.read<JobBloc>(),
+            getTasksUseCase: DependencyInjection.sl(),
+            deleteTaskUseCase: DependencyInjection.sl(),
+            homeBloc: context.read<HomeBloc>(),
+          ),
+        ),
+        BlocProvider<TasksFilterBloc>(
+          create: (context) => TasksFilterBloc(
+            context.read<TasksBloc>(),
+          ),
+        ),
       ],
       child: Scaffold(
         body: PageContainerWidget(
-          title: "Call forward",
-          child: BlocBuilder<JobBloc, JobState>(builder: (context, state) {
-            if (state is JobLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+          title: _pageTitle,
+          child: BlocBuilder<JobBloc, JobState>(
+            builder: (context, state) {
+              if (state is JobLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-            if (state is JobLoaded) {
-              return _jobLoaded(state);
-            }
+              if (state is JobLoaded) {
+                return _jobLoaded(state);
+              }
 
-            if (state is JobError) {
-              return FailureWidget(failure: state.failure);
-            }
+              if (state is JobError) {
+                return FailureWidget(failure: state.failure);
+              }
 
-            return const SizedBox.shrink();
-          }),
+              return const SizedBox.shrink();
+            },
+            buildWhen: (_, a) => true,
+          ),
         ),
       ),
     );
@@ -75,9 +103,9 @@ class _JobPageState extends State<JobPage> {
   Widget _jobLoaded(JobLoaded state) {
     return Column(
       children: [
-        JobItemWidget(job: state.job),
+        _viewJobInfo ? JobItemWidget(job: state.job) : const SizedBox.shrink(),
         _jobViewSelection(),
-        const FilterTasksWidget(),
+        const SizedBox(height: 5),
         _body
       ],
     );
@@ -87,22 +115,43 @@ class _JobPageState extends State<JobPage> {
     return Row(
       children: [
         ActionButtonWidget(
-            onPressed: () => _selectView(0),
-            type: ButtonType.textButton,
-            title: "View jobs documents",
-            icon: Icons.all_inbox_sharp),
+          onPressed: () => _selectView(0),
+          type: ButtonType.textButton,
+          title: "View jobs documents",
+          icon: Icons.all_inbox_sharp,
+          foregroundColor: _selectedIndex == 0 ? AppColor.black : AppColor.blue,
+        ),
         ActionButtonWidget(
-            onPressed: () => _selectView(1),
-            type: ButtonType.textButton,
-            title: "View all task",
-            icon: Icons.task_outlined),
+          onPressed: () => _selectView(1),
+          type: ButtonType.textButton,
+          title: "View all tasks",
+          icon: Icons.task_outlined,
+          foregroundColor: _selectedIndex == 1 ? AppColor.black : AppColor.blue,
+        ),
         ActionButtonWidget(
-            onPressed: () => _selectView(2),
-            type: ButtonType.textButton,
-            title: "View Calendar",
-            icon: Icons.task_outlined),
-        const SwitchWidget(
-          title: "View calendar",
+          onPressed: () => _selectView(2),
+          type: ButtonType.textButton,
+          title: "View Calendar",
+          icon: Icons.calendar_today_outlined,
+          foregroundColor: _selectedIndex == 2 ? AppColor.black : AppColor.blue,
+        ),
+        ActionButtonWidget(
+          onPressed: () => _selectView(3),
+          type: ButtonType.textButton,
+          title: "Bill of materials",
+          icon: Icons.list_alt_outlined,
+          foregroundColor: _selectedIndex == 3 ? AppColor.black : AppColor.blue,
+        ),
+        const Spacer(),
+        ActionButtonWidget(
+          onPressed: () {
+            setState(() {
+              _viewJobInfo = !_viewJobInfo;
+            });
+          },
+          type: ButtonType.textButton,
+          title: _viewJobInfo ? "Hide Job Details" : "View Job Details",
+          icon: _viewJobInfo ? Icons.arrow_circle_up : Icons.arrow_circle_down,
         ),
       ],
     );
@@ -110,51 +159,9 @@ class _JobPageState extends State<JobPage> {
 
   void _selectView(int index) {
     setState(() {
-      _body = _content[index];
+      _selectedIndex = index;
+      _body = _content[_selectedIndex].child;
+      _pageTitle = _content[_selectedIndex].title;
     });
-  }
-}
-
-class FilterTasksWidget extends StatelessWidget {
-  const FilterTasksWidget({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Text("Search"),
-        ActionButtonWidget(
-          onPressed: () {},
-          type: ButtonType.textButton,
-          title: "Filter",
-          icon: Icons.tune,
-          foregroundColor: Colors.black,
-        ),
-        const Text("Water Meter call up"),
-        ActionButtonWidget(
-            onPressed: () {},
-            type: ButtonType.textButton,
-            title: "Delete",
-            icon: Icons.delete_outline),
-        ActionButtonWidget(
-          onPressed: () {},
-          type: ButtonType.elevatedButton,
-          title: "Send task",
-          icon: Icons.mail_outline,
-          backgroundColor: Colors.blue.shade50,
-        ),
-        const SizedBox(width: 12),
-        ActionButtonWidget(
-          onPressed: () {},
-          type: ButtonType.elevatedButton,
-          title: "New Activity",
-          icon: Icons.add,
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-        ),
-      ],
-    );
   }
 }

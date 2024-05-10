@@ -1,4 +1,6 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class InputWidget extends StatelessWidget {
   final String label;
@@ -7,11 +9,15 @@ class InputWidget extends StatelessWidget {
   final Function(String)? onChanged;
   final String? Function(String?)? validator;
   final String? initialValue;
+  final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
 
   const InputWidget({
     super.key,
     required this.label,
     this.initialValue,
+    this.keyboardType,
+    this.inputFormatters,
     this.obscureText = false,
     this.hintText = "",
     this.onChanged,
@@ -35,8 +41,23 @@ class InputWidget extends StatelessWidget {
           initialValue: initialValue,
           enableSuggestions: obscureText ? false : true,
           autocorrect: obscureText ? false : true,
+          keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
           decoration: InputDecoration(
             hintText: hintText,
+            hintStyle: TextStyle(
+              color: AppColor.grey,
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColor.red,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColor.red,
+              ),
+            ),
           ),
         ),
       ],

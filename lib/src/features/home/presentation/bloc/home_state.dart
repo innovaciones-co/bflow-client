@@ -12,9 +12,11 @@ class HomeInitial extends HomeState {}
 class AlertMessage extends HomeState {
   final String message;
   final AlertType type;
+  final DateTime timestamp;
 
-  const AlertMessage({required this.message, required this.type});
+  AlertMessage({required this.message, required this.type, DateTime? timestamp})
+      : timestamp = timestamp ?? DateTime.now();
 
   @override
-  List<Object> get props => [message, type];
+  List<Object> get props => [message, type, timestamp];
 }

@@ -5,6 +5,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart'
 import 'package:bflow_client/src/features/jobs/domain/repositories/task_repository.dart';
 import 'package:dartz/dartz.dart';
 
+import '../../../../core/exceptions/bad_request_exception.dart';
 import '../../../../core/exceptions/remote_data_source_exception.dart';
 
 class TasksRepositoryImp implements TasksRepository {
@@ -13,21 +14,39 @@ class TasksRepositoryImp implements TasksRepository {
   TasksRepositoryImp({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, t.Task>> createTask(Task task) {
-    // TODO: implement createTask
-    throw UnimplementedError();
+  Future<Either<Failure, t.Task>> createTask(t.Task task) async {
+    try {
+      return Right(await remoteDataSource.createTask(task));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(ClientFailure(message: e.toString()));
+    }
   }
 
   @override
-  Future<Either<Failure, void>> delete(int id) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<Either<Failure, void>> delete(int id) async {
+    try {
+      return Right(await remoteDataSource.deleteTask(id));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(
+        ClientFailure(
+          message: e.toString(),
+          errorResponse: e.errorResponse,
+        ),
+      );
+    }
   }
 
   @override
-  Future<Either<Failure, t.Task>> getTask(int id) {
-    // TODO: implement getTask
-    throw UnimplementedError();
+  Future<Either<Failure, t.Task>> getTask(int id) async {
+    try {
+      return Right(await remoteDataSource.fetchTask(id));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
   }
 
   @override
@@ -49,8 +68,13 @@ class TasksRepositoryImp implements TasksRepository {
   }
 
   @override
-  Future<Either<Failure, t.Task>> update(Task task) {
-    // TODO: implement update
-    throw UnimplementedError();
+  Future<Either<Failure, t.Task>> updateTask(t.Task task) async {
+    try {
+      return Right(await remoteDataSource.updateTask(task));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(ClientFailure(message: e.toString()));
+    }
   }
 }

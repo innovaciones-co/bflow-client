@@ -1,25 +1,30 @@
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
 import 'package:equatable/equatable.dart';
 
-class Task implements Equatable {
-  final int id;
+class Task extends Equatable {
+  final int? id;
   final String name;
+  final DateTime? callDate;
   final DateTime? startDate;
   final DateTime? endDate;
+  final String? comments;
   final int progress;
   final TaskStatus status;
   final TaskStage stage;
   final int? parentTask;
-  final int? supplier;
+  final Contact? supplier;
   final List<dynamic>? attachments;
   final int job;
 
-  Task({
-    required this.id,
+  const Task({
+    this.id,
     required this.name,
+    this.callDate,
     this.startDate,
     this.endDate,
+    this.comments,
     this.progress = 0,
     required this.status,
     required this.stage,
@@ -33,8 +38,10 @@ class Task implements Equatable {
   List<Object?> get props => [
         id,
         name,
+        callDate,
         startDate,
         endDate,
+        comments,
         progress,
         status,
         stage,

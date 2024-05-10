@@ -4,9 +4,9 @@ import 'package:bflow_client/src/core/theme/theme.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
 import 'package:bflow_client/src/features/login/presentation/bloc/login_bloc.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'src/core/routes/router.dart';
 import 'src/core/routes/routes.dart';
 

@@ -3,6 +3,7 @@ import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/write_job_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,9 +12,11 @@ import '../../domain/entities/job_entity.dart';
 
 class JobItemWidget extends StatelessWidget {
   final Job job;
+  final bool viewDetailsEnabled;
   const JobItemWidget({
     super.key,
     required this.job,
+    this.viewDetailsEnabled = false,
   });
 
   @override
@@ -37,7 +40,15 @@ class JobItemWidget extends StatelessWidget {
       padding: const EdgeInsets.only(left: 15, right: 8, top: 15, bottom: 15),
       children: [
         _mobileCellJob(
-            title: "Job Number", width: 110, child: Text(job.jobNumber)),
+          title: "Job Number",
+          width: 110,
+          child: ActionButtonWidget(
+            onPressed: () => _editJob(context),
+            type: ButtonType.textButton,
+            title: job.jobNumber,
+            icon: Icons.edit_outlined,
+          ),
+        ),
         _mobileCellJob(
           title: "Address",
           width: 160,
@@ -45,16 +56,18 @@ class JobItemWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(job.address),
-              TextButton(
+              ActionButtonWidget(
                 onPressed: () {},
-                style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
-                child: const Text("Open in Goole maps"),
+                type: ButtonType.textButton,
+                title: "Open in Goole maps",
               ), // THIS ?link
             ],
           ),
         ),
         _mobileCellJob(
-            title: "Supervisor", width: 140, child: Text(job.user.fullName)),
+            title: "Supervisor",
+            width: 140,
+            child: Text(job.supervisor.fullName)),
         _mobileCellJob(
           title: "Job Stage",
           width: 110,
@@ -68,27 +81,32 @@ class JobItemWidget extends StatelessWidget {
           ),
         ),
         _mobileCellJob(
-            title: "Days in construction",
+            title: "Weeks",
             width: 160,
-            child: Text(job.daysOfConstruction.toString())),
+            child: Text(job.weeksOfConstruction.toString())),
         _mobileCellJob(
           title: "Progress",
           width: 150,
           child: _progressBar(percentage: job.progress, width: 140),
         ),
-        const SizedBox(width: 40),
-        Column(
-          //mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ActionButtonWidget(
-              onPressed: () => _goToDetails(context),
-              type: ButtonType.elevatedButton,
-              title: "View details",
-              backgroundColor: context.background,
-              foregroundColor: context.primary,
-            ),
-          ],
-        ),
+        viewDetailsEnabled
+            ? Container(
+                margin: const EdgeInsets.only(left: 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ActionButtonWidget(
+                      onPressed: () => _goToDetails(context),
+                      type: ButtonType.elevatedButton,
+                      title: "View details",
+                      backgroundColor: AppColor.lightBlue,
+                      foregroundColor: AppColor.blue,
+                    ),
+                  ],
+                ),
+              )
+            : const SizedBox.shrink(),
       ],
     );
   }
@@ -98,7 +116,20 @@ class JobItemWidget extends StatelessWidget {
       padding: const EdgeInsets.only(left: 15, right: 8, top: 15, bottom: 15),
       child: Row(
         children: [
-          _cellJob(title: "Job Number", flex: 1, child: Text(job.jobNumber)),
+          _cellJob(
+            title: "Job Number",
+            flex: 2,
+            child: Row(
+              children: [
+                ActionButtonWidget(
+                  onPressed: () => _editJob(context),
+                  type: ButtonType.textButton,
+                  title: job.jobNumber,
+                  icon: Icons.edit_outlined,
+                ),
+              ],
+            ),
+          ),
           _cellJob(
               title: "Address",
               flex: 2,
@@ -115,7 +146,9 @@ class JobItemWidget extends StatelessWidget {
                 ],
               )),
           _cellJob(
-              title: "Supervisor", flex: 2, child: Text(job.user.fullName)),
+              title: "Supervisor",
+              flex: 2,
+              child: Text(job.supervisor.fullName)),
           _cellJob(
             title: "Job Stage",
             flex: 2,
@@ -129,36 +162,43 @@ class JobItemWidget extends StatelessWidget {
             ),
           ),
           _cellJob(
-            title: "Days in construction",
+            title: "Weeks",
             flex: 2,
             child: Text(
-              job.daysOfConstruction.toString(),
+              job.weeksOfConstruction.toString(),
             ),
           ),
           _cellJob(
               title: "Progress",
               flex: 2,
               child: _progressBar(percentage: job.progress, width: 200)),
-          Expanded(
-            flex: 2,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ActionButtonWidget(
-                      onPressed: () => _goToDetails(context),
-                      type: ButtonType.elevatedButton,
-                      title: "View details",
-                      backgroundColor: context.background,
-                      foregroundColor: context.primary,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          viewDetailsEnabled
+              ? Expanded(
+                  flex: 2,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ActionButtonWidget(
+                        onPressed: () => _goToDetails(context),
+                        type: ButtonType.elevatedButton,
+                        title: "View details",
+                        backgroundColor: AppColor.lightBlue,
+                        foregroundColor: AppColor.blue,
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink(),
         ],
+      ),
+    );
+  }
+
+  Future<void> _editJob(BuildContext context) {
+    return context.showLeftDialog(
+      'Update Job',
+      WriteJobWidget(
+        job: job,
       ),
     );
   }
@@ -179,7 +219,7 @@ Widget _progressBar({required double percentage, required double width}) {
           width: width,
           margin: const EdgeInsets.only(top: 7),
           decoration: BoxDecoration(
-            color: Colors.grey.shade400,
+            color: AppColor.grey,
             borderRadius: BorderRadius.circular(5),
           ),
           child: FractionallySizedBox(
@@ -187,7 +227,7 @@ Widget _progressBar({required double percentage, required double width}) {
             alignment: Alignment.centerLeft,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.orange.shade700,
+                color: AppColor.orange,
                 borderRadius: BorderRadius.circular(5),
               ),
             ),
@@ -211,7 +251,7 @@ SizedBox _mobileCellJob(
       children: [
         Text(
           title,
-          style: const TextStyle(color: Colors.grey),
+          style: TextStyle(color: AppColor.darkGrey),
         ),
         const SizedBox(height: 10),
         child,
@@ -229,7 +269,7 @@ Widget _cellJob(
       children: [
         Text(
           title,
-          style: const TextStyle(color: Colors.grey),
+          style: TextStyle(color: AppColor.darkGrey),
         ),
         const SizedBox(height: 10),
         child,

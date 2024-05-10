@@ -1,7 +1,9 @@
 import 'package:bflow_client/src/core/routes/routes.dart';
+import 'package:bflow_client/src/features/contacts/presentation/pages/contacts_page.dart';
 import 'package:bflow_client/src/features/home/presentation/pages/home_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/job_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/jobs_page.dart';
+import 'package:bflow_client/src/features/jobs/presentation/pages/task_confirmation_page.dart';
 import 'package:bflow_client/src/features/login/presentation/pages/login_page.dart';
 import 'package:bflow_client/src/features/users/presentation/pages/users_page.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +24,12 @@ const List<CustomNavigationDestination> homeDestinations = [
     icon: Icon(Icons.people_outlined),
     route: RoutesName.users,
     child: UsersPage(),
+  ),
+  CustomNavigationDestination(
+    label: 'Contacts',
+    icon: Icon(Icons.contact_page_outlined),
+    route: RoutesName.contacts,
+    child: ContactsPage(),
   ),
 ];
 
@@ -64,6 +72,34 @@ final appRouter = GoRouter(
         ),
       ),
     ),
+    // TaskConfirmationScreen
+    GoRoute(
+        path: RoutesName.taskConfirmation,
+        pageBuilder: (context, state) {
+          final idStr = state.pathParameters["id"];
+          final int? taskId = idStr != null ? int.tryParse(idStr) : null;
+
+          if (taskId == null) {
+            return const MaterialPage(
+              key: _pageKey,
+              child: Scaffold(
+                key: _scaffoldKey,
+                body: Text("Not found"), // TODO: replace with no found widget
+              ),
+            );
+          }
+
+          return MaterialPage<void>(
+            key: _pageKey,
+            child: TaskConfirmationPage(
+              key: _scaffoldKey,
+              taskId: taskId,
+              action: TaskAction.fromString(
+                state.uri.queryParameters['action'],
+              ),
+            ),
+          );
+        }),
     // Job Screen
     GoRoute(
       path: RoutesName.job,

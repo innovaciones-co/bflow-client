@@ -11,9 +11,9 @@ abstract class TasksRepository {
 
   Future<Either<Failure, List<t.Task>>> getTasksByJob(int jobId);
 
-  Future<Either<Failure, t.Task>> createTask(Task task);
+  Future<Either<Failure, t.Task>> createTask(t.Task task);
 
-  Future<Either<Failure, t.Task>> update(Task task);
+  Future<Either<Failure, t.Task>> updateTask(t.Task task);
 
   Future<Either<Failure, void>> delete(int id);
 }

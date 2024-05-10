@@ -3,7 +3,7 @@ enum TaskStage {
   plateHeigh("Plate Heigh"),
   roofCover("Roof cover"),
   lockUp("Lock Up"),
-  cabinets("Cabinates"),
+  cabinets("Cabinets"),
   pCI("PCI");
 
   final String name;
@@ -17,13 +17,13 @@ enum TaskStage {
 
   static TaskStage fromString(String str) {
     switch (str.toLowerCase()) {
-      case "slab down":
+      case "slab_down":
         return TaskStage.slabDown;
-      case "plate height":
+      case "plate_height":
         return TaskStage.plateHeigh;
-      case "roof cover":
+      case "roof_cover":
         return TaskStage.roofCover;
-      case "lock up":
+      case "lock_up":
         return TaskStage.lockUp;
       case "cabinets":
         return TaskStage.cabinets;

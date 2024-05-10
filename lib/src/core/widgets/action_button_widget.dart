@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 
 enum ButtonType {
@@ -6,6 +7,7 @@ enum ButtonType {
 }
 
 class ActionButtonWidget extends StatelessWidget {
+  final bool inProgress;
   final Function()? onPressed;
   final ButtonType type;
   final String title;
@@ -15,29 +17,29 @@ class ActionButtonWidget extends StatelessWidget {
   final double? paddingHorizontal;
   final double? paddingVertical;
 
-  const ActionButtonWidget({
+  ActionButtonWidget({
     super.key,
     required this.onPressed,
     required this.type,
     required this.title,
     this.icon,
     this.backgroundColor,
-    this.foregroundColor = Colors.blue,
+    foregroundColor,
     this.paddingHorizontal,
     this.paddingVertical,
-  });
+    this.inProgress = false,
+  }) : foregroundColor = foregroundColor ?? AppColor.blue;
 
   @override
   Widget build(BuildContext context) {
     switch (type) {
       case ButtonType.textButton:
         return TextButton(
-          onPressed: onPressed,
+          onPressed: inProgress ? null : onPressed,
           style: ButtonStyle(
             padding: MaterialStatePropertyAll(EdgeInsets.symmetric(
-                vertical: paddingVertical == null ? 0 : paddingVertical!,
-                horizontal:
-                    paddingHorizontal == null ? 5 : paddingHorizontal!)),
+                vertical: paddingVertical ?? 0,
+                horizontal: paddingHorizontal ?? 5)),
             overlayColor:
                 MaterialStateProperty.all(foregroundColor?.withOpacity(0.05)),
             backgroundColor: MaterialStateProperty.all(backgroundColor),
@@ -47,20 +49,33 @@ class ActionButtonWidget extends StatelessWidget {
           ),
           child: Row(
             children: [
+              inProgress
+                  ? Container(
+                      height: 20,
+                      width: 20,
+                      margin: const EdgeInsets.only(right: 10),
+                      child: CircularProgressIndicator(
+                        color: foregroundColor,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
               icon != null ? Icon(icon, size: 18) : const SizedBox(),
               icon != null ? const SizedBox(width: 6) : const SizedBox(),
-              Text(title),
+              Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ],
           ),
         );
       case ButtonType.elevatedButton:
         return ElevatedButton(
-          onPressed: onPressed,
+          onPressed: inProgress ? null : onPressed,
           style: ButtonStyle(
             padding: MaterialStatePropertyAll(EdgeInsets.symmetric(
-                vertical: paddingVertical == null ? 18 : paddingVertical!,
-                horizontal:
-                    paddingHorizontal == null ? 15 : paddingHorizontal!)),
+                vertical: paddingVertical ?? 18,
+                horizontal: paddingHorizontal ?? 15)),
             overlayColor: MaterialStateProperty.all(Colors.transparent),
             backgroundColor: MaterialStateProperty.all(backgroundColor),
             foregroundColor: MaterialStateProperty.all(foregroundColor),
@@ -70,6 +85,16 @@ class ActionButtonWidget extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              inProgress
+                  ? Container(
+                      height: 20,
+                      width: 20,
+                      margin: const EdgeInsets.only(right: 10),
+                      child: CircularProgressIndicator(
+                        color: foregroundColor,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
               icon != null ? Icon(icon, size: 18) : const SizedBox(),
               icon != null ? const SizedBox(width: 6) : const SizedBox(),
               Text(title),

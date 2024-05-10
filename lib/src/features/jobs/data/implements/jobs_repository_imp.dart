@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/exceptions/bad_request_exception.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
@@ -20,15 +21,23 @@ class JobsRepositoryImp implements JobsRepository {
   }
 
   @override
-  Future<Either<Failure, Job>> createJob(Job job) {
-    // TODO: implement createJob
-    throw UnimplementedError();
+  Future<Either<Failure, Job>> createJob(Job job) async {
+    try {
+      return Right(await remoteDataSource.createJob(job));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(ClientFailure(message: e.toString()));
+    }
   }
 
   @override
-  Future<Either<Failure, void>> delete(int id) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<Either<Failure, void>> delete(int id) async {
+    try {
+      return Right(await remoteDataSource.deleteJob(id));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
   }
 
   @override
@@ -47,8 +56,13 @@ class JobsRepositoryImp implements JobsRepository {
   }
 
   @override
-  Future<Either<Failure, Job>> update(Job job) {
-    // TODO: implement update
-    throw UnimplementedError();
+  Future<Either<Failure, Job>> update(Job job) async {
+    try {
+      return Right(await remoteDataSource.updateJob(job));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(ClientFailure(message: e.toString()));
+    }
   }
 }

@@ -1,4 +1,4 @@
-import 'package:bflow_client/src/core/config/injection.dart';
+import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/routes/names.dart';
@@ -9,6 +9,8 @@ import 'package:bflow_client/src/features/login/presentation/bloc/login_bloc.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../../core/domain/entities/form_status.dart';
 
 class LoginPage extends StatelessWidget with Validator {
   LoginPage({super.key});

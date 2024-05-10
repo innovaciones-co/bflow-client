@@ -1,3 +1,4 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         Text(
           "Alberto",
           style: context.bodyMedium?.copyWith(
-            color: context.onSecondary,
+            color: AppColor.grey,
           ),
         ),
         const SizedBox(
@@ -40,7 +41,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           onPressed: () => context.go(RoutesName.login),
           icon: Icon(
             Icons.logout_outlined,
-            color: context.onSecondary,
+            color: AppColor.grey,
           ),
         ),
       ],
