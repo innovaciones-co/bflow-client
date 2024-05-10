@@ -1,7 +1,11 @@
 library dependency_injection;
 
-import 'package:bflow_client/src/core/api/api_service.dart';
+import 'package:bflow_client/src/core/api/api.dart';
+import 'package:bflow_client/src/features/catalog/data/implements/products_repository_imp.dart';
+import 'package:bflow_client/src/features/catalog/data/sources/products_remote_data_source.dart';
+import 'package:bflow_client/src/features/catalog/domain/repositories/product_repository.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/create_product_usecase.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/get_products_use_case.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
 import 'package:bflow_client/src/features/contacts/data/implements/contacts_repository_imp.dart';
 import 'package:bflow_client/src/features/contacts/data/sources/sources.dart';
@@ -17,17 +21,14 @@ import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart'
 import 'package:bflow_client/src/features/jobs/data/implements/files_repository_imp.dart';
 import 'package:bflow_client/src/features/jobs/data/implements/notes_repository_imp.dart';
 import 'package:bflow_client/src/features/jobs/data/implements/tasks_repository_imp.dart';
-import 'package:bflow_client/src/features/templates/data/implements/templates_repository_imp.dart';
 import 'package:bflow_client/src/features/jobs/data/sources/files_remote_data_source.dart';
 import 'package:bflow_client/src/features/jobs/data/sources/jobs_remote_data_source.dart';
 import 'package:bflow_client/src/features/jobs/data/sources/notes_remote_data_source.dart';
 import 'package:bflow_client/src/features/jobs/data/sources/tasks_remote_data_source.dart';
-import 'package:bflow_client/src/features/templates/data/sources/template_remote_data_source.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/files_repository.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/job_repository.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/note_repository.dart';
 import 'package:bflow_client/src/features/jobs/domain/repositories/task_repository.dart';
-import 'package:bflow_client/src/features/templates/domain/repositories/template_repository.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_note_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_task_use_case.dart';
@@ -36,7 +37,6 @@ import 'package:bflow_client/src/features/jobs/domain/usecases/delete_task_use_c
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
-import 'package:bflow_client/src/features/templates/domain/usecases/get_templates_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/upload_files_use_case.dart';
@@ -44,7 +44,6 @@ import 'package:bflow_client/src/features/jobs/presentation/bloc/files/files_cub
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/task/task_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
-import 'package:bflow_client/src/features/templates/presentation/cubit/templates_cubit.dart';
 import 'package:bflow_client/src/features/login/data/implements/login_repository_impl.dart';
 import 'package:bflow_client/src/features/login/data/sources/login_remote_data_source.dart';
 import 'package:bflow_client/src/features/login/domain/repositories/repositories.dart';
@@ -52,15 +51,12 @@ import 'package:bflow_client/src/features/login/domain/usecases/login_use_case.d
 import 'package:bflow_client/src/features/login/presentation/bloc/login_bloc.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/implements/categories_repository_imp.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/implements/items_repository_imp.dart';
-import 'package:bflow_client/src/features/catalog/data/implements/products_repository_imp.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/implements/purchase_orders_repository_imp.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/sources/categories_remote_data_source.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/sources/items_remote_data_source.dart';
-import 'package:bflow_client/src/features/catalog/data/sources/products_remote_data_source.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/sources/purchase_orders_remote_data_source.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/category_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/item_repository.dart';
-import 'package:bflow_client/src/features/catalog/domain/repositories/product_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/purchase_order_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_item_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_purchase_order_use_case.dart';
@@ -68,10 +64,14 @@ import 'package:bflow_client/src/features/purchase_orders/domain/usecases/delete
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_by_supplier_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_items_use_case.dart';
-import 'package:bflow_client/src/features/catalog/domain/usecases/get_products_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_order_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_orders_by_job_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
+import 'package:bflow_client/src/features/templates/data/implements/templates_repository_imp.dart';
+import 'package:bflow_client/src/features/templates/data/sources/template_remote_data_source.dart';
+import 'package:bflow_client/src/features/templates/domain/repositories/template_repository.dart';
+import 'package:bflow_client/src/features/templates/domain/usecases/get_templates_use_case.dart';
+import 'package:bflow_client/src/features/templates/presentation/cubit/templates_cubit.dart';
 import 'package:bflow_client/src/features/users/data/implements/users_repository_imp.dart';
 import 'package:bflow_client/src/features/users/data/sources/users_remote_data_source.dart';
 import 'package:bflow_client/src/features/users/domain/repositories/users_repository.dart';
@@ -98,6 +98,9 @@ class DependencyInjection {
     sl.registerLazySingleton(
       () => ApiService(),
     );
+    sl.registerLazySingleton(
+      () => SocketService.instance(url: SocketConstants.endpointUrl),
+    );
 
     // BLoC
     sl.registerSingleton<HomeBloc>(
@@ -118,6 +121,7 @@ class DependencyInjection {
         getTasksUseCase: sl(),
         deleteTaskUseCase: sl(),
         homeBloc: sl(),
+        socketService: sl(),
       ),
     );
     sl.registerFactory<UsersBloc>(
