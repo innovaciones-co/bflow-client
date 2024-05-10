@@ -1,6 +1,6 @@
 library dependency_injection;
 
-import 'package:bflow_client/src/core/api/api_service.dart';
+import 'package:bflow_client/src/core/api/api.dart';
 import 'package:bflow_client/src/features/contacts/data/implements/contacts_repository_imp.dart';
 import 'package:bflow_client/src/features/contacts/data/sources/sources.dart';
 import 'package:bflow_client/src/features/contacts/domain/repositories/contacts_repository.dart';
@@ -96,6 +96,9 @@ class DependencyInjection {
     sl.registerLazySingleton(
       () => ApiService(),
     );
+    sl.registerLazySingleton(
+      () => SocketService.instance(url: SocketConstants.endpointUrl),
+    );
 
     // BLoC
     sl.registerSingleton<HomeBloc>(
@@ -116,6 +119,7 @@ class DependencyInjection {
         getTasksUseCase: sl(),
         deleteTaskUseCase: sl(),
         homeBloc: sl(),
+        socketService: sl(),
       ),
     );
     sl.registerFactory<UsersBloc>(

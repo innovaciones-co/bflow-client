@@ -14,6 +14,18 @@ class ToggleSelectedTask extends TasksEvent {
   const ToggleSelectedTask({required this.task});
 }
 
+class AddSelectedTask extends TasksEvent {
+  final Task task;
+
+  const AddSelectedTask({required this.task});
+}
+
+class RemoveSelectedTask extends TasksEvent {
+  final Task task;
+
+  const RemoveSelectedTask({required this.task});
+}
+
 class LoadingTasksEvent extends TasksEvent {}
 
 class DeleteTasksEvent extends TasksEvent {}
