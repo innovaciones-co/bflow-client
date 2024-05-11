@@ -51,4 +51,10 @@ class ProductsRemoteDataSource extends RemoteDataSource {
 
     return fetchProduct(productId);
   }
+
+  Future<void> deleteProduct(int productId) async {
+    await apiService.delete(
+        endpoint: ApiConstants.productEndpoint
+            .replaceAll(':id', productId.toString()));
+  }
 }

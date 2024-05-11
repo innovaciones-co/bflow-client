@@ -218,13 +218,15 @@ class CatalogPage extends StatelessWidget {
                       supplierId: product.supplier,
                       product: product,
                     ),
-                  ), // TODO: Implement edit
+                  ),
                   color: AppColor.blue,
                   icon: const Icon(Icons.edit_outlined),
                   tooltip: 'Edit',
                 ),
                 IconButton(
-                  onPressed: () {}, // TODO: Implement delete
+                  onPressed: () => context
+                      .read<ProductsCubit>()
+                      .deleteProduct(product.id!, product.supplier),
                   color: AppColor.blue,
                   icon: const Icon(
                     Icons.delete_outline_outlined,

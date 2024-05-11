@@ -29,9 +29,19 @@ class ProductsRepositoryImp implements ProductsRepository {
   }
 
   @override
-  Future<Either<Failure, void>> deleteProduct(int productId) {
-    // TODO: implement deleteProduct
-    throw UnimplementedError();
+  Future<Either<Failure, void>> deleteProduct(int productId) async {
+    try {
+      return Right(await remoteDataSource.deleteProduct(productId));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(
+        ClientFailure(
+          message: e.toString(),
+          errorResponse: e.errorResponse,
+        ),
+      );
+    }
   }
 
   @override
