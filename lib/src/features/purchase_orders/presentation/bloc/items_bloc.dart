@@ -83,6 +83,40 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
         }
       },
     );
+    on<SelectItemsByCategory>(
+      (event, emit) {
+        if (state is! ItemsLoaded) return;
+
+        var categoryId = event.categoryId;
+        List<Item> items = (state as ItemsLoaded).items;
+        List<Item> selectedItems =
+            (state as ItemsLoaded).selectedItems.toList();
+
+        bool selected =
+            !_checkIfCategorySelected(categoryId, selectedItems, items);
+
+        var itemsOfCategory =
+            items.where((item) => item.category == categoryId);
+
+        for (var item in itemsOfCategory) {
+          if (selectedItems.contains(item)) {
+            if (!selected) {
+              selectedItems.remove(item);
+            }
+          } else {
+            if (selected) {
+              selectedItems.add(item);
+            }
+          }
+        }
+
+        emit(
+          (state as ItemsLoaded).copyWith(
+            selectedItems: selectedItems,
+          ),
+        );
+      },
+    );
     on<CreatePurchaseOrderEvent>(_createPurchaseOrder);
     on<GetItemsEvent>((event, emit) async {
       emit(ItemsLoading());
@@ -147,5 +181,16 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
       (l) => print(l.message),
       (r) => add(GetItemsEvent(jobId: event.jobId)),
     );
+  }
+
+  bool _checkIfCategorySelected(
+      int categoryId, List<Item> selectedItems, List<Item> allItems) {
+    var itemsOfCategory = allItems.where((item) => item.category == categoryId);
+
+    if (itemsOfCategory
+        .every((categoryItem) => selectedItems.contains(categoryItem))) {
+      return true;
+    }
+    return false;
   }
 }

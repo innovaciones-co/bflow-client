@@ -212,7 +212,7 @@ class JobMaterialsWidget extends StatelessWidget {
         verticalInside: BorderSide(width: 1.0, color: AppColor.lightPurple),
       ),
       children: [
-        _tableHeaderRow(itemsView.first.category?.id.toString() ?? "",
+        _tableHeaderRow(itemsView.first.category!.id,
             itemsView.first.category?.name ?? "", totalPerCategory),
         for (int index = 0; index < itemsView.length; index += 1)
           _tableItemRow(itemsView[index]),
@@ -244,18 +244,36 @@ class JobMaterialsWidget extends StatelessWidget {
     );
   }
 
-  TableRow _tableHeaderRow(String code, String name, double total) {
+  TableRow _tableHeaderRow(int categoryId, String name, double total) {
     return TableRow(
       decoration: BoxDecoration(
         color: AppColor.lightPurple,
       ),
       children: [
-        _tableCell(Text(code)),
-        _tableCell(Checkbox(
-          value: false,
-          onChanged: null,
-          side: BorderSide(color: AppColor.darkGrey, width: 2),
-        )),
+        _tableCell(Text(categoryId.toString())),
+        _tableCell(
+          BlocBuilder<ItemsBloc, ItemsState>(
+            builder: (context, state) {
+              ItemsBloc itemsBloc = context.read<ItemsBloc>();
+              if (state is! ItemsLoaded) {
+                return const SizedBox.shrink();
+              }
+
+              bool? itemsSelectedByCategory = _checkIfCategorySelected(
+                categoryId,
+                state.selectedItems,
+                state.items,
+              );
+              return Checkbox(
+                tristate: true,
+                value: itemsSelectedByCategory,
+                onChanged: (val) => itemsBloc
+                    .add(SelectItemsByCategory(categoryId: categoryId)),
+                side: BorderSide(color: AppColor.darkGrey, width: 2),
+              );
+            },
+          ),
+        ),
         _tableCell(Text(name)),
         ...List.generate(
           6,
@@ -358,5 +376,19 @@ class JobMaterialsWidget extends StatelessWidget {
   _openWriteMaterialWidget(BuildContext context, int jobId) {
     context.showLeftDialog('New Material',
         WriteMaterialWidget(itemsBloc: context.read(), jobId: jobId));
+  }
+
+  _checkIfCategorySelected(
+      int categoryId, List<Item> selectedItems, List<Item> allItems) {
+    var itemsOfCategory = allItems.where((item) => item.category == categoryId);
+
+    if (itemsOfCategory
+        .every((categoryItem) => selectedItems.contains(categoryItem))) {
+      return true;
+    } else if (itemsOfCategory
+        .every((categoryItem) => !selectedItems.contains(categoryItem))) {
+      return false;
+    }
+    return null;
   }
 }
