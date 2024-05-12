@@ -133,17 +133,11 @@ class ProductsCubit extends Cubit<ProductsState> {
     if (state is! ProductsLoaded) return;
 
     List<Product> products = (state as ProductsLoaded).products;
-    List<int> selectedCategories =
-        (state as ProductsLoaded).selectedCategories.toList();
     List<Product> selectedProducts =
         (state as ProductsLoaded).selectedProducts.toList();
 
-    if (selectedCategories.contains(categoryId)) {
-      selectedCategories.remove(categoryId);
-    } else {
-      selectedCategories.add(categoryId);
-    }
-    bool selected = selectedCategories.contains(categoryId);
+    bool selected =
+        !_checkIfCategorySelected(categoryId, selectedProducts, products);
 
     var productsOfCategory =
         products.where((product) => product.category == categoryId);
@@ -161,8 +155,19 @@ class ProductsCubit extends Cubit<ProductsState> {
     }
 
     emit((state as ProductsLoaded).copyWith(
-      selectedCategories: selectedCategories,
       selectedProducts: selectedProducts,
     ));
+  }
+
+  bool _checkIfCategorySelected(int categoryId, List<Product> selectedProducts,
+      List<Product> allProducts) {
+    var productsOfCategory =
+        allProducts.where((product) => product.category == categoryId);
+
+    if (productsOfCategory.every(
+        (categoryProduct) => selectedProducts.contains(categoryProduct))) {
+      return true;
+    }
+    return false;
   }
 }
