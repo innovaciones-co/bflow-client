@@ -1,6 +1,7 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/write_category_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/write_product_widget.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +64,7 @@ class CatalogViewBarWidget extends StatelessWidget {
         Row(
           children: [
             ActionButtonWidget(
-              onPressed: () {},
+              onPressed: () => context.read<ProductsCubit>().deleteProducts(),
               type: ButtonType.textButton,
               title: "Delete",
               icon: Icons.delete_outline,

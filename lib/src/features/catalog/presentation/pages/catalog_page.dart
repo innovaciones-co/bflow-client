@@ -148,8 +148,8 @@ class CatalogPage extends StatelessWidget {
           ),
           children: [
             _tableCategoryRow(
-              catalogProducts.first.category.toString(),
-              state.categories
+              categoryId: catalogProducts.first.category,
+              categoryName: state.categories
                   .where(
                       (element) => element.id == catalogProducts.first.category)
                   .first
@@ -163,19 +163,36 @@ class CatalogPage extends StatelessWidget {
     );
   }
 
-  TableRow _tableCategoryRow(String code, String name) {
+  TableRow _tableCategoryRow(
+      {required int categoryId, required String categoryName}) {
     return TableRow(
       decoration: BoxDecoration(
         color: AppColor.lightPurple,
       ),
       children: [
-        _tableCell(Text(code)),
-        _tableCell(Checkbox(
-          value: false,
-          onChanged: null,
-          side: BorderSide(color: AppColor.darkGrey, width: 2),
-        )),
-        _tableCell(Text(name)),
+        _tableCell(Text(categoryId.toString())),
+        _tableCell(
+          BlocBuilder<ProductsCubit, ProductsState>(
+            builder: (context, state) {
+              ProductsCubit productsCubit = context.read<ProductsCubit>();
+              if (state is! ProductsLoaded) return const SizedBox.shrink();
+
+              bool? productSelectedByCategory = _checkIfCategorySelected(
+                categoryId,
+                state.selectedProducts,
+                state.products,
+              );
+              return Checkbox(
+                tristate: true,
+                value: productSelectedByCategory,
+                onChanged: (val) =>
+                    productsCubit.selectProductsByCategory(categoryId),
+                side: BorderSide(color: AppColor.darkGrey, width: 2),
+              );
+            },
+          ),
+        ),
+        _tableCell(Text(categoryName)),
         ...List.generate(
           6,
           (index) => _tableCell(const Text("")),
@@ -192,10 +209,20 @@ class CatalogPage extends StatelessWidget {
       children: [
         _tableCell(const Text("")),
         _tableCell(
-          Checkbox(
-            value: false,
-            onChanged: null,
-            side: BorderSide(color: AppColor.darkGrey, width: 2),
+          BlocBuilder<ProductsCubit, ProductsState>(
+            builder: (context, state) {
+              ProductsCubit productsCubit = context.read<ProductsCubit>();
+              if (state is! ProductsLoaded) return const SizedBox.shrink();
+
+              var productSelected = state.selectedProducts.contains(product);
+
+              return Checkbox(
+                value: productSelected,
+                onChanged: (val) =>
+                    productsCubit.toggleSelectedProduct(product),
+                side: BorderSide(color: AppColor.darkGrey, width: 2),
+              );
+            },
           ),
         ),
         _tableCell(Text(product.sku)),
@@ -261,5 +288,20 @@ class CatalogPage extends StatelessWidget {
     }
 
     return groupedProducts;
+  }
+
+  bool? _checkIfCategorySelected(int categoryId, List<Product> selectedProducts,
+      List<Product> allProducts) {
+    var productsOfCategory =
+        allProducts.where((prod) => prod.category == categoryId);
+
+    if (productsOfCategory.every(
+        (categoryProduct) => selectedProducts.contains(categoryProduct))) {
+      return true;
+    } else if (productsOfCategory.every(
+        (categoryProduct) => !selectedProducts.contains(categoryProduct))) {
+      return false;
+    }
+    return null;
   }
 }

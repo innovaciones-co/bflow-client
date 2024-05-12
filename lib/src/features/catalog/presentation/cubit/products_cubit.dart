@@ -82,4 +82,87 @@ class ProductsCubit extends Cubit<ProductsState> {
       },
     );
   }
+
+  deleteProducts() async {
+    if (state is! ProductsLoaded) return;
+
+    var selectedProducts = (state as ProductsLoaded).selectedProducts;
+    var supplierId = (state as ProductsLoaded).supplier.id!;
+
+    for (var product in selectedProducts) {
+      var response = await deleteProductUseCase
+          .execute(DeleteProductParams(id: product.id!));
+
+      response.fold(
+        (failure) => homeBloc?.add(
+          ShowMessageEvent(
+            message: "Products couldn't be deleted: ${failure.message}",
+            type: AlertType.error,
+          ),
+        ),
+        (_) {
+          loadSupplierProducts(supplierId);
+          homeBloc?.add(
+            ShowMessageEvent(
+              message: "Products have been deleted!",
+              type: AlertType.success,
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  toggleSelectedProduct(Product product) {
+    if (state is! ProductsLoaded) return;
+
+    List<Product> selectedProducts =
+        (state as ProductsLoaded).selectedProducts.toList();
+
+    if (selectedProducts.contains(product)) {
+      selectedProducts.remove(product);
+    } else {
+      selectedProducts.add(product);
+    }
+
+    emit(
+        (state as ProductsLoaded).copyWith(selectedProducts: selectedProducts));
+  }
+
+  selectProductsByCategory(int categoryId) {
+    if (state is! ProductsLoaded) return;
+
+    List<Product> products = (state as ProductsLoaded).products;
+    List<int> selectedCategories =
+        (state as ProductsLoaded).selectedCategories.toList();
+    List<Product> selectedProducts =
+        (state as ProductsLoaded).selectedProducts.toList();
+
+    if (selectedCategories.contains(categoryId)) {
+      selectedCategories.remove(categoryId);
+    } else {
+      selectedCategories.add(categoryId);
+    }
+    bool selected = selectedCategories.contains(categoryId);
+
+    var productsOfCategory =
+        products.where((product) => product.category == categoryId);
+
+    for (var product in productsOfCategory) {
+      if (selectedProducts.contains(product)) {
+        if (!selected) {
+          selectedProducts.remove(product);
+        }
+      } else {
+        if (selected) {
+          selectedProducts.add(product);
+        }
+      }
+    }
+
+    emit((state as ProductsLoaded).copyWith(
+      selectedCategories: selectedCategories,
+      selectedProducts: selectedProducts,
+    ));
+  }
 }
