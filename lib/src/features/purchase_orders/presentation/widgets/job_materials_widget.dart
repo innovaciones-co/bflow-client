@@ -15,6 +15,7 @@ import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/item
 import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/materials_view_bar_widget.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/no_materials_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/cross_scroll_widget.dart';
+import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -57,9 +58,7 @@ class JobMaterialsWidget extends StatelessWidget {
             child: BlocBuilder<ItemsBloc, ItemsState>(
               builder: (context, state) {
                 if (state is ItemsLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const LoadingWidget();
                 }
 
                 if (state is ItemsFailed) {
@@ -71,16 +70,11 @@ class JobMaterialsWidget extends StatelessWidget {
                 var orders = (state).orders;
                 var suppliers = (state).suppliers;
 
-                if (items.isEmpty) {
-                  return NoMaterialsWidget(
-                    jobId: jobId,
-                    itemsBloc: context.read(),
-                  );
-                }
-
-                final double total = items
-                    .map((e) => e.price)
-                    .reduce((value, element) => value + element);
+                final double total = items.isEmpty
+                    ? 0.0
+                    : items
+                        .map((e) => e.price)
+                        .reduce((value, element) => value + element);
 
                 final Map<int, List<ItemView>> itemsPerCategoryMap =
                     _itemsPerCategoryMap(items, categories, orders, suppliers);
@@ -90,16 +84,22 @@ class JobMaterialsWidget extends StatelessWidget {
                     const MaterialsViewBarWidget(),
                     const SizedBox(height: 15),
                     Expanded(
-                      child: CrossScrollWidget(
-                        child: Column(
-                          children: [
-                            _tableHeader(),
-                            ...itemsPerCategoryMap.entries.map(
-                              (e) => _categoryTable(context, e.value, jobId),
+                      child: items.isEmpty
+                          ? NoMaterialsWidget(
+                              jobId: jobId,
+                              itemsBloc: context.read(),
                             )
-                          ],
-                        ),
-                      ),
+                          : CrossScrollWidget(
+                              child: Column(
+                                children: [
+                                  _tableHeader(),
+                                  ...itemsPerCategoryMap.entries.map(
+                                    (e) =>
+                                        _categoryTable(context, e.value, jobId),
+                                  )
+                                ],
+                              ),
+                            ),
                     ),
                     const SizedBox(height: 10),
                     Container(
