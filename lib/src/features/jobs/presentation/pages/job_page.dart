@@ -35,7 +35,7 @@ class _JobPageState extends State<JobPage> {
   bool _viewJobInfo = false;
   late Widget _body;
   late String _pageTitle;
-  int _selectedIndex = 3;
+  int _selectedIndex = 1;
 
   final List<PageSelector> _content = [
     PageSelector(child: const JobFilesWidget(), title: "Documents"),

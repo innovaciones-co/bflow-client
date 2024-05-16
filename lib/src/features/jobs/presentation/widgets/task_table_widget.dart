@@ -221,14 +221,12 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
               : const SizedBox.shrink(),
         ),
         _tableCell(
-          Expanded(
-            child: Tooltip(
-              message: task.name,
-              child: Text(
-                task.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+          Tooltip(
+            message: task.name,
+            child: Text(
+              task.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           paddingLeft: 0,

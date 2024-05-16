@@ -78,6 +78,8 @@ class SocketService {
   }
 
   _onWebSocketError(dynamic error) {
-    debugPrint(error);
+    if (error is String) {
+      debugPrint(error);
+    }
   }
 }
