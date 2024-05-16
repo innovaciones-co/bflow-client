@@ -12,25 +12,15 @@ class UploadFilesUseCase extends UseCase<void, UploadFilesParams> {
 
   @override
   Future<Either<Failure, void>> execute(UploadFilesParams params) async {
-    try {
-      for (var file in params.files) {
-        debugPrint("Uploading file ${file.name}");
-        final result = await repository.upload(file);
-        result.fold(
-          (failure) {
-            return Left(failure);
-          },
-          (_) {
-            // Upload successful, continue to the next file
-          },
-        );
+    for (var file in params.files) {
+      debugPrint("Uploading file ${file.name}");
+      final result = await repository.upload(file);
+      if (result.isLeft()) {
+        return result;
       }
-
-      return const Right(null);
-    } catch (e) {
-      return Left(
-          ServerFailure(message: "Unexpected error during file upload: $e"));
     }
+
+    return const Right(null);
   }
 }
 

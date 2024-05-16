@@ -102,7 +102,7 @@ class ApiService {
     try {
       final options = Options(
         method: method.toString(),
-        validateStatus: (status) => status != null ? status < 500 : false,
+        validateStatus: (status) => status != null ? status <= 500 : false,
         headers: headers,
       );
 
@@ -120,6 +120,11 @@ class ApiService {
       // debugPrint("Response: ${response.toString()}");
 
       switch (response.statusCode) {
+        case 500:
+          ErrorResponseModel? errorResponse = _getErrorResponse(response);
+
+          throw BadResponseException(
+              errorResponse?.message ?? "Server failure");
         case 400:
           ErrorResponseModel? errorResponse = _getErrorResponse(response);
 
