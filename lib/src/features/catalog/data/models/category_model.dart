@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
 
 class CategoryModel extends Category {
   const CategoryModel({

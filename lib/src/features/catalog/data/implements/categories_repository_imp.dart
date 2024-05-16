@@ -1,8 +1,8 @@
 import 'package:bflow_client/src/core/exceptions/bad_request_exception.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/repositories/category_repository.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/repositories/category_repository.dart';
 import 'package:dartz/dartz.dart';
 
 import '../sources/categories_remote_data_source.dart';

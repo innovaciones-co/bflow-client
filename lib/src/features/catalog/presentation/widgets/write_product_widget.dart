@@ -12,7 +12,7 @@ import 'package:bflow_client/src/features/catalog/domain/entities/product_entity
 import 'package:bflow_client/src/features/catalog/domain/entities/units.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/write_product_cubit/write_product_cubit.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
