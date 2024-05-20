@@ -4,6 +4,7 @@ import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
+import 'package:bflow_client/src/features/catalog/presentation/widgets/categories_widget.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/contacts/presentation/cubit/contacts_cubit.dart';
@@ -35,17 +36,25 @@ class CatalogsPage extends StatelessWidget {
 
             var suppliers = (state as ContactsLoaded).contacts;
 
-            return GridView.count(
-              crossAxisCount: context.isMobile || context.isSmallTablet
-                  ? 2
-                  : context.isTablet
-                      ? 3
-                      : 4,
-              childAspectRatio: context.isMobile || context.isTablet ? 2 : 3,
-              children: suppliers
-                  .mapIndexed((index, supplier) =>
-                      _supplierItem(index, supplier, context))
-                  .toList(),
+            return Row(
+              children: [
+                Expanded(
+                  child: GridView.count(
+                    crossAxisCount: context.isMobile || context.isSmallTablet
+                        ? 2
+                        : context.isTablet
+                            ? 3
+                            : 4,
+                    childAspectRatio:
+                        context.isMobile || context.isTablet ? 2 : 3,
+                    children: suppliers
+                        .mapIndexed((index, supplier) =>
+                            _supplierItem(index, supplier, context))
+                        .toList(),
+                  ),
+                ),
+                const CategoriesWidget()
+              ],
             );
           },
         ),

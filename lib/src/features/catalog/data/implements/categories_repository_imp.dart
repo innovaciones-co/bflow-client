@@ -37,6 +37,8 @@ class CategoriesRepositoryImp implements CategoriesRepository {
       return Right(await remoteDataSource.deleteCategory(id));
     } on RemoteDataSourceException catch (e) {
       return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(ClientFailure(message: e.toString()));
     }
   }
 

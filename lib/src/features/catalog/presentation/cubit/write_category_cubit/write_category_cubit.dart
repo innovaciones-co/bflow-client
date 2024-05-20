@@ -3,7 +3,7 @@ import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/create_category_use_case.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/update_category_use_case.dart';
-import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/categories_cubit.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,12 +11,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 part 'write_category_state.dart';
 
 class WriteCategoryCubit extends Cubit<WriteCategoryState> {
-  final ProductsCubit productsCubit;
+  final CategoriesCubit categoriesCubit;
   final CreateCategoryUseCase createCategorytUseCase;
   final UpdateCategoryUseCase updateCategorytUseCase;
 
   WriteCategoryCubit({
-    required this.productsCubit,
+    required this.categoriesCubit,
     required this.createCategorytUseCase,
     required this.updateCategorytUseCase,
   }) : super(WriteCategoryValidator());
@@ -57,7 +57,10 @@ class WriteCategoryCubit extends Cubit<WriteCategoryState> {
     failureOrCategory.fold(
       (failure) =>
           emit(state.copyWith(failure: failure, formStatus: FormStatus.failed)),
-      (contact) => emit(state.copyWith(formStatus: FormStatus.success)),
+      (contact) {
+        emit(state.copyWith(formStatus: FormStatus.success));
+        categoriesCubit.loadCategories();
+      },
     );
   }
 
@@ -78,8 +81,8 @@ class WriteCategoryCubit extends Cubit<WriteCategoryState> {
       (failure) =>
           emit(state.copyWith(failure: failure, formStatus: FormStatus.failed)),
       (contact) {
-        productsCubit.loadSupplierProducts(state.supplier!);
         emit(state.copyWith(formStatus: FormStatus.success));
+        categoriesCubit.loadCategories();
       },
     );
   }

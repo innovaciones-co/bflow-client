@@ -2,7 +2,6 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
-import 'package:bflow_client/src/features/catalog/presentation/widgets/write_category_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/write_product_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,17 +69,6 @@ class CatalogViewBarWidget extends StatelessWidget {
               icon: Icons.delete_outline,
               paddingHorizontal: 15,
               paddingVertical: 18,
-            ),
-            const SizedBox(width: 12),
-            ActionButtonWidget(
-              onPressed: () => context.showLeftDialog(
-                "New Category",
-                WriteCategorytWidget(productsCubit: context.read()),
-              ),
-              type: ButtonType.elevatedButton,
-              title: "New Category",
-              icon: Icons.add,
-              backgroundColor: AppColor.lightBlue,
             ),
             const SizedBox(width: 12),
             ActionButtonWidget(
