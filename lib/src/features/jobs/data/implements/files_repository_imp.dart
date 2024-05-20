@@ -33,7 +33,7 @@ class FilesRepositoryImp implements FilesRepository {
       return Left(ServerFailure(message: e.message));
     } on BadRequestException catch (e) {
       return Left(ClientFailure(message: e.toString()));
-    } on BadResponseException catch (e) {
+    } on BadResponseException {
       return Left(
         ServerFailure(
           message:

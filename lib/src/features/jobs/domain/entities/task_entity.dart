@@ -53,4 +53,36 @@ class Task extends Equatable {
 
   @override
   bool? get stringify => true;
+
+  Task copyWith({
+    int? id,
+    String? name,
+    DateTime? callDate,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? comments,
+    int? progress,
+    TaskStatus? status,
+    TaskStage? stage,
+    int? parentTask,
+    Contact? supplier,
+    List<dynamic>? attachments,
+    int? job,
+  }) {
+    return Task(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      callDate: callDate ?? this.callDate,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      comments: comments ?? this.comments,
+      progress: progress ?? this.progress,
+      status: status ?? this.status,
+      stage: stage ?? this.stage,
+      parentTask: parentTask ?? this.parentTask,
+      supplier: supplier ?? this.supplier,
+      attachments: attachments ?? this.attachments,
+      job: job ?? this.job,
+    );
+  }
 }

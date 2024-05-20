@@ -385,6 +385,7 @@ class TaskDeleteConfirmationWidget extends StatelessWidget {
             getJobUseCase: DependencyInjection.sl(),
             getTaskUseCase: DependencyInjection.sl(),
             deleteTaskUseCase: DependencyInjection.sl(),
+            updateTaskUseCase: DependencyInjection.sl(),
             tasksBloc: tasksBloc,
             homeBloc: context.read(),
           ),
