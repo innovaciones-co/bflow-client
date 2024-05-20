@@ -75,7 +75,7 @@ class CatalogViewBarWidget extends StatelessWidget {
             ActionButtonWidget(
               onPressed: () => context.showLeftDialog(
                 "New Category",
-                WriteCategorytWidget(),
+                WriteCategorytWidget(productsCubit: context.read()),
               ),
               type: ButtonType.elevatedButton,
               title: "New Category",

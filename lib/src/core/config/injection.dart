@@ -4,11 +4,14 @@ import 'package:bflow_client/src/core/api/api.dart';
 import 'package:bflow_client/src/features/catalog/data/implements/products_repository_imp.dart';
 import 'package:bflow_client/src/features/catalog/data/sources/products_remote_data_source.dart';
 import 'package:bflow_client/src/features/catalog/domain/repositories/product_repository.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/create_category_use_case.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/create_product_usecase.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/delete_product_usecase.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/update_category_use_case.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/update_product_usecase.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/get_products_use_case.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/write_category_cubit/write_category_cubit.dart';
 import 'package:bflow_client/src/features/contacts/data/implements/contacts_repository_imp.dart';
 import 'package:bflow_client/src/features/contacts/data/sources/sources.dart';
 import 'package:bflow_client/src/features/contacts/domain/repositories/contacts_repository.dart';
@@ -175,6 +178,13 @@ class DependencyInjection {
         homeBloc: sl(),
       ),
     );
+    sl.registerFactory(
+      () => WriteCategoryCubit(
+        productsCubit: sl(),
+        createCategorytUseCase: sl(),
+        updateCategorytUseCase: sl(),
+      ),
+    );
 
     // Use cases
     sl.registerLazySingleton(
@@ -257,6 +267,12 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => CreatePurchaseOrderUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => CreateCategoryUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => UpdateCategoryUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => GetCategoriesUseCase(repository: sl()),

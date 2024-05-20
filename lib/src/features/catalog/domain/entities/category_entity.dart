@@ -1,13 +1,13 @@
 import 'package:equatable/equatable.dart';
 
 class Category extends Equatable {
-  final int id;
+  final int? id;
   final String name;
   final int tradeCode;
   final int? parentCategory;
 
   const Category({
-    required this.id,
+    this.id,
     required this.name,
     required this.tradeCode,
     this.parentCategory,

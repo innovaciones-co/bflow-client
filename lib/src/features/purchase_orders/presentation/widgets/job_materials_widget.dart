@@ -212,7 +212,7 @@ class JobMaterialsWidget extends StatelessWidget {
         verticalInside: BorderSide(width: 1.0, color: AppColor.lightPurple),
       ),
       children: [
-        _tableHeaderRow(itemsView.first.category!.id,
+        _tableHeaderRow(itemsView.first.category!.id!,
             itemsView.first.category?.name ?? "", totalPerCategory),
         for (int index = 0; index < itemsView.length; index += 1)
           _tableItemRow(itemsView[index]),
