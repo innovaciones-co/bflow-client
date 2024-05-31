@@ -108,7 +108,7 @@ class ApiService {
       );
 
       debugPrint("Request to: ${url.toString()}");
-      // debugPrint("Body: ${body.toString()}");
+      debugPrint("Body: ${body.toString()}");
 
       final response = await client.request(
         url,

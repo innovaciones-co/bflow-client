@@ -50,6 +50,7 @@ import 'package:bflow_client/src/features/login/data/implements/login_repository
 import 'package:bflow_client/src/features/login/data/sources/login_local_data_source.dart';
 import 'package:bflow_client/src/features/login/data/sources/login_remote_data_source.dart';
 import 'package:bflow_client/src/features/login/domain/repositories/repositories.dart';
+import 'package:bflow_client/src/features/login/domain/usecases/get_logged_user_use_case.dart';
 import 'package:bflow_client/src/features/login/domain/usecases/is_logged_use_case.dart';
 import 'package:bflow_client/src/features/login/domain/usecases/login_use_case.dart';
 import 'package:bflow_client/src/features/login/domain/usecases/logout_use_case.dart';
@@ -107,9 +108,11 @@ class DependencyInjection {
     sl.registerLazySingleton(
       () => SocketService.instance(url: SocketConstants.endpointUrl),
     );
-    sl.registerSingletonAsync<SharedPreferences>(
+    final sharedPreferences = await SharedPreferences.getInstance();
+    sl.registerSingleton<SharedPreferences>(sharedPreferences);
+    /* sl.registerSingletonAsync<SharedPreferences>(
       () => SharedPreferences.getInstance(),
-    );
+    ); */
 
     // BLoC
     sl.registerSingleton<HomeBloc>(
@@ -119,6 +122,8 @@ class DependencyInjection {
       () => LoginCubit(
         loginUseCase: sl(),
         isLoggedUseCase: sl(),
+        getLoggedUserUseCase: sl(),
+        logoutUseCase: sl(),
       ),
     );
     sl.registerFactory<JobsBloc>(
@@ -190,6 +195,9 @@ class DependencyInjection {
     // Use cases
     sl.registerLazySingleton(
       () => LoginUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => GetLoggedUserUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => LogoutUseCase(
@@ -332,6 +340,7 @@ class DependencyInjection {
       () => LoginRepositoryImp(
         remoteDataSource: sl(),
         localDataSource: sl(),
+        usersRemoteDataSource: sl(),
       ),
     );
     sl.registerLazySingleton<ContactsRepository>(

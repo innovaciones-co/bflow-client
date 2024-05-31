@@ -76,10 +76,12 @@ class LoginPage extends StatelessWidget with Validator {
             Expanded(
               flex: 1,
               child: Center(
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 500),
-                  margin: const EdgeInsets.symmetric(horizontal: 80),
-                  child: _loginForm(context),
+                child: SingleChildScrollView(
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 500),
+                    margin: const EdgeInsets.symmetric(horizontal: 35),
+                    child: _loginForm(context),
+                  ),
                 ),
               ),
             ),
@@ -128,7 +130,11 @@ class LoginPage extends StatelessWidget with Validator {
               ),
               const SizedBox(height: 20),
               Padding(
-                padding: const EdgeInsets.only(top: 30, right: 20, left: 20),
+                padding: EdgeInsets.only(
+                  top: 30,
+                  right: context.isDesktop ? 20 : 0,
+                  left: context.isDesktop ? 20 : 0,
+                ),
                 child: ActionButtonWidget(
                   onPressed: () {
                     if (_loginFormKey.currentState!.validate()) {

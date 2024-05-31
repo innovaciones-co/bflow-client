@@ -21,12 +21,13 @@ class LoginFormState extends LoginState {
       this.status = FormStatus.initialized,
       this.errorMessage});
 
-  LoginFormState copyWith(
-          {String? username,
-          String? password,
-          AutovalidateMode? autovalidateMode,
-          String? errorMessage,
-          FormStatus? status}) =>
+  LoginFormState copyWith({
+    String? username,
+    String? password,
+    AutovalidateMode? autovalidateMode,
+    String? errorMessage,
+    FormStatus? status,
+  }) =>
       LoginFormState(
         autovalidateMode: autovalidateMode ?? this.autovalidateMode,
         username: username ?? this.username,

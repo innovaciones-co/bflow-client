@@ -17,6 +17,15 @@ class UsersRemoteDataSource {
     return UsersModel.fromMap(response);
   }
 
+  Future<UsersModel> fetchUserByUsername(String username) async {
+    Map<String, dynamic> response = await apiService.get(
+      endpoint:
+          ApiConstants.userByusernameEndpoint.replaceAll(":username", username),
+    );
+
+    return UsersModel.fromMap(response);
+  }
+
   Future<List<UsersModel>> fetchUsers() async {
     List<dynamic> response =
         await apiService.get(endpoint: ApiConstants.usersEndpoint);

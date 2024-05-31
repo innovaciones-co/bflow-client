@@ -25,7 +25,7 @@ class WriteProductCubit extends Cubit<WriteProductState> {
     required this.createProductUseCase,
     required this.getCategoriesUseCase,
     required this.updateProductUseCase,
-  }) : super(WriteProductValidator());
+  }) : super(const WriteProductValidator());
 
   Future<void> initForm({
     final int? id,
@@ -33,9 +33,9 @@ class WriteProductCubit extends Cubit<WriteProductState> {
     final String sku = '',
     final String description = '',
     final double? unitPrice = 0.0,
-    final int? vat,
+    final double? vat,
     final Unit? unitOfMeasure,
-    final int? uomOrderIncrement,
+    final double? uomOrderIncrement,
     final String? url = '',
     final int? category,
     final int? supplier,

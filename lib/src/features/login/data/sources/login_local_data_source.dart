@@ -11,11 +11,11 @@ class LoginLocalDataSource implements LocalDataSource {
 
   LoginLocalDataSource({required this.prefs});
 
-  Future<bool> isLogged() async {
+  Future<String?> getToken() async {
     try {
-      return prefs.getString(LoginValues.token) != null;
+      return prefs.getString(LoginValues.token);
     } on Exception {
-      return false;
+      return null;
     }
   }
 
