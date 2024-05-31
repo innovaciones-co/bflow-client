@@ -11,8 +11,10 @@ import 'package:bflow_client/src/features/catalog/domain/usecases/delete_product
 import 'package:bflow_client/src/features/catalog/domain/usecases/update_category_use_case.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/update_product_usecase.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/get_products_use_case.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/upsert_products_use_case.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/categories_cubit.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/upsert_products_cubit/upsert_products_cubit.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/write_category_cubit/write_category_cubit.dart';
 import 'package:bflow_client/src/features/contacts/data/implements/contacts_repository_imp.dart';
 import 'package:bflow_client/src/features/contacts/data/sources/sources.dart';
@@ -194,6 +196,11 @@ class DependencyInjection {
         updateCategorytUseCase: sl(),
       ),
     );
+    sl.registerFactory<UpsertProductsCubit>(
+      () => UpsertProductsCubit(
+        upsertProductsUseCase: sl(),
+      ),
+    );
 
     // Use cases
     sl.registerLazySingleton(
@@ -322,6 +329,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => DeleteProductUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => UpsertProductsUseCase(repository: sl()),
     );
 
     // Repository

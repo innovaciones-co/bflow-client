@@ -1,8 +1,12 @@
+import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/upsert_products_cubit/upsert_products_cubit.dart';
+import 'package:bflow_client/src/features/catalog/presentation/widgets/import_products_file_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/write_product_widget.dart';
+import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -86,7 +90,54 @@ class CatalogViewBarWidget extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             ActionButtonWidget(
-              onPressed: () {},
+              onPressed: () => context.showModal("Import data", [
+                BlocProvider<UpsertProductsCubit>(
+                  create: (context) => DependencyInjection.sl(),
+                  child: BlocBuilder<UpsertProductsCubit, UpsertProductsState>(
+                    builder: (context, state) {
+                      if (state is UpsertProductsInitial ||
+                          state is UpsertProductsLoadFailure) {
+                        return Column(
+                          children: [
+                            const Row(
+                              children: [
+                                Text(
+                                  'Please upload the file to import the products data:',
+                                  textAlign: TextAlign.end,
+                                ),
+                              ],
+                            ),
+                            ImportProductsFileWidget(
+                              supplierId: 1,
+                              upsertProductsCubit:
+                                  context.read<UpsertProductsCubit>(),
+                            ),
+                            state is UpsertProductsLoadFailure
+                                ? Text(state.message)
+                                : const SizedBox.shrink(),
+                          ],
+                        );
+                      }
+
+                      if (state is UpsertProductsLoadInProgress) {
+                        return Column(
+                          children: [
+                            const LoadingWidget(),
+                            Text(state.message),
+                          ],
+                        );
+                      }
+
+                      return const Column(
+                        children: [
+                          LoadingWidget(),
+                          Text('Other'),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ]),
               type: ButtonType.elevatedButton,
               title: "Import",
               icon: Icons.upload,

@@ -75,4 +75,20 @@ class ProductsRepositoryImp implements ProductsRepository {
       );
     }
   }
+
+  @override
+  Future<Either<Failure, void>> upsertProducts(List<Product> products) async {
+    try {
+      return Right(await remoteDataSource.upsertProducts(products));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(
+        ClientFailure(
+          message: e.toString(),
+          errorResponse: e.errorResponse,
+        ),
+      );
+    }
+  }
 }

@@ -57,4 +57,14 @@ class ProductsRemoteDataSource extends RemoteDataSource {
         endpoint: ApiConstants.productEndpoint
             .replaceAll(':id', productId.toString()));
   }
+
+  Future<void> upsertProducts(List<Product> products) async {
+    List<ProductModel> productModels =
+        products.map((product) => ProductModel.fromEntity(product)).toList();
+
+    await apiService.put(
+      endpoint: ApiConstants.upsertProductsEndpoint,
+      data: productModels,
+    );
+  }
 }
