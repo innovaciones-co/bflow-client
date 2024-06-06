@@ -198,8 +198,7 @@ class DependencyInjection {
     );
     sl.registerFactory<UpsertProductsCubit>(
       () => UpsertProductsCubit(
-        upsertProductsUseCase: sl(),
-      ),
+          upsertProductsUseCase: sl(), getCategoriesUseCase: sl()),
     );
 
     // Use cases
