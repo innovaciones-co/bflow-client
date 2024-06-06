@@ -77,4 +77,16 @@ class TasksRepositoryImp implements TasksRepository {
       return Left(ClientFailure(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> sendTasks(List<t.Task> tasks) async {
+    try {
+      await remoteDataSource.sendTasks(tasks);
+      return const Right(null);
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(ClientFailure(message: e.toString()));
+    }
+  }
 }

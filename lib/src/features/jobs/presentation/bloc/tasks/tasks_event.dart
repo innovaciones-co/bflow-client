@@ -30,6 +30,10 @@ class LoadingTasksEvent extends TasksEvent {}
 
 class DeleteTasksEvent extends TasksEvent {}
 
+class SendSelectedTasksEvent extends TasksEvent {}
+
+class SendTaskEvent extends TasksEvent {}
+
 class GetTasksEvent extends TasksEvent {
   final int? jobId;
 

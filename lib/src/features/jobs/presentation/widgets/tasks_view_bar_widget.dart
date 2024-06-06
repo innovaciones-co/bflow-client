@@ -58,7 +58,8 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
             ),
             const SizedBox(width: 12),
             ActionButtonWidget(
-              onPressed: () {},
+              onPressed: () =>
+                  context.read<TasksBloc>().add(SendSelectedTasksEvent()),
               type: ButtonType.elevatedButton,
               title: "Send task",
               icon: Icons.mail_outline,

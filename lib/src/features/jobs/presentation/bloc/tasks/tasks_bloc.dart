@@ -8,6 +8,7 @@ import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart'
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/send_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +20,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   final JobBloc jobBloc;
   final GetTasksUseCase getTasksUseCase;
   final DeleteTaskUseCase deleteTaskUseCase;
+  final SendTasksUseCase sendTasksUseCase;
   final HomeBloc? homeBloc;
   final SocketService socketService;
   List<Task> tasks = [];
@@ -27,6 +29,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     required this.jobBloc,
     required this.getTasksUseCase,
     required this.deleteTaskUseCase,
+    required this.sendTasksUseCase,
     required this.homeBloc,
     required this.socketService,
   }) : super(TasksInitial()) {
@@ -42,39 +45,59 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       ),
     );
 
-    on<DeleteTasksEvent>(
-      (event, emit) async {
-        if (state is TasksLoaded) {
-          var loadedState = (state as TasksLoaded);
-          var selectedTasks = List<Task>.from(loadedState.selectedTasks);
-
-          for (var e in selectedTasks) {
-            var task =
-                await deleteTaskUseCase.execute(DeleteTaskParams(id: e.id!));
-            task.fold(
-              (failure) => homeBloc?.add(
-                ShowMessageEvent(
-                    message:
-                        "Task ${e.id} couldn't be deleted: ${failure.message}",
-                    type: AlertType.error),
-              ),
-              (r) {
-                add(GetTasksEvent(jobId: e.job));
-              },
-            );
-          }
-        }
-      },
-    );
+    on<DeleteTasksEvent>(_deleteTasks);
     on<ToggleSelectedTask>(_toggleSelectdTask);
     on<AddSelectedTask>(_addSelectdTask);
     on<RemoveSelectedTask>(_removeSelectedTask);
+    on<SendSelectedTasksEvent>(_sendTasks);
     on<TasksEvent>((event, emit) {});
     on<LoadingTasksEvent>(_loadingTasks);
     on<GetTasksEvent>(_getTasks);
 
     if (jobBloc.state is JobLoaded) {
       add(GetTasksEvent(jobId: (jobBloc.state as JobLoaded).job.id));
+    }
+  }
+
+  FutureOr<void> _sendTasks(event, emit) async {
+    if (state is TasksLoaded) {
+      var loadedState = (state as TasksLoaded);
+      var selectedTasks = List<Task>.from(loadedState.selectedTasks);
+
+      var task =
+          await sendTasksUseCase.execute(SendTasksParams(tasks: selectedTasks));
+      task.fold(
+        (failure) => homeBloc?.add(
+          ShowMessageEvent(
+              message:
+                  "There was a failure sending the tasks: ${failure.message}",
+              type: AlertType.error),
+        ),
+        (r) {
+          add(GetTasksEvent(jobId: loadedState.tasks.first.job));
+        },
+      );
+    }
+  }
+
+  FutureOr<void> _deleteTasks(event, emit) async {
+    if (state is TasksLoaded) {
+      var loadedState = (state as TasksLoaded);
+      var selectedTasks = List<Task>.from(loadedState.selectedTasks);
+
+      for (var e in selectedTasks) {
+        var task = await deleteTaskUseCase.execute(DeleteTaskParams(id: e.id!));
+        task.fold(
+          (failure) => homeBloc?.add(
+            ShowMessageEvent(
+                message: "Task ${e.id} couldn't be deleted: ${failure.message}",
+                type: AlertType.error),
+          ),
+          (r) {
+            add(GetTasksEvent(jobId: e.job));
+          },
+        );
+      }
     }
   }
 

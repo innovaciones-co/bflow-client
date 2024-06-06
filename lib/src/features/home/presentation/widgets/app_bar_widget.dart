@@ -38,11 +38,24 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             if (snapshot.hasData) {
               User? user = snapshot.data;
               if (user != null) {
-                return Text(
-                  "${user.firstName} ${user.lastName}",
-                  style: context.bodyMedium?.copyWith(
-                    color: AppColor.grey,
-                  ),
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "${user.firstName} ${user.lastName}",
+                      style: context.bodyMedium?.copyWith(
+                        color: AppColor.grey,
+                      ),
+                    ),
+                    Text(
+                      user.role.toString(),
+                      style: context.bodySmall?.copyWith(
+                        fontStyle: FontStyle.italic,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 );
               }
             }

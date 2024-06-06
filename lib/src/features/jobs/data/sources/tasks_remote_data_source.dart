@@ -11,19 +11,19 @@ class TasksRemoteDataSource extends RemoteDataSource {
     if (jobId != null) {
       Map<String, String> queryParams = {'job_id': jobId.toString()};
       List<dynamic> response = await apiService.get(
-          endpoint: ApiConstants.listTasksEndpoint, params: queryParams);
+          endpoint: ApiConstants.tasksEndpoint, params: queryParams);
       return response.map((e) => TaskModel.fromMap(e)).toList();
     }
 
     List<dynamic> response =
-        await apiService.get(endpoint: ApiConstants.listTasksEndpoint);
+        await apiService.get(endpoint: ApiConstants.tasksEndpoint);
     return response.map((e) => TaskModel.fromMap(e)).toList();
   }
 
   Future<TaskModel> createTask(Task task) async {
     final taskModel = TaskModel.fromEntity(task);
     int taskId = await apiService.post(
-      endpoint: ApiConstants.listTasksEndpoint,
+      endpoint: ApiConstants.tasksEndpoint,
       data: taskModel.toMap(),
     );
 
@@ -51,6 +51,14 @@ class TasksRemoteDataSource extends RemoteDataSource {
   Future<void> deleteTask(int id) async {
     await apiService.delete(
       endpoint: ApiConstants.taskEndpoint.replaceAll(':id', id.toString()),
+    );
+  }
+
+  sendTasks(List<Task> tasks) async {
+    final tasksIds = tasks.map((e) => e.id!).toList();
+    await apiService.post(
+      endpoint: ApiConstants.sendTasksEndpoint,
+      data: tasksIds,
     );
   }
 }
