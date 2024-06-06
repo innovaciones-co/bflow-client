@@ -11,6 +11,10 @@ final class TasksInitial extends TasksState {}
 
 class TasksLoading extends TasksState {}
 
+class TasksDeleting extends TasksState {}
+
+class TasksSending extends TasksState {}
+
 class TasksLoaded extends TasksState {
   final List<Task> tasks;
   final List<Task> selectedTasks;

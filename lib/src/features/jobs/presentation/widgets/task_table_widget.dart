@@ -11,6 +11,7 @@ import 'package:bflow_client/src/features/jobs/presentation/bloc/task/task_cubit
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/no_tasks_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_task_widget.dart';
+import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -53,6 +54,9 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
   Widget build(BuildContext context) {
     return BlocBuilder<TasksBloc, TasksState>(
       builder: (context, state) {
+        if (state is TaskLoading) {
+          return const LoadingWidget();
+        }
         // As the tasks from the widget are filtered, we should use the tasks bloc
         if (state is TasksLoaded && state.tasks.isEmpty) {
           return BlocBuilder<JobBloc, JobState>(

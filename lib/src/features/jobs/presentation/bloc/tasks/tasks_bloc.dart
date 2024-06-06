@@ -46,8 +46,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     );
 
     on<DeleteTasksEvent>(_deleteTasks);
-    on<ToggleSelectedTask>(_toggleSelectdTask);
-    on<AddSelectedTask>(_addSelectdTask);
+    on<ToggleSelectedTask>(_toggleSelectedTask);
+    on<AddSelectedTask>(_addSelectedTask);
     on<RemoveSelectedTask>(_removeSelectedTask);
     on<SendSelectedTasksEvent>(_sendTasks);
     on<TasksEvent>((event, emit) {});
@@ -64,16 +64,27 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       var loadedState = (state as TasksLoaded);
       var selectedTasks = List<Task>.from(loadedState.selectedTasks);
 
+      emit(TasksSending());
+
       var task =
           await sendTasksUseCase.execute(SendTasksParams(tasks: selectedTasks));
       task.fold(
-        (failure) => homeBloc?.add(
-          ShowMessageEvent(
-              message:
-                  "There was a failure sending the tasks: ${failure.message}",
-              type: AlertType.error),
-        ),
+        (failure) {
+          homeBloc?.add(
+            ShowMessageEvent(
+                message:
+                    "There was a failure sending the tasks: ${failure.message}",
+                type: AlertType.error),
+          );
+          emit(loadedState);
+        },
         (r) {
+          homeBloc?.add(
+            ShowMessageEvent(
+                message:
+                    "A confirmation email was sent for the suppliers of the selected tasks.",
+                type: AlertType.success),
+          );
           add(GetTasksEvent(jobId: loadedState.tasks.first.job));
         },
       );
@@ -85,14 +96,20 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       var loadedState = (state as TasksLoaded);
       var selectedTasks = List<Task>.from(loadedState.selectedTasks);
 
+      emit(TasksDeleting());
+
       for (var e in selectedTasks) {
         var task = await deleteTaskUseCase.execute(DeleteTaskParams(id: e.id!));
         task.fold(
-          (failure) => homeBloc?.add(
-            ShowMessageEvent(
-                message: "Task ${e.id} couldn't be deleted: ${failure.message}",
-                type: AlertType.error),
-          ),
+          (failure) {
+            homeBloc?.add(
+              ShowMessageEvent(
+                  message:
+                      "Task ${e.id} couldn't be deleted: ${failure.message}",
+                  type: AlertType.error),
+            );
+            emit(loadedState);
+          },
           (r) {
             add(GetTasksEvent(jobId: e.job));
           },
@@ -101,7 +118,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     }
   }
 
-  FutureOr<void> _toggleSelectdTask(event, emit) {
+  FutureOr<void> _toggleSelectedTask(event, emit) {
     if (state is TasksLoaded) {
       var loadedState = (state as TasksLoaded);
       var selectedTasks = List<Task>.from(loadedState.selectedTasks);
@@ -144,6 +161,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     var selectedTasks = List<Task>.from(loadedState.selectedTasks);
     var task = event.task;
 
+    emit(TasksDeleting());
+
     selectedTasks.remove(task);
 
     emit(
@@ -151,7 +170,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     );
   }
 
-  FutureOr<void> _addSelectdTask(
+  FutureOr<void> _addSelectedTask(
       AddSelectedTask event, Emitter<TasksState> emit) {
     var loadedState = (state as TasksLoaded);
     var selectedTasks = List<Task>.from(loadedState.selectedTasks);

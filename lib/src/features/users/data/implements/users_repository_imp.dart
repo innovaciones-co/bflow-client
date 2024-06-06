@@ -45,9 +45,12 @@ class UsersRepositoryImp implements UsersRepository {
   }
 
   @override
-  Future<Either<Failure, User>> getUser(int id) {
-    // TODO: implement getUser
-    throw UnimplementedError();
+  Future<Either<Failure, User>> getUser(int id) async {
+    try {
+      return Right(await remoteDataSource.fetchUser(id));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
   }
 
   @override

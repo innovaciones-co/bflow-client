@@ -4,7 +4,7 @@ import 'package:bflow_client/src/features/catalog/domain/entities/product_entity
 import 'package:bflow_client/src/features/catalog/domain/entities/units.dart';
 
 class ProductModel extends Product {
-  ProductModel({
+  const ProductModel({
     super.id,
     required super.name,
     super.description,
