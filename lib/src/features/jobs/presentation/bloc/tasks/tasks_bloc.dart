@@ -49,6 +49,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<ToggleSelectedTask>(_toggleSelectedTask);
     on<AddSelectedTask>(_addSelectedTask);
     on<RemoveSelectedTask>(_removeSelectedTask);
+    on<SendTaskEvent>(_sendTask);
     on<SendSelectedTasksEvent>(_sendTasks);
     on<TasksEvent>((event, emit) {});
     on<LoadingTasksEvent>(_loadingTasks);
@@ -181,5 +182,37 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     emit(
       loadedState.copyWith(selectedTasks: selectedTasks),
     );
+  }
+
+  FutureOr<void> _sendTask(
+      SendTaskEvent event, Emitter<TasksState> emit) async {
+    if (state is TasksLoaded) {
+      var loadedState = (state as TasksLoaded);
+
+      emit(TasksSending());
+
+      var taskorFailure =
+          await sendTasksUseCase.execute(SendTasksParams(tasks: [event.task]));
+      taskorFailure.fold(
+        (failure) {
+          homeBloc?.add(
+            ShowMessageEvent(
+                message:
+                    "There was a failure sending the tasks: ${failure.message}",
+                type: AlertType.error),
+          );
+          emit(loadedState);
+        },
+        (r) {
+          homeBloc?.add(
+            ShowMessageEvent(
+                message:
+                    "A confirmation email was sent for the suppliers of the selected tasks.",
+                type: AlertType.success),
+          );
+          add(GetTasksEvent(jobId: loadedState.tasks.first.job));
+        },
+      );
+    }
   }
 }

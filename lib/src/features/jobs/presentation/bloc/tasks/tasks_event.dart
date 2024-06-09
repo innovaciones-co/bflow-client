@@ -32,7 +32,11 @@ class DeleteTasksEvent extends TasksEvent {}
 
 class SendSelectedTasksEvent extends TasksEvent {}
 
-class SendTaskEvent extends TasksEvent {}
+class SendTaskEvent extends TasksEvent {
+  final Task task;
+
+  const SendTaskEvent({required this.task});
+}
 
 class GetTasksEvent extends TasksEvent {
   final int? jobId;

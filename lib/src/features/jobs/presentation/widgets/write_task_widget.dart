@@ -210,7 +210,8 @@ class WriteTaskWidget extends StatelessWidget with Validator {
                         ? Container(
                             margin: const EdgeInsets.only(right: 12),
                             child: ActionButtonWidget(
-                              onPressed: () {},
+                              onPressed: () =>
+                                  tasksBloc.add(SendTaskEvent(task: task!)),
                               type: ButtonType.elevatedButton,
                               title: "Send email",
                               backgroundColor: AppColor.lightBlue,
