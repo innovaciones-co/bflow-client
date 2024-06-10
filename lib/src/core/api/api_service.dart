@@ -6,6 +6,7 @@ import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.da
 import 'package:bflow_client/src/features/shared/data/models/error_response_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api.dart';
 
@@ -25,8 +26,13 @@ enum Methods {
 
 class ApiService {
   final Dio client = Dio();
+  SharedPreferences sharedPreferences;
 
-  ApiService();
+  ApiService({
+    required this.sharedPreferences,
+  });
+
+  String? get token => sharedPreferences.get('token') as String?;
 
   Future<dynamic> get(
       {required String endpoint, Map<String, String>? params}) async {
@@ -100,6 +106,11 @@ class ApiService {
     dynamic body,
   }) async {
     try {
+      if (token != null) {
+        headers ??= {};
+        headers['Authorization'] = "Bearer $token";
+      }
+
       final options = Options(
         method: method.toString(),
         validateStatus: (status) => status != null ? status <= 500 : false,
@@ -152,6 +163,8 @@ class ApiService {
         default:
           throw RemoteDataSourceException('Unexpected error: ${e.message}');
       }
+    } on BadResponseException catch (e) {
+      throw RemoteDataSourceException(e.message ?? "Unexpected error");
     }
   }
 

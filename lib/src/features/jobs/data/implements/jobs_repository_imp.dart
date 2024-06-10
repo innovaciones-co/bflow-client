@@ -17,6 +17,8 @@ class JobsRepositoryImp implements JobsRepository {
       return Right(await remoteDataSource.fetchJobs());
     } on RemoteDataSourceException catch (e) {
       return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(ClientFailure(message: e.toString()));
     }
   }
 

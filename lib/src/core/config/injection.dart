@@ -103,9 +103,7 @@ class DependencyInjection {
     WidgetsFlutterBinding.ensureInitialized();
 
     // API service
-    sl.registerLazySingleton(
-      () => ApiService(),
-    );
+
     sl.registerLazySingleton(
       () => SocketService.instance(url: SocketConstants.endpointUrl),
     );
@@ -114,6 +112,11 @@ class DependencyInjection {
     /* sl.registerSingletonAsync<SharedPreferences>(
       () => SharedPreferences.getInstance(),
     ); */
+    sl.registerLazySingleton(
+      () => ApiService(
+        sharedPreferences: sharedPreferences,
+      ),
+    );
 
     // BLoC
     sl.registerSingleton<HomeBloc>(

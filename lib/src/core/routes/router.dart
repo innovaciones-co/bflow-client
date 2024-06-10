@@ -38,7 +38,7 @@ const List<CustomNavigationDestination> homeDestinations = [
     child: ContactsPage(),
   ),
   CustomNavigationDestination(
-    label: 'Contacts',
+    label: 'Catalogs',
     icon: Icon(Icons.menu_book_outlined),
     route: RoutesName.catalogs,
     child: CatalogsPage(),
