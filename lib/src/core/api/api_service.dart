@@ -32,7 +32,7 @@ class ApiService {
     required this.sharedPreferences,
   });
 
-  String? get token => sharedPreferences.get('token') as String?;
+  String? get token => sharedPreferences.getString('token');
 
   Future<dynamic> get(
       {required String endpoint, Map<String, String>? params}) async {
@@ -106,18 +106,20 @@ class ApiService {
     dynamic body,
   }) async {
     try {
+      Map<String, String> usedHeaders = Map<String, String>.from(headers ?? {});
+
       if (token != null) {
-        headers ??= {};
-        headers['Authorization'] = "Bearer $token";
+        usedHeaders.addAll({"Authorization": "Bearer $token"});
       }
 
       final options = Options(
         method: method.toString(),
         validateStatus: (status) => status != null ? status <= 500 : false,
-        headers: headers,
+        headers: usedHeaders,
       );
 
       debugPrint("Request to: ${url.toString()}");
+      debugPrint("Params: ${queryParams.toString()}");
       debugPrint("Body: ${body.toString()}");
 
       final response = await client.request(
