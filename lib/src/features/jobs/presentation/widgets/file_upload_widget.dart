@@ -34,7 +34,7 @@ class FileUploadWidget extends StatefulWidget {
 
 class _FileUploadWidgetState extends State<FileUploadWidget> {
   bool isHighlighted = false;
-
+  bool isUploading = false;
   DropzoneViewController? _controller;
   final List<File> _selectedFiles = [];
 
@@ -53,33 +53,35 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
             Container(
               height: 120,
               margin: const EdgeInsets.all(15),
-              child: Stack(
-                children: [
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                    child: DropzoneView(
-                      onCreated: _onCreated,
-                      onDrop: _addFile,
-                      onHover: () => setState(() {
-                        isHighlighted = true;
-                      }),
-                      onLeave: () => setState(() {
-                        isHighlighted = false;
-                      }),
+              child: isUploading
+                  ? const LoadingWidget()
+                  : Stack(
+                      children: [
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          top: 0,
+                          bottom: 0,
+                          child: DropzoneView(
+                            onCreated: _onCreated,
+                            onDrop: _addFile,
+                            onHover: () => setState(() {
+                              isHighlighted = true;
+                            }),
+                            onLeave: () => setState(() {
+                              isHighlighted = false;
+                            }),
+                          ),
+                        ),
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          top: 0,
+                          bottom: 0,
+                          child: _buildChooseFilesArea(context),
+                        ),
+                      ],
                     ),
-                  ),
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                    child: _buildChooseFilesArea(context),
-                  ),
-                ],
-              ),
             ),
             const SizedBox(
               height: 5,
@@ -226,6 +228,9 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
   }
 
   void _addFile(value) async {
+    setState(() {
+      isUploading = true;
+    });
     final fileName = await _controller?.getFilename(value);
     final url = await _controller?.createFileUrl(value);
     final multipartFile = await createMultipartFile(value);
@@ -244,6 +249,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
         _selectedFiles.add(file);
       }
       isHighlighted = false;
+      isUploading = false;
     });
 
     debugPrint(fileName);
