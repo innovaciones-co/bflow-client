@@ -49,7 +49,9 @@ class Job extends Equatable {
         plannedEndDate,
         address,
         description,
-        user
+        user,
+        files,
+        notes,
       ];
 
   @override

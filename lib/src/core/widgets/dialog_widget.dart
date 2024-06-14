@@ -33,7 +33,7 @@ class DialogWidget extends StatelessWidget {
             title != null
                 ? Text(
                     title!,
-                    style: context.titleLarge
+                    style: context.titleMedium
                         ?.copyWith(fontWeight: FontWeight.bold),
                   )
                 : const SizedBox(),

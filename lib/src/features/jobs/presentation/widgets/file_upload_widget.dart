@@ -43,6 +43,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
     return BlocProvider<FilesCubit>(
       create: (context) => FilesCubit(
         uploadFilesUseCase: DependencyInjection.sl(),
+        deleteFilesUseCase: DependencyInjection.sl(),
         jobBloc: widget.jobBloc,
       ),
       child: Builder(builder: (context) {

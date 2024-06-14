@@ -185,4 +185,14 @@ extension BuildContextEntension<T> on BuildContext {
       },
     );
   }
+
+  Future<void> showCustomModal(Widget child) {
+    return showDialog<void>(
+      context: this,
+      useRootNavigator: false,
+      builder: (BuildContext context) {
+        return child;
+      },
+    );
+  }
 }

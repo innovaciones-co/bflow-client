@@ -4,7 +4,9 @@ import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/utils/file_download.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_category.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/files/files_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FileDownloadWidget extends StatefulWidget {
   final File file;
@@ -19,7 +21,9 @@ class FileDownloadWidget extends StatefulWidget {
 }
 
 class _FileDownloadWidgetState extends State<FileDownloadWidget> {
-  bool isDownloaded = false;
+  bool _isDownloaded = false;
+  bool _isDownloading = false;
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
@@ -33,44 +37,75 @@ class _FileDownloadWidgetState extends State<FileDownloadWidget> {
       }
       var colWidth = (constraints.maxWidth - (colNumber - 1) * 10) / colNumber;
 
-      return SizedBox(
-        width: colWidth,
-        child: Card(
-          color: AppColor.lightBlue,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-          child: ListTile(
-            horizontalTitleGap: 8,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-            leading: Icon(
-              _getIcon(widget.file),
-              size: 18,
-            ),
-            title: Tooltip(
-              message: widget.file.name,
-              child: Text(
-                widget.file.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+      return BlocSelector<FilesCubit, FilesState, bool>(
+        selector: (state) {
+          if (state is FilesSelected) {
+            return (state).selectedFiles.contains(widget.file);
+          }
+          return false;
+        },
+        builder: (context, isSelected) {
+          return SizedBox(
+            width: colWidth,
+            child: Card(
+              color: isSelected ? AppColor.lightOrange : AppColor.lightBlue,
+              shadowColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5)),
+              child: InkWell(
+                onTap: () =>
+                    context.read<FilesCubit>().toggleSelectedFile(widget.file),
+                child: ListTile(
+                  horizontalTitleGap: 8,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  leading: Icon(
+                    _getIcon(widget.file),
+                    size: 18,
+                  ),
+                  title: Tooltip(
+                    message: widget.file.name,
+                    child: Text(
+                      widget.file.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  trailing: IconButton(
+                    onPressed: () async {
+                      setState(() {
+                        _isDownloading = true;
+                      });
+                      bool downloaded = await FileDownload.downloadFile(
+                          widget.file.temporaryUrl, widget.file.name);
+                      setState(() {
+                        _isDownloaded = downloaded;
+                        _isDownloading = false;
+                      });
+                    },
+                    icon: _isDownloading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Icon(
+                            !_isDownloaded
+                                ? Icons.download
+                                : Icons.done_outlined,
+                            color: !_isDownloaded
+                                ? AppColor.black
+                                : AppColor.green,
+                            size: 22,
+                          ),
+                  ),
+                ),
               ),
             ),
-            trailing: IconButton(
-              onPressed: () async {
-                bool downloaded = await FileDownload.downloadFile(
-                    widget.file.temporaryUrl, widget.file.name);
-                setState(() {
-                  isDownloaded = downloaded;
-                });
-              },
-              icon: Icon(
-                !isDownloaded ? Icons.download : Icons.done_outlined,
-                color: !isDownloaded ? AppColor.black : AppColor.green,
-                size: 22,
-              ),
-            ),
-          ),
-        ),
+          );
+        },
       );
     });
   }

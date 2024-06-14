@@ -35,6 +35,7 @@ import 'package:bflow_client/src/features/jobs/domain/usecases/create_job_use_ca
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_note_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_tasks_from_template_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/delete_files_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_task_use_case.dart';
@@ -173,6 +174,7 @@ class DependencyInjection {
     sl.registerFactory<FilesCubit>(
       () => FilesCubit(
         uploadFilesUseCase: sl(),
+        deleteFilesUseCase: sl(),
         jobBloc: sl(),
       ),
     );
@@ -271,6 +273,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => UploadFilesUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => DeleteFilesUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => CreateNoteUsecase(notesRepository: sl()),
