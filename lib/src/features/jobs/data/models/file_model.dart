@@ -21,17 +21,18 @@ class FileModel extends File {
       super.multipartFile});
 
   factory FileModel.fromEntity(File file) => FileModel(
-      id: file.id,
-      uuid: file.uuid,
-      temporaryUrl: file.temporaryUrl,
-      name: file.name,
-      bucket: file.bucket,
-      type: file.type,
-      category: file.category,
-      tag: file.tag,
-      task: file.task,
-      job: file.job,
-      multipartFile: file.multipartFile);
+        id: file.id,
+        uuid: file.uuid,
+        temporaryUrl: file.temporaryUrl,
+        name: file.name,
+        bucket: file.bucket,
+        type: file.type,
+        category: file.category,
+        tag: file.tag,
+        task: file.task,
+        job: file.job,
+        multipartFile: file.multipartFile,
+      );
 
   factory FileModel.fromJson(String str) => FileModel.fromMap(json.decode(str));
 

@@ -34,6 +34,7 @@ class FileUploadWidget extends StatefulWidget {
 
 class _FileUploadWidgetState extends State<FileUploadWidget> {
   bool isHighlighted = false;
+
   DropzoneViewController? _controller;
   final List<File> _selectedFiles = [];
 
@@ -249,15 +250,12 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
   }
 
   Future<MultipartFile?> createMultipartFile(dynamic value) async {
-    final stream = _controller?.getFileStream(value);
+    final fileData = await _controller?.getFileData(value);
     final fileName = await _controller?.getFilename(value);
 
-    if (stream != null) {
-      List<int> byteList = await stream
-          .fold<List<int>>([], (prev, chunk) => prev..addAll(chunk));
-
+    if (fileData != null) {
       MultipartFile multipartFile = MultipartFile.fromBytes(
-        byteList,
+        fileData,
         filename: fileName,
       );
       return multipartFile;
