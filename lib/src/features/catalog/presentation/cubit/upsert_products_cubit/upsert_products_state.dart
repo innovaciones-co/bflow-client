@@ -20,7 +20,16 @@ final class UpsertProductsLoadInProgress extends UpsertProductsState {
   List<Object> get props => [message];
 }
 
-final class UpsertProductsLoadSuccess extends UpsertProductsState {}
+final class UpsertProductsLoadSuccess extends UpsertProductsState {
+  final String message;
+
+  const UpsertProductsLoadSuccess({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [message];
+}
 
 final class UpsertProductsLoadFailure extends UpsertProductsState {
   final String message;

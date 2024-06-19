@@ -57,7 +57,10 @@ class CatalogPage extends StatelessWidget {
               title: '${state.supplier.name} catalog',
               child: Column(
                 children: [
-                  CatalogViewBarWidget(supplierId: supplierId),
+                  CatalogViewBarWidget(
+                    supplierId: supplierId,
+                    productsCubit: context.read(),
+                  ),
                   const SizedBox(height: 15),
                   Expanded(
                     child: CrossScrollWidget(

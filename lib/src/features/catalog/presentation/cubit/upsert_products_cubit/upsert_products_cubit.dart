@@ -2,9 +2,11 @@ import 'package:bflow_client/src/core/exceptions/type_mismatch_exception.dart';
 import 'package:bflow_client/src/core/usecases/usecases.dart';
 import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
 import 'package:bflow_client/src/features/catalog/domain/entities/product_entity.dart';
-import 'package:bflow_client/src/features/catalog/domain/entities/units.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/units.dart'
+    as u;
 import 'package:bflow_client/src/features/catalog/domain/usecases/get_categories_use_case.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/upsert_products_use_case.dart';
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,13 +22,12 @@ class UpsertProductsCubit extends Cubit<UpsertProductsState> {
     required this.getCategoriesUseCase,
   }) : super(UpsertProductsInitial());
 
-  Future<void> loadProductsData(List<int>? file) async {
-    List<Product> products = [];
-
+  Future<void> loadProductsData(List<int>? file, int supplierId) async {
     if (file == null) return;
 
     emit(const UpsertProductsLoadInProgress(message: 'Reading file...'));
-    Excel excel = Excel.decodeBytes(file);
+
+    Excel excel = Excel.decodeBytes(file); //TODO: validate .xlsx
 
     emit(const UpsertProductsLoadInProgress(message: 'Validating data...'));
 
@@ -42,106 +43,145 @@ class UpsertProductsCubit extends Cubit<UpsertProductsState> {
       (l) => emit(const UpsertProductsLoadFailure(
           message: 'Error loading the categories. Try again later.')),
       (categories) {
-        try {
-          int n = 1;
-          for (int i = 1; i <= n; i++) {
-            String nameCell = _getValueFromCell(
-              sheet: productsSheet,
-              expectedType: String,
-              rowIndex: i,
-              columnIndex: 0,
-            );
-            String skuCell = _getValueFromCell(
-              sheet: productsSheet,
-              expectedType: String,
-              rowIndex: i,
-              columnIndex: 1,
-            );
-            String? descriptionCell = _getValueFromCell(
-              sheet: productsSheet,
-              expectedType: String,
-              rowIndex: i,
-              columnIndex: 2,
-              nullable: true,
-            );
-            num unitPriceCell = _getValueFromCell(
-              sheet: productsSheet,
-              expectedType: num,
-              rowIndex: i,
-              columnIndex: 3,
-            );
-            int? gtsCell = _getValueFromCell(
-              sheet: productsSheet,
-              expectedType: int,
-              rowIndex: i,
-              columnIndex: 4,
-              nullable: true,
-            );
-            String unitOfMeasureCellStr = _getValueFromCell(
-              sheet: productsSheet,
-              expectedType: String,
-              rowIndex: i,
-              columnIndex: 5,
-            );
-            int? uomOrderIncrement = _getValueFromCell(
-              sheet: productsSheet,
-              expectedType: int,
-              rowIndex: i,
-              columnIndex: 6,
-              nullable: true,
-            );
-            String? urlCell = _getValueFromCell(
-              sheet: productsSheet,
-              expectedType: String,
-              rowIndex: i,
-              columnIndex: 7,
-              nullable: true,
-            );
-            String categoryCell = _getValueFromCell(
-              sheet: productsSheet,
-              expectedType: String,
-              rowIndex: i,
-              columnIndex: 8,
+        Either<UpsertProductsLoadFailure, List<Product>> productsFromExcel =
+            _getProductsFromExcel(
+          productsSheet: productsSheet,
+          categories: categories,
+          supplierId: supplierId,
+        );
+
+        productsFromExcel.fold(
+          (l) => {null},
+          (products) async {
+            int numProducts = products.length;
+
+            final upsertProducts = await upsertProductsUseCase.execute(
+              UpsertProductsParams(products: products),
             );
 
-            Unit unitOfMeasureCell;
-            try {
-              unitOfMeasureCell = Unit.fromString(unitOfMeasureCellStr);
-            } catch (e) {
-              throw TypeMismatchException(
-                  "${productsSheet.sheetName} sheet - Expected a valid unit: row ${i + 1}, column 6");
-            }
-
-            int categoryId = _categoryIdIfExists(categories, categoryCell, i);
-
-            Product product = Product(
-              name: nameCell,
-              sku: skuCell,
-              description: descriptionCell,
-              unitPrice: unitPriceCell.toDouble(),
-              vat: gtsCell,
-              unitOfMeasure: unitOfMeasureCell,
-              uomOrderIncrement: uomOrderIncrement,
-              url: urlCell,
-              category: categoryId,
-              supplier: 1,
+            upsertProducts.fold(
+              (l) => {emit(UpsertProductsLoadFailure(message: 'Error: $l'))},
+              (r) => {
+                emit(UpsertProductsLoadSuccess(
+                    message:
+                        '$numProducts products were created/updated successfully.'))
+              },
             );
-
-            products.add(product);
-
-            if (productsSheet
-                    .cell(CellIndex.indexByColumnRow(
-                        columnIndex: 0, rowIndex: i + 1))
-                    .value !=
-                null) {
-              n++;
-            }
-          }
-        } on TypeMismatchException catch (e) {
-          emit(UpsertProductsLoadFailure(message: e.toString()));
-        }
+          },
+        );
       },
     );
+  }
+
+  Either<UpsertProductsLoadFailure, List<Product>> _getProductsFromExcel(
+      {required Sheet productsSheet,
+      required List<Category> categories,
+      required int supplierId}) {
+    try {
+      List<Product> products = [];
+
+      int n = 1;
+      for (int i = 1; i <= n; i++) {
+        String nameCell = _getValueFromCell(
+          sheet: productsSheet,
+          expectedType: String,
+          rowIndex: i,
+          columnIndex: 0,
+        );
+        String skuCell = _getValueFromCell(
+          sheet: productsSheet,
+          expectedType: String,
+          rowIndex: i,
+          columnIndex: 1,
+        );
+        String? descriptionCell = _getValueFromCell(
+          sheet: productsSheet,
+          expectedType: String,
+          rowIndex: i,
+          columnIndex: 2,
+          nullable: true,
+        );
+        num unitPriceCell = _getValueFromCell(
+          sheet: productsSheet,
+          expectedType: num,
+          rowIndex: i,
+          columnIndex: 3,
+        );
+        int? gtsCell = _getValueFromCell(
+          sheet: productsSheet,
+          expectedType: int,
+          rowIndex: i,
+          columnIndex: 4,
+          nullable: true,
+        );
+        String unitOfMeasureCellStr = _getValueFromCell(
+          sheet: productsSheet,
+          expectedType: String,
+          rowIndex: i,
+          columnIndex: 5,
+        );
+        int? uomOrderIncrement = _getValueFromCell(
+          sheet: productsSheet,
+          expectedType: int,
+          rowIndex: i,
+          columnIndex: 6,
+          nullable: true,
+        );
+        String? urlCell = _getValueFromCell(
+          sheet: productsSheet,
+          expectedType: String,
+          rowIndex: i,
+          columnIndex: 7,
+          nullable: true,
+        );
+        String categoryCell = _getValueFromCell(
+          sheet: productsSheet,
+          expectedType: String,
+          rowIndex: i,
+          columnIndex: 8,
+        );
+
+        u.Unit unitOfMeasureCell;
+        try {
+          unitOfMeasureCell = u.Unit.fromString(unitOfMeasureCellStr);
+        } catch (e) {
+          throw TypeMismatchException(
+              "${productsSheet.sheetName} sheet - Expected a valid unit: row ${i + 1}, column 'UOM'");
+        }
+
+        int categoryId = _categoryIdIfExists(categories, categoryCell, i);
+
+        Product product = Product(
+          name: nameCell,
+          sku: skuCell,
+          description: descriptionCell,
+          unitPrice: unitPriceCell.toDouble(),
+          vat: gtsCell,
+          unitOfMeasure: unitOfMeasureCell,
+          uomOrderIncrement: uomOrderIncrement,
+          url: urlCell,
+          category: categoryId,
+          supplier: supplierId,
+        );
+
+        products.add(product);
+
+        if (productsSheet
+                .cell(
+                    CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: i + 1))
+                .value !=
+            null) {
+          n++;
+        }
+      }
+      return Right(products);
+    } on TypeMismatchException catch (e) {
+      emit(UpsertProductsLoadFailure(message: e.toString()));
+      return left(UpsertProductsLoadFailure(message: e.toString()));
+    } catch (e) {
+      emit(UpsertProductsLoadFailure(message: e.toString()));
+      return left(UpsertProductsLoadFailure(message: e.toString()));
+    }
   }
 
   dynamic _getValueFromCell({
@@ -192,7 +232,7 @@ class UpsertProductsCubit extends Cubit<UpsertProductsState> {
     final category = categories.firstWhere(
       (cat) => cat.name == categoryName,
       orElse: () => throw TypeMismatchException(
-          'sheet - Expected a valid category: row $rowIndex, column 8'),
+          "sheet - Expected a valid category: row $rowIndex, column 'Url'"),
     );
 
     return category.id!;

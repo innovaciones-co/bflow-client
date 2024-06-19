@@ -1,5 +1,6 @@
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
@@ -9,13 +10,16 @@ import 'package:bflow_client/src/features/catalog/presentation/widgets/write_pro
 import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class CatalogViewBarWidget extends StatelessWidget {
   final int supplierId;
+  final ProductsCubit productsCubit;
 
   const CatalogViewBarWidget({
     super.key,
     required this.supplierId,
+    required this.productsCubit,
   });
 
   @override
@@ -93,7 +97,15 @@ class CatalogViewBarWidget extends StatelessWidget {
               onPressed: () => context.showModal("Import data", [
                 BlocProvider<UpsertProductsCubit>(
                   create: (context) => DependencyInjection.sl(),
-                  child: BlocBuilder<UpsertProductsCubit, UpsertProductsState>(
+                  child: BlocConsumer<UpsertProductsCubit, UpsertProductsState>(
+                    listener: (context, state) {
+                      if (state is UpsertProductsLoadSuccess) {
+                        context.pop();
+                        context.showAlert(
+                            message: state.message, type: AlertType.success);
+                        productsCubit.loadSupplierProducts(supplierId);
+                      }
+                    },
                     builder: (context, state) {
                       if (state is UpsertProductsInitial ||
                           state is UpsertProductsLoadFailure) {
@@ -108,7 +120,7 @@ class CatalogViewBarWidget extends StatelessWidget {
                               ],
                             ),
                             ImportProductsFileWidget(
-                              supplierId: 1,
+                              supplierId: supplierId,
                               upsertProductsCubit:
                                   context.read<UpsertProductsCubit>(),
                             ),

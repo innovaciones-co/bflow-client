@@ -59,8 +59,9 @@ class ProductsRemoteDataSource extends RemoteDataSource {
   }
 
   Future<void> upsertProducts(List<Product> products) async {
-    List<ProductModel> productModels =
-        products.map((product) => ProductModel.fromEntity(product)).toList();
+    List<Map<String, dynamic>> productModels = products
+        .map((product) => ProductModel.fromEntity(product).toMap())
+        .toList();
 
     await apiService.put(
       endpoint: ApiConstants.upsertProductsEndpoint,

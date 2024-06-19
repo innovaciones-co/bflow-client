@@ -196,7 +196,7 @@ class DependencyInjection {
         updateCategorytUseCase: sl(),
       ),
     );
-    sl.registerFactory<UpsertProductsCubit>(
+    sl.registerLazySingleton<UpsertProductsCubit>(
       () => UpsertProductsCubit(
           upsertProductsUseCase: sl(), getCategoriesUseCase: sl()),
     );

@@ -83,8 +83,8 @@ class _ImportProductsFileWidgetState extends State<ImportProductsFileWidget> {
               width: 15,
             ),
             ActionButtonWidget(
-              onPressed: () =>
-                  widget.upsertProductsCubit.loadProductsData(file),
+              onPressed: () => widget.upsertProductsCubit
+                  .loadProductsData(file, widget.supplierId),
               type: ButtonType.elevatedButton,
               title: "Import",
               foregroundColor: AppColor.white,
