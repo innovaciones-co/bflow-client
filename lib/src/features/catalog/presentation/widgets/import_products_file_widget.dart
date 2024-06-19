@@ -32,39 +32,41 @@ class _ImportProductsFileWidgetState extends State<ImportProductsFileWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          height: 120,
-          margin: const EdgeInsets.all(15),
-          child: Stack(
-            children: [
-              Positioned(
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                child: DropzoneView(
-                  onCreated: _onCreated,
-                  onDrop: _addFile,
-                  onHover: () => setState(() {
-                    isHighlighted = true;
-                  }),
-                  onLeave: () => setState(() {
-                    isHighlighted = false;
-                  }),
+        _selectedFile != null
+            ? const SizedBox.shrink()
+            : Container(
+                height: 120,
+                margin: const EdgeInsets.all(15),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                      child: DropzoneView(
+                        onCreated: _onCreated,
+                        onDrop: _addFile,
+                        onHover: () => setState(() {
+                          isHighlighted = true;
+                        }),
+                        onLeave: () => setState(() {
+                          isHighlighted = false;
+                        }),
+                      ),
+                    ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                      child: _buildChooseFilesArea(context),
+                    ),
+                  ],
                 ),
               ),
-              Positioned(
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                child: _buildChooseFilesArea(context),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(
-          height: 5,
+        SizedBox(
+          height: _selectedFile != null ? 20 : 5,
         ),
         _showSelectedFile(),
         const SizedBox(
