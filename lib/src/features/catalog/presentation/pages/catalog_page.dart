@@ -7,6 +7,7 @@ import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/catalog/domain/entities/product_entity.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/catalog_view_bar_widget.dart';
+import 'package:bflow_client/src/features/catalog/presentation/widgets/no_products_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/write_product_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/cross_scroll_widget.dart';
 import 'package:flutter/material.dart';
@@ -63,15 +64,17 @@ class CatalogPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 15),
                   Expanded(
-                    child: CrossScrollWidget(
-                      child: Column(
-                        children: [
-                          _tableHeader(),
-                          ...catalogProducts.entries
-                              .map((e) => _categoryTable(context, e.value))
-                        ],
-                      ),
-                    ),
+                    child: catalogProducts.isEmpty
+                        ? const NoProductsWidget()
+                        : CrossScrollWidget(
+                            child: Column(
+                              children: [
+                                _tableHeader(),
+                                ...catalogProducts.entries.map(
+                                    (e) => _categoryTable(context, e.value))
+                              ],
+                            ),
+                          ),
                   ),
                   const SizedBox(height: 10),
                 ],
