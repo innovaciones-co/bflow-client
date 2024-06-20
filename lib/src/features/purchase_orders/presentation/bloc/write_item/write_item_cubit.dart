@@ -1,12 +1,13 @@
 import 'package:bflow_client/src/core/domain/entities/form_status.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
+import 'package:bflow_client/src/core/usecases/usecases.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/get_suppliers_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
 import 'package:bflow_client/src/features/catalog/domain/entities/product_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_item_use_case.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_by_supplier_use_case.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_items_use_case.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/get_products_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
@@ -21,7 +22,7 @@ class WriteItemCubit extends Cubit<WriteItemState> {
   final int jobId;
   final CreateItemUseCase createItemUseCase;
   final GetSuppliersUseCase getSuppliersUseCase;
-  final GetCategoriesBySupplierUseCase getCategoriesBySupplierUseCase;
+  final GetCategoriesUseCase getCategoriesUseCase;
   final GetProductsUseCase getProductsUseCase;
   final GetItemsUseCase getItemsUseCase;
 
@@ -30,7 +31,7 @@ class WriteItemCubit extends Cubit<WriteItemState> {
     required this.jobId,
     required this.createItemUseCase,
     required this.getSuppliersUseCase,
-    required this.getCategoriesBySupplierUseCase,
+    required this.getCategoriesUseCase,
     required this.getProductsUseCase,
     required this.getItemsUseCase,
   }) : super(const WriteItemValidator());
@@ -88,8 +89,7 @@ class WriteItemCubit extends Cubit<WriteItemState> {
       return;
     }
 
-    var failureOrCategories = await getCategoriesBySupplierUseCase
-        .execute(GetCategoriesBySupplierParams(supplierId: supplier.id!));
+    var failureOrCategories = await getCategoriesUseCase.execute(NoParams());
     failureOrCategories.fold(
       (l) => emit(state.copyWith(formStatus: FormStatus.failed)),
       (r) => emit(state.copyWith(categories: r, supplier: supplier)),
@@ -101,12 +101,13 @@ class WriteItemCubit extends Cubit<WriteItemState> {
         .execute(GetProductsParams(categoryId: category?.id));
     failureOrItems.fold(
       (l) => emit(state.copyWith(formStatus: FormStatus.failed)),
-      (r) => emit(state.copyWith(category: category, items: r)),
+      (r) => emit(
+          state.copyWith(category: category, items: r, product: () => null)),
     );
   }
 
   void updateProduct(Product? product) {
-    emit(state.copyWith(product: product));
+    emit(state.copyWith(product: () => product));
   }
 
   // Method to update quantity

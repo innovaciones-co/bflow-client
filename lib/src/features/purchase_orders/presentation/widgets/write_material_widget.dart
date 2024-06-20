@@ -37,7 +37,7 @@ class WriteMaterialWidget extends StatelessWidget with Validator {
         jobId: jobId,
         createItemUseCase: DependencyInjection.sl(),
         getSuppliersUseCase: DependencyInjection.sl(),
-        getCategoriesBySupplierUseCase: DependencyInjection.sl(),
+        getCategoriesUseCase: DependencyInjection.sl(),
         getProductsUseCase: DependencyInjection.sl(),
         getItemsUseCase: DependencyInjection.sl(),
       )..initForm(),

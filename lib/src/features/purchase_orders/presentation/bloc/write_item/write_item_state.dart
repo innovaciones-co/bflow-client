@@ -34,9 +34,23 @@ sealed class WriteItemState extends Equatable {
     List<Product>? items,
     Contact? supplier,
     Category? category,
-    Product? product,
+    Product? Function()? product,
     int? quantity,
   });
+
+  @override
+  List<Object> get props => [
+        autovalidateMode,
+        failure ?? "",
+        formStatus,
+        suppliers,
+        categories,
+        items,
+        category ?? "",
+        supplier ?? "",
+        product ?? "",
+        quantity
+      ];
 }
 
 final class WriteItemValidator extends WriteItemState {
@@ -63,7 +77,7 @@ final class WriteItemValidator extends WriteItemState {
     List<Product>? items,
     Contact? supplier,
     Category? category,
-    Product? product,
+    Product? Function()? product,
     int? quantity,
   }) {
     return WriteItemValidator(
@@ -75,7 +89,7 @@ final class WriteItemValidator extends WriteItemState {
       items: items ?? this.items,
       category: category ?? this.category,
       supplier: supplier ?? this.supplier,
-      product: product ?? this.product,
+      product: product == null ? this.product : product(),
       quantity: quantity ?? this.quantity,
     );
   }
