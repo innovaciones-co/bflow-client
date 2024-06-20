@@ -1,6 +1,7 @@
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
@@ -11,6 +12,7 @@ import 'package:bflow_client/src/features/catalog/presentation/widgets/write_pro
 import 'package:bflow_client/src/features/shared/presentation/widgets/cross_scroll_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class CatalogPage extends StatelessWidget {
   final int supplierId;
@@ -251,9 +253,22 @@ class CatalogPage extends StatelessWidget {
                   tooltip: 'Edit',
                 ),
                 IconButton(
-                  onPressed: () => context
-                      .read<ProductsCubit>()
-                      .deleteProduct(product.id!, product.supplier),
+                  onPressed: () {
+                    context.showCustomModal(
+                      ConfirmationWidget(
+                        title: "Delete product",
+                        description:
+                            "Are you sure you want to delete product \"${product.sku}\"?",
+                        onConfirm: () {
+                          context
+                              .read<ProductsCubit>()
+                              .deleteProduct(product.id!, product.supplier);
+                          context.pop();
+                        },
+                        confirmText: "Delete",
+                      ),
+                    );
+                  },
                   color: AppColor.blue,
                   icon: const Icon(
                     Icons.delete_outline_outlined,

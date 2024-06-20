@@ -169,6 +169,8 @@ class DependencyInjection {
         getJobUseCase: sl(),
         deleteTaskUseCase: sl(),
         updateTaskUseCase: sl(),
+        tasksBloc: sl(),
+        homeBloc: sl(),
       ),
     );
     sl.registerFactory<FilesCubit>(

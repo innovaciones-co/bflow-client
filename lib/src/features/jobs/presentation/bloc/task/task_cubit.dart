@@ -47,7 +47,7 @@ class TaskCubit extends Cubit<TaskState> {
           "Task couldn't be deleted: ${failure.message}", AlertType.error),
       (_) {
         tasksBloc?.add(GetTasksEvent(jobId: jobId));
-        _showMessage("Task has been deleted!", AlertType.success);
+        _showMessage("The task has been deleted!", AlertType.success);
       },
     );
   }

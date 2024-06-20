@@ -39,6 +39,10 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
                 type: AlertType.error),
           ),
           (r) {
+            homeBloc?.add(
+              ShowMessageEvent(
+                  message: "The user was deleted!", type: AlertType.success),
+            );
             add(GetUsersEvent());
           },
         );

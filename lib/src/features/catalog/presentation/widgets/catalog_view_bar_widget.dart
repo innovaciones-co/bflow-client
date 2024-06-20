@@ -1,11 +1,13 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/write_category_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/write_product_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class CatalogViewBarWidget extends StatelessWidget {
   final int supplierId;
@@ -64,7 +66,20 @@ class CatalogViewBarWidget extends StatelessWidget {
         Row(
           children: [
             ActionButtonWidget(
-              onPressed: () => context.read<ProductsCubit>().deleteProducts(),
+              onPressed: () {
+                context.showCustomModal(
+                  ConfirmationWidget(
+                    title: "Delete products",
+                    description:
+                        "Are you sure you want to delete the selected product(s)?",
+                    onConfirm: () {
+                      context.read<ProductsCubit>().deleteProducts();
+                      context.pop();
+                    },
+                    confirmText: "Delete",
+                  ),
+                );
+              },
               type: ButtonType.textButton,
               title: "Delete",
               icon: Icons.delete_outline,

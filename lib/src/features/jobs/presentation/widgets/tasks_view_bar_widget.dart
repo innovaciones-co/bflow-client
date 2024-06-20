@@ -1,6 +1,7 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
@@ -62,9 +63,22 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
                         },
                         builder: (context, isLoading) {
                           return ActionButtonWidget(
-                            onPressed: () => context
-                                .read<TasksBloc>()
-                                .add(DeleteTasksEvent()),
+                            onPressed: () {
+                              context.showCustomModal(
+                                ConfirmationWidget(
+                                  title: "Delete tasks",
+                                  description:
+                                      "Are you sure you want to delete the selected task(s)?",
+                                  onConfirm: () {
+                                    context
+                                        .read<TasksBloc>()
+                                        .add(DeleteTasksEvent());
+                                    context.pop();
+                                  },
+                                  confirmText: "Delete",
+                                ),
+                              );
+                            },
                             type: ButtonType.textButton,
                             title: "Delete",
                             icon: Icons.delete_outline,

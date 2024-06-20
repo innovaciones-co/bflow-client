@@ -136,7 +136,7 @@ class JobFilesWidget extends StatelessWidget {
                           ConfirmationWidget(
                             title: "Delete files",
                             description:
-                                "Are you sure that you want to delete ($selectedItems) file(s)?",
+                                "Are you sure you want to delete ($selectedItems) file(s)?",
                             onConfirm: () {
                               context.read<FilesCubit>().deleteFiles();
                               context.pop();

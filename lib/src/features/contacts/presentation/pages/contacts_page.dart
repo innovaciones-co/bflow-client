@@ -3,6 +3,7 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
@@ -158,8 +159,22 @@ class ContactsPage extends StatelessWidget {
             ),
             Builder(builder: (context) {
               return IconButton(
-                onPressed: () =>
-                    context.read<ContactsCubit>().deleteContact(contact.id!),
+                onPressed: () {
+                  context.showCustomModal(
+                    ConfirmationWidget(
+                      title: "Delete contact",
+                      description:
+                          "Are you sure you want to delete contact \"${contact.name}\"?",
+                      onConfirm: () {
+                        context
+                            .read<ContactsCubit>()
+                            .deleteContact(contact.id!);
+                        context.pop();
+                      },
+                      confirmText: "Delete",
+                    ),
+                  );
+                },
                 color: AppColor.blue,
                 icon: const Icon(
                   Icons.delete_outline_outlined,
