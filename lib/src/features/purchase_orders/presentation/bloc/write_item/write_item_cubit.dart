@@ -43,12 +43,24 @@ class WriteItemCubit extends Cubit<WriteItemState> {
       (l) => emit(state.copyWith(formStatus: FormStatus.failed)),
       (r) => emit(state.copyWith(suppliers: r, formStatus: FormStatus.loaded)),
     );
+
+    var failureOrCategories = await getCategoriesUseCase.execute(NoParams());
+    failureOrCategories.fold(
+      (l) => emit(state.copyWith(formStatus: FormStatus.failed)),
+      (r) => emit(state.copyWith(categories: r, formStatus: FormStatus.loaded)),
+    );
   }
 
   addItem() async {
     var product = state.product;
 
     if (product == null) {
+      emit(
+        state.copyWith(
+          formStatus: FormStatus.failed,
+          failure: ClientFailure(message: "You should select a material"),
+        ),
+      );
       return;
     }
 
@@ -84,25 +96,26 @@ class WriteItemCubit extends Cubit<WriteItemState> {
   }
 
   void updateSupplier(Contact? supplier) async {
-    if (supplier == null) {
-      emit(state.copyWith(supplier: supplier));
-      return;
-    }
-
-    var failureOrCategories = await getCategoriesUseCase.execute(NoParams());
-    failureOrCategories.fold(
-      (l) => emit(state.copyWith(formStatus: FormStatus.failed)),
-      (r) => emit(state.copyWith(categories: r, supplier: supplier)),
-    );
+    emit(state.copyWith(supplier: () => supplier, product: () => null));
   }
 
   void updateCategory(Category? category) async {
-    var failureOrItems = await getProductsUseCase
-        .execute(GetProductsParams(categoryId: category?.id));
+    var failureOrItems = await getProductsUseCase.execute(
+      GetProductsParams(
+        categoryId: category?.id,
+        supplierId: state.supplier?.id,
+      ),
+    );
+
     failureOrItems.fold(
-      (l) => emit(state.copyWith(formStatus: FormStatus.failed)),
-      (r) => emit(
-          state.copyWith(category: category, items: r, product: () => null)),
+      (failure) => emit(state.copyWith(formStatus: FormStatus.failed)),
+      (items) => emit(
+        state.copyWith(
+          category: () => category,
+          items: items,
+          product: () => null,
+        ),
+      ),
     );
   }
 
@@ -110,7 +123,6 @@ class WriteItemCubit extends Cubit<WriteItemState> {
     emit(state.copyWith(product: () => product));
   }
 
-  // Method to update quantity
   void updateQuantity(String value) {
     int? quantity = int.tryParse(value);
     emit(state.copyWith(quantity: quantity));
