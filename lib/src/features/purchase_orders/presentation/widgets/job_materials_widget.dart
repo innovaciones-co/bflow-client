@@ -8,7 +8,7 @@ import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/purchase_order_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
@@ -212,7 +212,7 @@ class JobMaterialsWidget extends StatelessWidget {
         verticalInside: BorderSide(width: 1.0, color: AppColor.lightPurple),
       ),
       children: [
-        _tableHeaderRow(itemsView.first.category!.id,
+        _tableHeaderRow(itemsView.first.category!.id!,
             itemsView.first.category?.name ?? "", totalPerCategory),
         for (int index = 0; index < itemsView.length; index += 1)
           _tableItemRow(itemsView[index]),

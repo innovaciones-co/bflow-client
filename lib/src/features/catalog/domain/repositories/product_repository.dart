@@ -9,4 +9,5 @@ abstract class ProductsRepository {
   Future<Either<Failure, Product>> createProduct(Product product);
   Future<Either<Failure, Product>> updateProduct(Product product);
   Future<Either<Failure, void>> deleteProduct(int productId);
+  Future<Either<Failure, void>> upsertProducts(List<Product> products);
 }

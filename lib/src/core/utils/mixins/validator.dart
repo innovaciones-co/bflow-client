@@ -258,4 +258,23 @@ mixin Validator {
     }
     return null;
   }
+
+  // Trade code validation
+  String? validateTradeCode(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Trade code is required";
+    }
+
+    int? code = int.tryParse(value);
+
+    if (code == null) {
+      return "Rate should be a valid number";
+    }
+
+    if (code <= 0) {
+      return "Rate should be a positive number";
+    }
+
+    return null;
+  }
 }

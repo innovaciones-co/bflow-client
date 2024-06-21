@@ -7,8 +7,8 @@ import 'package:bflow_client/src/features/catalog/domain/usecases/get_products_u
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/get_contact_usecase.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_use_case.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/get_categories_use_case.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

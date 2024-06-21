@@ -1,14 +1,26 @@
 library dependency_injection;
 
 import 'package:bflow_client/src/core/api/api.dart';
+import 'package:bflow_client/src/features/catalog/data/implements/categories_repository_imp.dart';
 import 'package:bflow_client/src/features/catalog/data/implements/products_repository_imp.dart';
+import 'package:bflow_client/src/features/catalog/data/sources/categories_remote_data_source.dart';
 import 'package:bflow_client/src/features/catalog/data/sources/products_remote_data_source.dart';
+import 'package:bflow_client/src/features/catalog/domain/repositories/category_repository.dart';
 import 'package:bflow_client/src/features/catalog/domain/repositories/product_repository.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/create_category_use_case.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/create_product_usecase.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/delete_category_use_case.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/delete_product_usecase.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/get_categories_by_supplier_use_case.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/get_categories_use_case.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/get_products_use_case.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/update_category_use_case.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/update_product_usecase.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/upsert_products_use_case.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/categories_cubit.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/upsert_products_cubit/upsert_products_cubit.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/write_category_cubit/write_category_cubit.dart';
 import 'package:bflow_client/src/features/contacts/data/implements/contacts_repository_imp.dart';
 import 'package:bflow_client/src/features/contacts/data/sources/sources.dart';
 import 'package:bflow_client/src/features/contacts/domain/repositories/contacts_repository.dart';
@@ -57,20 +69,15 @@ import 'package:bflow_client/src/features/login/domain/usecases/is_logged_use_ca
 import 'package:bflow_client/src/features/login/domain/usecases/login_use_case.dart';
 import 'package:bflow_client/src/features/login/domain/usecases/logout_use_case.dart';
 import 'package:bflow_client/src/features/login/presentation/bloc/login_bloc.dart';
-import 'package:bflow_client/src/features/purchase_orders/data/implements/categories_repository_imp.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/implements/items_repository_imp.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/implements/purchase_orders_repository_imp.dart';
-import 'package:bflow_client/src/features/purchase_orders/data/sources/categories_remote_data_source.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/sources/items_remote_data_source.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/sources/purchase_orders_remote_data_source.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/repositories/category_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/item_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/purchase_order_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_item_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_purchase_order_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/delete_item_use_case.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_by_supplier_use_case.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_items_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_order_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_orders_by_job_use_case.dart';
@@ -200,6 +207,24 @@ class DependencyInjection {
         homeBloc: sl(),
       ),
     );
+    sl.registerLazySingleton<CategoriesCubit>(
+      () => CategoriesCubit(
+        getCategoriesUseCase: sl(),
+        deleteCategoryUseCase: sl(),
+        homeBloc: sl(),
+      ),
+    );
+    sl.registerFactory<WriteCategoryCubit>(
+      () => WriteCategoryCubit(
+        categoriesCubit: sl(),
+        createCategorytUseCase: sl(),
+        updateCategorytUseCase: sl(),
+      ),
+    );
+    sl.registerLazySingleton<UpsertProductsCubit>(
+      () => UpsertProductsCubit(
+          upsertProductsUseCase: sl(), getCategoriesUseCase: sl()),
+    );
 
     // Use cases
     sl.registerLazySingleton(
@@ -301,6 +326,15 @@ class DependencyInjection {
       () => CreatePurchaseOrderUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
+      () => CreateCategoryUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => UpdateCategoryUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => DeleteCategoryUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
       () => GetCategoriesUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
@@ -336,6 +370,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => DeleteProductUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => UpsertProductsUseCase(repository: sl()),
     );
 
     // Repository

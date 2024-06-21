@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:bflow_client/src/features/catalog/presentation/pages/catalog_page.dart';
-import 'package:bflow_client/src/features/catalog/presentation/pages/catalogs_paget.dart';
+import 'package:bflow_client/src/features/catalog/presentation/pages/catalogs_page.dart';
 import 'package:bflow_client/src/features/contacts/presentation/pages/contacts_page.dart';
 import 'package:bflow_client/src/features/home/presentation/pages/home_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/job_page.dart';
