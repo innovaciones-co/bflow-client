@@ -207,7 +207,7 @@ class DependencyInjection {
         homeBloc: sl(),
       ),
     );
-    sl.registerLazySingleton<CategoriesCubit>(
+    sl.registerFactory<CategoriesCubit>(
       () => CategoriesCubit(
         getCategoriesUseCase: sl(),
         deleteCategoryUseCase: sl(),
@@ -221,7 +221,7 @@ class DependencyInjection {
         updateCategorytUseCase: sl(),
       ),
     );
-    sl.registerLazySingleton<UpsertProductsCubit>(
+    sl.registerFactory<UpsertProductsCubit>(
       () => UpsertProductsCubit(
           upsertProductsUseCase: sl(), getCategoriesUseCase: sl()),
     );

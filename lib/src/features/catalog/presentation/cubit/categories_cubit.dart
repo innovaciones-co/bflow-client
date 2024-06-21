@@ -22,9 +22,10 @@ class CategoriesCubit extends Cubit<CategoriesState> {
   }) : super(CategoriesInitial());
 
   void loadCategories() async {
-    final categories = await getCategoriesUseCase.execute(NoParams());
+    emit(CategoriesLoading());
+    final categoriesOrFailure = await getCategoriesUseCase.execute(NoParams());
 
-    categories.fold(
+    categoriesOrFailure.fold(
       (l) => emit(CategoriesError(failure: l)),
       (cat) => emit(CategoriesLoaded(categories: cat)),
     );
