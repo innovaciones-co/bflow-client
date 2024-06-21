@@ -22,14 +22,20 @@ class UpsertProductsCubit extends Cubit<UpsertProductsState> {
     required this.getCategoriesUseCase,
   }) : super(UpsertProductsInitial());
 
+  void addFailure(String error) {
+    emit(UpsertProductsLoadFailure(message: error));
+  }
+
   Future<void> loadProductsData(List<int>? file, int supplierId) async {
     if (file == null) return;
 
     emit(const UpsertProductsLoadInProgress(message: 'Reading file...'));
+    await Future.delayed(const Duration(milliseconds: 1500));
 
-    Excel excel = Excel.decodeBytes(file); //TODO: validate .xlsx
+    Excel excel = Excel.decodeBytes(file);
 
     emit(const UpsertProductsLoadInProgress(message: 'Validating data...'));
+    await Future.delayed(const Duration(seconds: 1));
 
     var productsSheet = excel.tables['Products'];
     if (productsSheet == null) {

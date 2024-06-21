@@ -1,9 +1,12 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/domain/entities/mime_type.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/upsert_products_cubit/upsert_products_cubit.dart';
+import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,68 +34,78 @@ class _ImportProductsFileWidgetState extends State<ImportProductsFileWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _selectedFile != null
-            ? const SizedBox.shrink()
-            : Container(
-                height: 120,
-                margin: const EdgeInsets.all(15),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      top: 0,
-                      bottom: 0,
-                      child: DropzoneView(
-                        onCreated: _onCreated,
-                        onDrop: _addFile,
-                        onHover: () => setState(() {
-                          isHighlighted = true;
-                        }),
-                        onLeave: () => setState(() {
-                          isHighlighted = false;
-                        }),
+        BlocBuilder<UpsertProductsCubit, UpsertProductsState>(
+          builder: (context, state) {
+            if (state is UpsertProductsLoadInProgress) {
+              return Column(
+                children: [
+                  const LoadingWidget(),
+                  Text(state.message),
+                ],
+              );
+            }
+
+            if (state is UpsertProductsInitial ||
+                state is UpsertProductsLoadFailure) {
+              return Column(
+                children: [
+                  const Row(
+                    children: [
+                      Text(
+                        'Please upload the file to import the products data:',
+                        textAlign: TextAlign.end,
                       ),
-                    ),
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      top: 0,
-                      bottom: 0,
-                      child: _buildChooseFilesArea(context),
-                    ),
-                  ],
-                ),
-              ),
-        SizedBox(
-          height: _selectedFile != null ? 20 : 5,
+                    ],
+                  ),
+                  _selectFileBody(),
+                  state is UpsertProductsLoadFailure
+                      ? Text(
+                          state.message,
+                          style: context.bodySmall
+                              ?.copyWith(color: AppColor.lightRed),
+                        )
+                      : const SizedBox.shrink(),
+                ],
+              );
+            }
+
+            return const Column(
+              children: [
+                LoadingWidget(),
+              ],
+            );
+          },
         ),
-        _showSelectedFile(),
         const SizedBox(
           height: 10,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            ActionButtonWidget(
-              onPressed: () => _cancel(context),
-              type: ButtonType.textButton,
-              title: "Cancel",
-              foregroundColor: AppColor.blue,
-            ),
-            const SizedBox(
-              width: 15,
-            ),
-            ActionButtonWidget(
-              onPressed: () => widget.upsertProductsCubit
-                  .loadProductsData(file, widget.supplierId),
-              type: ButtonType.elevatedButton,
-              title: "Import",
-              foregroundColor: AppColor.white,
-              backgroundColor: AppColor.blue,
-            ),
-          ],
+        _actionButtons(context),
+      ],
+    );
+  }
+
+  Widget _actionButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        ActionButtonWidget(
+          onPressed: () => _cancel(context),
+          type: ButtonType.textButton,
+          title: "Cancel",
+          foregroundColor: AppColor.blue,
+        ),
+        const SizedBox(
+          width: 15,
+        ),
+        ActionButtonWidget(
+          onPressed: () async => widget.upsertProductsCubit
+              .loadProductsData(file, widget.supplierId),
+          type: ButtonType.elevatedButton,
+          title: "Import",
+          foregroundColor: AppColor.white,
+          backgroundColor: AppColor.blue,
         ),
       ],
     );
@@ -173,9 +186,13 @@ class _ImportProductsFileWidgetState extends State<ImportProductsFileWidget> {
 
   void _addFile(value) async {
     var fileName = await _controller?.getFilename(value);
-    var data = _controller?.getFileStream(value);
-
-    file = await convertStreamToList(data!);
+    var fileMIME = await _controller?.getFileMIME(value);
+    if (fileMIME != MimeType.msExcel.value &&
+        fileMIME != MimeType.msExcelOpenXML.value) {
+      widget.upsertProductsCubit.addFailure("Only Excel files are supported");
+      return;
+    }
+    file = await _controller?.getFileData(value);
 
     setState(() {
       _selectedFile = fileName;
@@ -183,16 +200,7 @@ class _ImportProductsFileWidgetState extends State<ImportProductsFileWidget> {
     });
 
     debugPrint(fileName);
-  } // TODO: Validate .xlsx
-
-  Future<List<int>> convertStreamToList(Stream<List<int>> stream) async {
-    // Collect all lists from the stream
-    List<List<int>> listOfLists = await stream.toList();
-
-    // Flatten the list of lists into a single list
-    List<int> combinedList = listOfLists.expand((list) => list).toList();
-
-    return combinedList;
+    debugPrint(fileMIME);
   }
 
   void _onCreated(DropzoneViewController controller) {
@@ -203,5 +211,49 @@ class _ImportProductsFileWidgetState extends State<ImportProductsFileWidget> {
     if (context.canPop()) {
       context.pop();
     }
+  }
+
+  _selectFileBody() {
+    return Column(
+      children: [
+        _selectedFile != null
+            ? const SizedBox.shrink()
+            : Container(
+                height: 120,
+                margin: const EdgeInsets.all(15),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                      child: DropzoneView(
+                        onCreated: _onCreated,
+                        onDrop: _addFile,
+                        onHover: () => setState(() {
+                          isHighlighted = true;
+                        }),
+                        onLeave: () => setState(() {
+                          isHighlighted = false;
+                        }),
+                      ),
+                    ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                      child: _buildChooseFilesArea(context),
+                    ),
+                  ],
+                ),
+              ),
+        SizedBox(
+          height: _selectedFile != null ? 20 : 5,
+        ),
+        _showSelectedFile(),
+      ],
+    );
   }
 }

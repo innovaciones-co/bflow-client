@@ -1,19 +1,20 @@
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/usecases/usecases.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/get_categories_use_case.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/get_contacts_usecase.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
-import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/purchase_order_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_purchase_order_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/delete_item_use_case.dart';
-import 'package:bflow_client/src/features/catalog/domain/usecases/get_categories_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_items_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_orders_by_job_use_case.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'items_event.dart';
@@ -178,7 +179,7 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
     );
 
     failureOrOrders.fold(
-      (l) => print(l.message),
+      (l) => debugPrint(l.message),
       (r) => add(GetItemsEvent(jobId: event.jobId)),
     );
   }

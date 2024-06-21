@@ -8,7 +8,6 @@ import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cu
 import 'package:bflow_client/src/features/catalog/presentation/cubit/upsert_products_cubit/upsert_products_cubit.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/import_products_file_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/write_product_widget.dart';
-import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -108,62 +107,32 @@ class CatalogViewBarWidget extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             ActionButtonWidget(
-              onPressed: () => context.showModal("Import data", [
-                BlocProvider<UpsertProductsCubit>(
-                  create: (context) => DependencyInjection.sl(),
-                  child: BlocConsumer<UpsertProductsCubit, UpsertProductsState>(
-                    listener: (context, state) {
-                      if (state is UpsertProductsLoadSuccess) {
-                        context.pop();
-                        context.showAlert(
-                            message: state.message, type: AlertType.success);
-                        productsCubit.loadSupplierProducts(supplierId);
-                      }
-                    },
-                    builder: (context, state) {
-                      if (state is UpsertProductsInitial ||
-                          state is UpsertProductsLoadFailure) {
-                        return Column(
-                          children: [
-                            const Row(
-                              children: [
-                                Text(
-                                  'Please upload the file to import the products data:',
-                                  textAlign: TextAlign.end,
-                                ),
-                              ],
-                            ),
-                            ImportProductsFileWidget(
-                              supplierId: supplierId,
-                              upsertProductsCubit:
-                                  context.read<UpsertProductsCubit>(),
-                            ),
-                            state is UpsertProductsLoadFailure
-                                ? Text(state.message)
-                                : const SizedBox.shrink(),
-                          ],
+              onPressed: () => context.showModal(
+                "Import data",
+                [
+                  BlocProvider<UpsertProductsCubit>(
+                    create: (context) => DependencyInjection.sl(),
+                    child:
+                        BlocConsumer<UpsertProductsCubit, UpsertProductsState>(
+                      listener: (context, state) {
+                        if (state is UpsertProductsLoadSuccess) {
+                          context.pop();
+                          context.showAlert(
+                              message: state.message, type: AlertType.success);
+                          productsCubit.loadSupplierProducts(supplierId);
+                        }
+                      },
+                      builder: (context, state) {
+                        return ImportProductsFileWidget(
+                          supplierId: supplierId,
+                          upsertProductsCubit:
+                              context.read<UpsertProductsCubit>(),
                         );
-                      }
-
-                      if (state is UpsertProductsLoadInProgress) {
-                        return Column(
-                          children: [
-                            const LoadingWidget(),
-                            Text(state.message),
-                          ],
-                        );
-                      }
-
-                      return const Column(
-                        children: [
-                          LoadingWidget(),
-                          Text('Other'),
-                        ],
-                      );
-                    },
+                      },
+                    ),
                   ),
-                ),
-              ]),
+                ],
+              ),
               type: ButtonType.elevatedButton,
               title: "Import",
               icon: Icons.upload,

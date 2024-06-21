@@ -9,7 +9,7 @@ sealed class WriteCategoryState extends Equatable {
   final FormStatus formStatus;
   final AutovalidateMode? autovalidateMode;
 
-  WriteCategoryState({
+  const WriteCategoryState({
     this.id,
     this.tradeCode,
     this.name,
@@ -42,7 +42,7 @@ sealed class WriteCategoryState extends Equatable {
 }
 
 final class WriteCategoryValidator extends WriteCategoryState {
-  WriteCategoryValidator({
+  const WriteCategoryValidator({
     super.id,
     super.tradeCode,
     super.name,
