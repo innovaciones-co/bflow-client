@@ -41,17 +41,22 @@ class CategoriesWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Categories", style: context.headlineMedium),
-                ActionButtonWidget(
-                  onPressed: () => context.showLeftDialog(
-                    "New Category",
-                    WriteCategoryWidget(),
-                  ),
-                  type: ButtonType.elevatedButton,
-                  title: "New",
-                  icon: Icons.add,
-                  backgroundColor: AppColor.blue,
-                  foregroundColor: AppColor.white,
-                ),
+                Builder(builder: (context) {
+                  CategoriesCubit categoriesCubit = context.read();
+                  return ActionButtonWidget(
+                    onPressed: () => context.showLeftDialog(
+                      "New Category",
+                      WriteCategoryWidget(
+                        categoriesCubit: categoriesCubit,
+                      ),
+                    ),
+                    type: ButtonType.elevatedButton,
+                    title: "New",
+                    icon: Icons.add,
+                    backgroundColor: AppColor.blue,
+                    foregroundColor: AppColor.white,
+                  );
+                }),
               ],
             ),
             const SizedBox(
@@ -96,6 +101,7 @@ class CategoriesWidget extends StatelessWidget {
                                       "Edit Category",
                                       WriteCategoryWidget(
                                         category: state.categories[i],
+                                        categoriesCubit: context.read(),
                                       ),
                                     ),
                                     color: AppColor.blue,

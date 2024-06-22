@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/usecases/usecases.dart';
@@ -65,59 +67,9 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
     on<LoadingItemsEvent>(
       (event, emit) => emit(ItemsLoading()),
     );
-    on<ToggleSelectedItemEvent>(
-      (event, emit) {
-        if (state is ItemsLoaded) {
-          var loadedState = (state as ItemsLoaded);
-          var selectedItems = List<Item>.from(loadedState.selectedItems);
-          var item = event.item;
-
-          if (selectedItems.contains(item)) {
-            selectedItems.remove(item);
-          } else {
-            selectedItems.add(item);
-          }
-
-          emit(
-            loadedState.copyWith(selectedItems: selectedItems),
-          );
-        }
-      },
-    );
-    on<SelectItemsByCategory>(
-      (event, emit) {
-        if (state is! ItemsLoaded) return;
-
-        var categoryId = event.categoryId;
-        List<Item> items = (state as ItemsLoaded).items;
-        List<Item> selectedItems =
-            (state as ItemsLoaded).selectedItems.toList();
-
-        bool selected =
-            !_checkIfCategorySelected(categoryId, selectedItems, items);
-
-        var itemsOfCategory =
-            items.where((item) => item.category == categoryId);
-
-        for (var item in itemsOfCategory) {
-          if (selectedItems.contains(item)) {
-            if (!selected) {
-              selectedItems.remove(item);
-            }
-          } else {
-            if (selected) {
-              selectedItems.add(item);
-            }
-          }
-        }
-
-        emit(
-          (state as ItemsLoaded).copyWith(
-            selectedItems: selectedItems,
-          ),
-        );
-      },
-    );
+    on<ToggleSelectedItemEvent>(_onToggleSelectedItem);
+    on<ToggleAllItems>(_onToggleAll);
+    on<SelectItemsByCategory>(_onSelectItemsByCategory);
     on<CreatePurchaseOrderEvent>(_createPurchaseOrder);
     on<GetItemsEvent>((event, emit) async {
       emit(ItemsLoading());
@@ -162,6 +114,54 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
     });
   }
 
+  void _onSelectItemsByCategory(event, emit) {
+    if (state is! ItemsLoaded) return;
+
+    var categoryId = event.categoryId;
+    List<Item> items = (state as ItemsLoaded).items;
+    List<Item> selectedItems = (state as ItemsLoaded).selectedItems.toList();
+
+    bool selected = !_checkIfCategorySelected(categoryId, selectedItems, items);
+
+    var itemsOfCategory = items.where((item) => item.category == categoryId);
+
+    for (var item in itemsOfCategory) {
+      if (selectedItems.contains(item)) {
+        if (!selected) {
+          selectedItems.remove(item);
+        }
+      } else {
+        if (selected) {
+          selectedItems.add(item);
+        }
+      }
+    }
+
+    emit(
+      (state as ItemsLoaded).copyWith(
+        selectedItems: selectedItems,
+      ),
+    );
+  }
+
+  FutureOr<void> _onToggleSelectedItem(event, emit) {
+    if (state is ItemsLoaded) {
+      var loadedState = (state as ItemsLoaded);
+      var selectedItems = List<Item>.from(loadedState.selectedItems);
+      var item = event.item;
+
+      if (selectedItems.contains(item)) {
+        selectedItems.remove(item);
+      } else {
+        selectedItems.add(item);
+      }
+
+      emit(
+        loadedState.copyWith(selectedItems: selectedItems),
+      );
+    }
+  }
+
   _createPurchaseOrder(
       CreatePurchaseOrderEvent event, Emitter<ItemsState> emit) async {
     if (state is! ItemsLoaded) {
@@ -193,5 +193,27 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
       return true;
     }
     return false;
+  }
+
+  void _onToggleAll(ToggleAllItems event, Emitter<ItemsState> emit) {
+    if (state is! ItemsLoaded) return;
+
+    var loadedState = (state as ItemsLoaded);
+    var selectedItems = List<Item>.from(loadedState.selectedItems);
+    var items = List<Item>.from(loadedState.items);
+
+    if (selectedItems.isNotEmpty) {
+      if (selectedItems.length < items.length) {
+        selectedItems = List.of(items);
+      } else {
+        selectedItems = [];
+      }
+    } else {
+      selectedItems = List.of(items);
+    }
+
+    emit(
+      loadedState.copyWith(selectedItems: selectedItems),
+    );
   }
 }

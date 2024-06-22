@@ -119,6 +119,7 @@ class WriteJobWidget extends StatelessWidget with Validator {
                           getLabel: (s) => s.fullName,
                           onChanged: createJobBloc.updateSupervisor,
                           initialValue: state.supervisor,
+                          value: () => state.supervisor,
                         ),
                         const SizedBox(height: 20),
                         DropdownWidget<User>(
@@ -127,6 +128,7 @@ class WriteJobWidget extends StatelessWidget with Validator {
                           getLabel: (u) => u.fullName,
                           onChanged: createJobBloc.updateOwner,
                           initialValue: state.owner,
+                          value: () => state.owner,
                         ),
                         const SizedBox(height: 20),
                         Row(

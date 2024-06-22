@@ -8,6 +8,7 @@ import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
 import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/categories_cubit.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/write_category_cubit/write_category_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,10 +16,12 @@ import 'package:go_router/go_router.dart';
 
 class WriteCategoryWidget extends StatelessWidget with Validator {
   final Category? category;
+  final CategoriesCubit categoriesCubit;
 
   WriteCategoryWidget({
     super.key,
     this.category,
+    required this.categoriesCubit,
   });
 
   final _formKey = GlobalKey<FormState>();
@@ -26,14 +29,18 @@ class WriteCategoryWidget extends StatelessWidget with Validator {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<WriteCategoryCubit>(
-      create: (context) =>
-          DependencyInjection.sl()..initFormFromCategory(category),
+      create: (context) => WriteCategoryCubit(
+        categoriesCubit: categoriesCubit,
+        createCategorytUseCase: DependencyInjection.sl(),
+        updateCategorytUseCase: DependencyInjection.sl(),
+      ),
       child: BlocConsumer<WriteCategoryCubit, WriteCategoryState>(
         listener: (context, state) {
           if (state.formStatus == FormStatus.success) {
             context.showAlert(
-                message: "The category was created successfully!",
-                type: AlertType.success);
+              message: "The category was created successfully!",
+              type: AlertType.success,
+            );
 
             if (context.canPop()) {
               context.pop();

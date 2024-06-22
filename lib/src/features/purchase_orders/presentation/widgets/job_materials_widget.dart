@@ -6,9 +6,9 @@ import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/utils/launch_url.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
-import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/purchase_order_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
@@ -146,20 +146,6 @@ class JobMaterialsWidget extends StatelessWidget {
     return groupedItems;
   }
 
-  /* _itemsPerCategoryMap(List<Item> items) {
-    Map<int, List<Item>> itemsPerCategoryMap = {};
-
-    for (var item in items) {
-      if (itemsPerCategoryMap.containsKey(item.category)) {
-        itemsPerCategoryMap[item.category]!.add(item);
-      } else {
-        itemsPerCategoryMap[item.category] = [item];
-      }
-    }
-
-    return itemsPerCategoryMap;
-  } */
-
   Table _tableHeader() {
     return Table(
       columnWidths: _columnWidths,
@@ -176,11 +162,23 @@ class JobMaterialsWidget extends StatelessWidget {
           ),
           children: [
             _tableCell(const Text("Trade code")),
-            _tableCell(Checkbox(
-              value: false,
-              onChanged: null,
-              side: BorderSide(color: AppColor.darkGrey, width: 2),
-            )),
+            BlocBuilder<ItemsBloc, ItemsState>(
+              builder: (context, state) {
+                ItemsBloc itemsBloc = context.read<ItemsBloc>();
+
+                if (state is! ItemsLoaded) {
+                  return const SizedBox.shrink();
+                }
+
+                return _tableCell(
+                  Checkbox(
+                    value: state.selectedItems.length == state.items.length,
+                    onChanged: (val) => itemsBloc.add(ToggleAllItems()),
+                    side: BorderSide(color: AppColor.darkGrey, width: 2),
+                  ),
+                );
+              },
+            ),
             _tableCell(const Text("Item ID")),
             _tableCell(const Text("Order Number")),
             _tableCell(const Text("Supplier")),
@@ -212,10 +210,8 @@ class JobMaterialsWidget extends StatelessWidget {
         verticalInside: BorderSide(width: 1.0, color: AppColor.lightPurple),
       ),
       children: [
-        _tableHeaderRow(itemsView.first.category!.id!,
-            itemsView.first.category?.name ?? "", totalPerCategory),
-        for (int index = 0; index < itemsView.length; index += 1)
-          _tableItemRow(itemsView[index]),
+        _tableHeaderRow(itemsView.first.category!, totalPerCategory),
+        ...itemsView.map((item) => _tableItemRow(item)),
         TableRow(
           decoration: BoxDecoration(
             color: AppColor.white,
@@ -244,13 +240,13 @@ class JobMaterialsWidget extends StatelessWidget {
     );
   }
 
-  TableRow _tableHeaderRow(int categoryId, String name, double total) {
+  TableRow _tableHeaderRow(Category category, double total) {
     return TableRow(
       decoration: BoxDecoration(
         color: AppColor.lightPurple,
       ),
       children: [
-        _tableCell(Text(categoryId.toString())),
+        _tableCell(Text(category.tradeCode.toString())),
         _tableCell(
           BlocBuilder<ItemsBloc, ItemsState>(
             builder: (context, state) {
@@ -260,7 +256,7 @@ class JobMaterialsWidget extends StatelessWidget {
               }
 
               bool? itemsSelectedByCategory = _checkIfCategorySelected(
-                categoryId,
+                category.id!,
                 state.selectedItems,
                 state.items,
               );
@@ -268,13 +264,13 @@ class JobMaterialsWidget extends StatelessWidget {
                 tristate: true,
                 value: itemsSelectedByCategory,
                 onChanged: (val) => itemsBloc
-                    .add(SelectItemsByCategory(categoryId: categoryId)),
+                    .add(SelectItemsByCategory(categoryId: category.id!)),
                 side: BorderSide(color: AppColor.darkGrey, width: 2),
               );
             },
           ),
         ),
-        _tableCell(Text(name)),
+        _tableCell(Text(category.name)),
         ...List.generate(
           6,
           (index) => _tableCell(const Text("")),

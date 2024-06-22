@@ -30,7 +30,7 @@ class _MaterialsViewBarWidgetState extends State<MaterialsViewBarWidget> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
+        /* Row(
           children: [
             const Text("Search"),
             Container(
@@ -40,7 +40,7 @@ class _MaterialsViewBarWidgetState extends State<MaterialsViewBarWidget> {
               color: AppColor.grey,
             ),
           ],
-        ),
+        ), */
         Row(
           children: [
             ActionButtonWidget(
