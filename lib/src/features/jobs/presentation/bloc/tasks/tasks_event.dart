@@ -46,3 +46,9 @@ class GetTasksEvent extends TasksEvent {
   @override
   List<Object> get props => [jobId ?? 0];
 }
+
+class UpdateTasksEvent extends TasksEvent {
+  final List<Task> tasks;
+
+  const UpdateTasksEvent({required this.tasks});
+}

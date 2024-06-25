@@ -55,6 +55,7 @@ import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_cas
 import 'package:bflow_client/src/features/jobs/domain/usecases/send_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_task_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/update_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/upload_files_use_case.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/files/files_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
@@ -150,6 +151,7 @@ class DependencyInjection {
         getTasksUseCase: sl(),
         deleteTaskUseCase: sl(),
         sendTasksUseCase: sl(),
+        updateTasksUseCase: sl(),
         homeBloc: sl(),
         socketService: sl(),
       ),
@@ -288,6 +290,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => UpdateTaskUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => UpdateTasksUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => GetTaskUseCase(repository: sl()),

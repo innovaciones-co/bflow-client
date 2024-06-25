@@ -12,6 +12,7 @@ import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_blo
 import 'package:bflow_client/src/features/jobs/presentation/widgets/no_tasks_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_task_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -37,18 +38,12 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     11: const FixedColumnWidth(40),
   };
 
-  final List<Task> parentTasks = [];
-  late final Map<int, List<Task>> childrenTasksMap;
+  List<Task> updatedTasks = [];
 
   @override
   void initState() {
     super.initState();
-    for (var task in widget.tasks) {
-      if (task.parentTask == null) {
-        parentTasks.add(task);
-      }
-    }
-    childrenTasksMap = _tasksToChildrenMap(widget.tasks);
+    updatedTasks = List.of(widget.tasks);
   }
 
   @override
@@ -74,104 +69,48 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
         }
 
         return ReorderableListView(
-          header: Table(
-            columnWidths: columnWidths,
-            border: TableBorder(
-              right: BorderSide(width: 1.0, color: AppColor.lightGrey),
-              bottom: BorderSide(width: 0.2, color: AppColor.darkGrey),
-              left: BorderSide(width: 1.0, color: AppColor.lightGrey),
-              verticalInside: BorderSide(width: 1.0, color: AppColor.lightGrey),
-            ),
-            children: [
-              TableRow(
-                decoration: BoxDecoration(
-                  color: AppColor.grey,
-                ),
-                children: [
-                  _tableCell(BlocSelector<TasksBloc, TasksState, List<Task>>(
-                    selector: (state) {
-                      if (state is TasksLoaded) {
-                        return state.selectedTasks;
-                      }
-
-                      return [];
-                    },
-                    builder: (context, selectedTasks) {
-                      TasksBloc tasksBloc = context.read();
-                      return Checkbox(
-                        tristate: true,
-                        value: _checkIfAllTasksSelected(selectedTasks),
-                        onChanged: (val) => _toggleSelectedTasks(
-                          selected: val ?? false,
-                          bloc: tasksBloc,
-                          selectedTasks: selectedTasks,
-                        ),
-                        side: BorderSide(color: AppColor.darkGrey, width: 2),
-                      );
-                    },
-                  )),
-                  _tableCell(
-                    const Center(
-                      child: Text("#"),
-                    ),
+          header: _header(),
+          onReorder: _onReorderTasks,
+          children: updatedTasks
+              .map(
+                (task) => Table(
+                  key: Key('${task.id}'),
+                  columnWidths: columnWidths,
+                  border: TableBorder(
+                    top: BorderSide(width: 0.5, color: AppColor.lightGrey),
+                    right: BorderSide(width: 1.0, color: AppColor.lightGrey),
+                    bottom: BorderSide(width: 0.5, color: AppColor.lightGrey),
+                    left: BorderSide(width: 1.0, color: AppColor.lightGrey),
+                    horizontalInside:
+                        BorderSide(width: 1.0, color: AppColor.lightGrey),
+                    verticalInside:
+                        BorderSide(width: 1.0, color: AppColor.lightGrey),
                   ),
-                  _tableCell(const Text("Task")),
-                  _tableCell(const Text("Supplier")),
-                  _tableCell(const Text("Status")),
-                  _tableCell(const Text("Call date")),
-                  _tableCell(const Text("Booking date")),
-                  _tableCell(const Text("Completion date")),
-                  _tableCell(const Text("Comments")),
-                  _tableCell(const Text("Progress")),
-                  _tableCell(const Text("Actions")),
-                  const SizedBox.shrink(),
-                ],
-              ),
-            ],
-          ),
-          children: [
-            for (int index = 0; index < parentTasks.length; index += 1)
-              Table(
-                key: Key('$index'),
-                columnWidths: columnWidths,
-                border: TableBorder(
-                  top: BorderSide(width: 0.5, color: AppColor.lightGrey),
-                  right: BorderSide(width: 1.0, color: AppColor.lightGrey),
-                  bottom: BorderSide(width: 0.5, color: AppColor.lightGrey),
-                  left: BorderSide(width: 1.0, color: AppColor.lightGrey),
-                  horizontalInside:
-                      BorderSide(width: 1.0, color: AppColor.lightGrey),
-                  verticalInside:
-                      BorderSide(width: 1.0, color: AppColor.lightGrey),
+                  children: [
+                    _tableRow(task: task),
+                  ],
                 ),
-                children: [
-                  _tableRow(
-                      task: parentTasks[index], index: index, parent: true),
-                  for (int index2 = 0;
-                      index2 <
-                          (childrenTasksMap[parentTasks[index].id] ?? [])
-                              .length;
-                      index2 += 1)
-                    _tableRow(
-                      task: childrenTasksMap[parentTasks[index].id]![index2],
-                      index: index2,
-                      parent: false,
-                    ),
-                ],
               )
-          ],
-          onReorder: (int oldIndex, int newIndex) {
-            setState(() {
-              if (oldIndex < newIndex) {
-                newIndex -= 1;
-              }
-              final Task item = parentTasks.removeAt(oldIndex);
-              parentTasks.insert(newIndex, item);
-            });
-          },
+              .toList(),
         );
       },
     );
+  }
+
+  void _onReorderTasks(int oldIndex, int newIndex) {
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    final Task updatedTask = updatedTasks.removeAt(oldIndex);
+    updatedTasks.insert(newIndex, updatedTask);
+
+    setState(() {
+      updatedTasks = updatedTasks
+          .mapIndexed((index, task) => task.copyWith(order: index))
+          .toList();
+    });
+
+    context.read<TasksBloc>().add(UpdateTasksEvent(tasks: updatedTasks));
   }
 
   void _toggleSelectedTasks({
@@ -190,41 +129,34 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
 
   TableRow _tableRow({
     required Task task,
-    required int index,
-    required bool parent,
   }) {
     return TableRow(
       decoration: BoxDecoration(color: task.backgroundStatusColor),
       children: [
         _tableCell(
-          parent
-              ? BlocBuilder<TasksBloc, TasksState>(
-                  builder: (context, state) {
-                    TasksBloc tasksBloc = context.read<TasksBloc>();
-                    if (state is! TasksLoaded) {
-                      return const SizedBox.shrink();
-                    }
+          Builder(
+            builder: (context) {
+              TasksBloc tasksBloc = context.read<TasksBloc>();
+              if (tasksBloc.state is! TasksLoaded) {
+                return const SizedBox.shrink();
+              }
 
-                    var taskSelected = state.selectedTasks.contains(task);
-                    return Checkbox(
-                      value: taskSelected,
-                      onChanged: (val) =>
-                          tasksBloc.add(ToggleSelectedTask(task: task)),
-                      side: BorderSide(color: AppColor.darkGrey, width: 2),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(3)),
-                    );
-                  },
-                )
-              : const SizedBox.shrink(),
+              var taskSelected =
+                  (tasksBloc.state as TasksLoaded).selectedTasks.contains(task);
+              return Checkbox(
+                value: taskSelected,
+                onChanged: (val) =>
+                    tasksBloc.add(ToggleSelectedTask(task: task)),
+                side: BorderSide(color: AppColor.darkGrey, width: 2),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(3)),
+              );
+            },
+          ),
         ),
-        _tableCell(
-          parent
-              ? Center(
-                  child: Text('${index + 1}'),
-                )
-              : const SizedBox.shrink(),
-        ),
+        _tableCell(Center(
+          child: Text('${task.order + 1}'),
+        )),
         _tableCell(
           Tooltip(
             message: task.name,
@@ -345,10 +277,11 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
       verticalAlignment: TableCellVerticalAlignment.middle,
       child: Padding(
         padding: EdgeInsets.only(
-            right: paddingRight ?? 10,
-            left: paddingLeft ?? 10,
-            top: 5,
-            bottom: 5),
+          right: paddingRight ?? 10,
+          left: paddingLeft ?? 10,
+          top: 5,
+          bottom: 5,
+        ),
         child: widget,
       ),
     );
@@ -377,5 +310,63 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
       return false;
     }
     return null;
+  }
+
+  _header() {
+    return Table(
+      columnWidths: columnWidths,
+      border: TableBorder(
+        right: BorderSide(width: 1.0, color: AppColor.lightGrey),
+        bottom: BorderSide(width: 0.2, color: AppColor.darkGrey),
+        left: BorderSide(width: 1.0, color: AppColor.lightGrey),
+        verticalInside: BorderSide(width: 1.0, color: AppColor.lightGrey),
+      ),
+      children: [
+        TableRow(
+          decoration: BoxDecoration(
+            color: AppColor.grey,
+          ),
+          children: [
+            _tableCell(BlocSelector<TasksBloc, TasksState, List<Task>>(
+              selector: (state) {
+                if (state is TasksLoaded) {
+                  return state.selectedTasks;
+                }
+
+                return [];
+              },
+              builder: (context, selectedTasks) {
+                TasksBloc tasksBloc = context.read();
+                return Checkbox(
+                  tristate: true,
+                  value: _checkIfAllTasksSelected(selectedTasks),
+                  onChanged: (val) => _toggleSelectedTasks(
+                    selected: val ?? false,
+                    bloc: tasksBloc,
+                    selectedTasks: selectedTasks,
+                  ),
+                  side: BorderSide(color: AppColor.darkGrey, width: 2),
+                );
+              },
+            )),
+            _tableCell(
+              const Center(
+                child: Text("#"),
+              ),
+            ),
+            _tableCell(const Text("Task")),
+            _tableCell(const Text("Supplier")),
+            _tableCell(const Text("Status")),
+            _tableCell(const Text("Call date")),
+            _tableCell(const Text("Booking date")),
+            _tableCell(const Text("Completion date")),
+            _tableCell(const Text("Comments")),
+            _tableCell(const Text("Progress")),
+            _tableCell(const Text("Actions")),
+            const SizedBox.shrink(),
+          ],
+        ),
+      ],
+    );
   }
 }

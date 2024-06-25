@@ -21,6 +21,7 @@ class TaskModel extends Task {
     super.supplier,
     super.attachments,
     required super.job,
+    super.order,
   });
 
   factory TaskModel.fromEntity(Task task) => TaskModel(
@@ -37,6 +38,7 @@ class TaskModel extends Task {
         supplier: task.supplier,
         attachments: task.attachments,
         job: task.job,
+        order: task.order,
       );
 
   factory TaskModel.fromJson(String str) => TaskModel.fromMap(json.decode(str));
@@ -65,6 +67,7 @@ class TaskModel extends Task {
             ? []
             : List<dynamic>.from(json["attachments"]!.map((x) => x)),
         job: json["job"],
+        order: json["order"],
       );
 
   Map<String, dynamic> toMap() => {
@@ -83,5 +86,6 @@ class TaskModel extends Task {
             ? []
             : List<dynamic>.from(attachments!.map((x) => x)),
         "job": job,
+        "order": order,
       };
 }

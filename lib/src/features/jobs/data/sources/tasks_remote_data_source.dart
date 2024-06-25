@@ -61,4 +61,15 @@ class TasksRemoteDataSource extends RemoteDataSource {
       data: tasksIds,
     );
   }
+
+  Future<void> updateTasks(List<Task> tasks) async {
+    List<Map<String, dynamic>> tasksModel =
+        tasks.map((t) => TaskModel.fromEntity(t).toMap()).toList();
+    await apiService.put(
+      endpoint: ApiConstants.tasksEndpoint,
+      data: tasksModel,
+    );
+
+    return;
+  }
 }

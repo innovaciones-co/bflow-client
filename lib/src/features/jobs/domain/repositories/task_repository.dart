@@ -15,6 +15,8 @@ abstract class TasksRepository {
 
   Future<Either<Failure, t.Task>> updateTask(t.Task task);
 
+  Future<Either<Failure, void>> updateTasks(List<t.Task> tasks);
+
   Future<Either<Failure, void>> sendTasks(List<t.Task> tasks);
 
   Future<Either<Failure, void>> delete(int id);

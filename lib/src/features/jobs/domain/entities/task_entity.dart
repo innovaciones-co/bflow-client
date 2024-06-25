@@ -17,6 +17,7 @@ class Task extends Equatable {
   final Contact? supplier;
   final List<dynamic>? attachments;
   final int job;
+  final int order;
 
   const Task({
     this.id,
@@ -32,6 +33,7 @@ class Task extends Equatable {
     this.supplier,
     this.attachments,
     required this.job,
+    this.order = 0,
   });
 
   @override
@@ -49,6 +51,7 @@ class Task extends Equatable {
         supplier,
         attachments,
         job,
+        order,
       ];
 
   @override
@@ -68,6 +71,7 @@ class Task extends Equatable {
     Contact? supplier,
     List<dynamic>? attachments,
     int? job,
+    int? order,
   }) {
     return Task(
       id: id ?? this.id,
@@ -83,6 +87,7 @@ class Task extends Equatable {
       supplier: supplier ?? this.supplier,
       attachments: attachments ?? this.attachments,
       job: job ?? this.job,
+      order: order ?? this.order,
     );
   }
 }

@@ -9,6 +9,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart'
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/send_tasks_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/update_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +22,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   final GetTasksUseCase getTasksUseCase;
   final DeleteTaskUseCase deleteTaskUseCase;
   final SendTasksUseCase sendTasksUseCase;
+  final UpdateTasksUseCase updateTasksUseCase;
   final HomeBloc? homeBloc;
   final SocketService socketService;
   List<Task> tasks = [];
@@ -30,6 +32,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     required this.getTasksUseCase,
     required this.deleteTaskUseCase,
     required this.sendTasksUseCase,
+    required this.updateTasksUseCase,
     required this.homeBloc,
     required this.socketService,
   }) : super(TasksInitial()) {
@@ -45,6 +48,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       ),
     );
 
+    on<UpdateTasksEvent>(_updateTasks);
     on<DeleteTasksEvent>(_deleteTasks);
     on<ToggleSelectedTask>(_toggleSelectedTask);
     on<AddSelectedTask>(_addSelectedTask);
@@ -141,11 +145,11 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     emit(TasksLoading());
 
     GetTasksParams params = GetTasksParams(jobId: event.jobId);
-    var tasks = await getTasksUseCase.execute(params);
-    tasks.fold(
+    var tasksOrFailure = await getTasksUseCase.execute(params);
+    tasksOrFailure.fold(
       (l) => emit(TasksError(failure: l)),
       (t) {
-        //tasks = t;
+        t.sort((a, b) => a.order - b.order);
         emit(TasksLoaded(tasks: t));
       },
     );
@@ -214,5 +218,28 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
         },
       );
     }
+  }
+
+  FutureOr<void> _updateTasks(
+      UpdateTasksEvent event, Emitter<TasksState> emit) async {
+    var tasksOrFailure =
+        await updateTasksUseCase.execute(UpdateTasksParams(tasks: event.tasks));
+    tasksOrFailure.fold(
+      (failure) {
+        homeBloc?.add(
+          ShowMessageEvent(
+              message:
+                  "There was a failure updating the tasks: ${failure.message}",
+              type: AlertType.error),
+        );
+      },
+      (r) {
+        homeBloc?.add(
+          ShowMessageEvent(
+              message: "The tasks were updated successfully",
+              type: AlertType.success),
+        );
+      },
+    );
   }
 }
