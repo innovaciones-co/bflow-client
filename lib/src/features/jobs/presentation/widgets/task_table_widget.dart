@@ -287,7 +287,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     );
   }
 
-  _tasksToChildrenMap(List<Task> tasks) {
+  /* _tasksToChildrenMap(List<Task> tasks) {
     Map<int, List<Task>> childrenTasksMap = {};
 
     for (var task in tasks) {
@@ -301,7 +301,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     }
 
     return childrenTasksMap;
-  }
+  } */
 
   bool? _checkIfAllTasksSelected(List<Task> selectedTasks) {
     if (widget.tasks.every((task) => selectedTasks.contains(task))) {
