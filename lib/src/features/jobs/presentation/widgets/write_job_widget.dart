@@ -10,6 +10,7 @@ import 'package:bflow_client/src/core/widgets/date_picker_widget.dart';
 import 'package:bflow_client/src/core/widgets/dropdown_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/create_job_cubit.dart';
@@ -34,6 +35,7 @@ class WriteJobWidget extends StatelessWidget with Validator {
       create: (_) => CreateJobCubit(
         getSupervisorsUseCase: DependencyInjection.sl(),
         getUsersUseCase: DependencyInjection.sl(),
+        getContactUseCase: DependencyInjection.sl(),
         createJobUseCase: DependencyInjection.sl(),
         updateJobUseCase: DependencyInjection.sl(),
         jobsBloc: context.read<JobsBloc>(),
@@ -122,13 +124,30 @@ class WriteJobWidget extends StatelessWidget with Validator {
                           value: () => state.supervisor,
                         ),
                         const SizedBox(height: 20),
-                        DropdownWidget<User>(
-                          label: "Owner name",
-                          items: state.owners,
-                          getLabel: (u) => u.fullName,
-                          onChanged: createJobBloc.updateOwner,
-                          initialValue: state.owner,
-                          value: () => state.owner,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownWidget<User>(
+                                label: "Owner name",
+                                items: state.owners,
+                                getLabel: (u) => u.fullName,
+                                onChanged: createJobBloc.updateOwner,
+                                initialValue: state.owner,
+                                value: () => state.owner,
+                              ),
+                            ),
+                            const SizedBox(width: 15),
+                            Expanded(
+                              child: DropdownWidget<Contact>(
+                                label: "Client",
+                                items: state.clients,
+                                getLabel: (u) => u.name,
+                                onChanged: createJobBloc.updateClient,
+                                initialValue: state.client,
+                                value: () => state.client,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 20),
                         Row(

@@ -3,6 +3,7 @@ import 'package:bflow_client/src/core/domain/entities/form_status.dart';
 import 'package:bflow_client/src/core/usecases/usecases.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
+import 'package:bflow_client/src/features/contacts/domain/usecases/get_contacts_usecase.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_job_use_case.dart';
@@ -17,6 +18,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateJobCubit extends Cubit<CreateJobState> {
   final GetSupervisorsUseCase getSupervisorsUseCase;
+  final GetContactsUseCase getContactUseCase;
   final GetUsersUseCase getUsersUseCase;
   final CreateJobUseCase createJobUseCase;
   final UpdateJobUseCase updateJobUseCase;
@@ -29,6 +31,7 @@ class CreateJobCubit extends Cubit<CreateJobState> {
     required this.getUsersUseCase,
     required this.createJobUseCase,
     required this.updateJobUseCase,
+    required this.getContactUseCase,
     required this.jobsBloc,
     required this.homeBloc,
     this.job,
@@ -40,6 +43,8 @@ class CreateJobCubit extends Cubit<CreateJobState> {
             supervisor: job?.supervisor,
             owner: job?.user,
             supervisors: job?.supervisor != null ? [job!.supervisor] : [],
+            clients: job?.client != null ? [job!.client] : [],
+            client: job?.client,
             owners: job?.user != null ? [job!.user] : [],
             startDate: job?.plannedStartDate,
             endDate: job?.plannedEndDate,
@@ -75,6 +80,23 @@ class CreateJobCubit extends Cubit<CreateJobState> {
             ),
           },
         );
+
+    getContactUseCase
+        .execute(GetContactsParams(contactType: ContactType.client))
+        .then(
+          (contacts) => {
+            contacts.fold(
+              (failure) {
+                emit(state.copyWith(
+                    formStatus: FormStatus.failed, failure: failure));
+              },
+              (clients) {
+                emit(state.copyWith(
+                    clients: clients, formStatus: FormStatus.loaded));
+              },
+            ),
+          },
+        );
   }
 
   void updateJobNumber(String jobJumber) {
@@ -101,6 +123,10 @@ class CreateJobCubit extends Cubit<CreateJobState> {
     emit(state.copyWith(owner: owner));
   }
 
+  void updateClient(Contact client) {
+    emit(state.copyWith(client: client));
+  }
+
   void updateSupervisor(User supervisor) {
     emit(state.copyWith(supervisor: supervisor));
   }
@@ -123,15 +149,7 @@ class CreateJobCubit extends Cubit<CreateJobState> {
             state.endDate ?? DateTime.now().add(const Duration(days: 30)),
         address: state.address,
         user: state.owner!,
-        //TODO: Use client
-        client: const Contact(
-          id: 10000,
-          name: "Jhon Dow",
-          email: "test",
-          type: ContactType.client,
-          address: 'Cll 123',
-          phone: '+123',
-        ),
+        client: state.client!,
         supervisor: state.supervisor!,
       ),
     );
@@ -166,15 +184,7 @@ class CreateJobCubit extends Cubit<CreateJobState> {
             state.endDate ?? DateTime.now().add(const Duration(days: 30)),
         address: state.address,
         user: state.owner!,
-        //TODO: Use client
-        client: const Contact(
-          id: 10000,
-          name: "Jhon Dow",
-          email: "test",
-          type: ContactType.client,
-          address: 'Cll 123',
-          phone: '+123',
-        ),
+        client: state.client!,
         supervisor: state.supervisor!,
       ),
     );

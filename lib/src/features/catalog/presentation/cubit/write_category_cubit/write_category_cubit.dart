@@ -19,7 +19,7 @@ class WriteCategoryCubit extends Cubit<WriteCategoryState> {
     required this.categoriesCubit,
     required this.createCategorytUseCase,
     required this.updateCategorytUseCase,
-  }) : super(WriteCategoryValidator());
+  }) : super(const WriteCategoryValidator());
 
   void initForm({
     final int? id,

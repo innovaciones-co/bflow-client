@@ -19,7 +19,7 @@ enum TaskStage {
     switch (str.toLowerCase()) {
       case "slab_down":
         return TaskStage.slabDown;
-      case "plate_height":
+      case "plate_heigh":
         return TaskStage.plateHeigh;
       case "roof_cover":
         return TaskStage.roofCover;
