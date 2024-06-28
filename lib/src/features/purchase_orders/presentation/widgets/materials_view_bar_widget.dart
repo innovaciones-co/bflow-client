@@ -43,6 +43,31 @@ class _MaterialsViewBarWidgetState extends State<MaterialsViewBarWidget> {
         ), */
         Row(
           children: [
+            BlocBuilder<ItemsBloc, ItemsState>(
+              builder: (context, state) {
+                if (state is ItemsLoaded) {
+                  var itemModified = (state).itemModified;
+
+                  return itemModified
+                      ? ActionButtonWidget(
+                          onPressed: () =>
+                              context.read<ItemsBloc>().add(SaveUpdatedItems()),
+                          type: ButtonType.elevatedButton,
+                          title: "Save",
+                          //icon: Icons.save,
+                          backgroundColor: AppColor.blue,
+                          foregroundColor: AppColor.white,
+                        )
+                      : const SizedBox.shrink();
+                }
+
+                return const SizedBox.shrink();
+              },
+            ),
+          ],
+        ),
+        Row(
+          children: [
             ActionButtonWidget(
               onPressed: () {
                 context.showCustomModal(

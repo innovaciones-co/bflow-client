@@ -30,6 +30,36 @@ class Item extends Equatable {
     required this.job,
   });
 
+  Item copyWith({
+    int? id,
+    String? name,
+    String? description,
+    double? unitPrice,
+    double? vat,
+    double? price,
+    int? units,
+    Unit? measure,
+    int? purchaseOrder,
+    int? supplier,
+    int? category,
+    int? job,
+  }) {
+    return Item(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      unitPrice: unitPrice ?? this.unitPrice,
+      vat: vat ?? this.vat,
+      price: price ?? this.price,
+      units: units ?? this.units,
+      measure: measure ?? this.measure,
+      purchaseOrder: purchaseOrder ?? this.purchaseOrder,
+      supplier: supplier ?? this.supplier,
+      category: category ?? this.category,
+      job: job ?? this.job,
+    );
+  }
+
   @override
   List<Object?> get props => [
         id,

@@ -15,6 +15,7 @@ import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/delete_item_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_items_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_orders_by_job_use_case.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/usecases/update_item_use_case.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,6 +30,7 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
   final GetPurchaseOrdersByJobUseCase getOrdersUseCase;
   final CreatePurchaseOrderUseCase createPurchaseOrderUseCase;
   final DeleteItemUseCase deleteItemUseCase;
+  final UpdateItemUseCase updateItemUseCase;
   final HomeBloc? homeBloc;
 
   ItemsBloc({
@@ -38,6 +40,7 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
     required this.getOrdersUseCase,
     required this.createPurchaseOrderUseCase,
     required this.deleteItemUseCase,
+    required this.updateItemUseCase,
     required this.homeBloc,
   }) : super(ItemsLoading()) {
     on<DeleteItemsEvent>(
@@ -71,6 +74,8 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
     on<ToggleAllItems>(_onToggleAll);
     on<SelectItemsByCategory>(_onSelectItemsByCategory);
     on<CreatePurchaseOrderEvent>(_createPurchaseOrder);
+    on<UpdateItemEvent>(_updateItem);
+    on<SaveUpdatedItems>(_saveUpdatedItems);
     on<GetItemsEvent>((event, emit) async {
       emit(ItemsLoading());
       final params = GetItemsParams(jobId: event.jobId);
@@ -215,5 +220,60 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
     emit(
       loadedState.copyWith(selectedItems: selectedItems),
     );
+  }
+
+  void _updateItem(UpdateItemEvent event, Emitter<ItemsState> emit) {
+    if (state is! ItemsLoaded) return;
+
+    var loadedState = (state as ItemsLoaded);
+    List<Item> updatedItems = List.of(loadedState.updatedItems);
+    Item item = event.item;
+
+    bool exists = updatedItems.indexWhere((i) => i.id == item.id) != -1;
+    if (exists) {
+      updatedItems.removeWhere((i) => i.id == item.id);
+    }
+    updatedItems.add(item);
+
+    emit(loadedState.copyWith(updatedItems: updatedItems, itemModified: true));
+  }
+
+  _saveUpdatedItems(SaveUpdatedItems event, Emitter<ItemsState> emit) async {
+    if (state is ItemsLoaded) {
+      var loadedState = (state as ItemsLoaded);
+      var updatedItems = List<Item>.from(loadedState.updatedItems);
+
+      List<String> errorMessages = [];
+
+      for (var item in updatedItems) {
+        var updatedItem =
+            await updateItemUseCase.execute(UpdateItemParams(item: item));
+        updatedItem.fold(
+          (failure) {
+            errorMessages
+                .add("Item ${item.id} couldn't be updated: ${failure.message}");
+          },
+          (success) {},
+        );
+      }
+
+      if (errorMessages.isNotEmpty) {
+        homeBloc?.add(
+          ShowMessageEvent(
+            message: errorMessages.join('\n'),
+            type: AlertType.error,
+          ),
+        );
+      } else {
+        homeBloc?.add(
+          ShowMessageEvent(
+            message: "All items updated successfully!",
+            type: AlertType.success,
+          ),
+        );
+        emit(loadedState.copyWith(itemModified: false));
+        add(GetItemsEvent(jobId: updatedItems.first.job));
+      }
+    }
   }
 }

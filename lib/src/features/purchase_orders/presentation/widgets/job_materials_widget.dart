@@ -4,6 +4,7 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/utils/launch_url.dart';
+import 'package:bflow_client/src/core/utils/mixins/validator.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
@@ -18,12 +19,13 @@ import 'package:bflow_client/src/features/shared/presentation/widgets/cross_scro
 import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../aggregators/item_view.dart';
 import 'write_material_widget.dart';
 
-class JobMaterialsWidget extends StatelessWidget {
+class JobMaterialsWidget extends StatelessWidget with Validator {
   JobMaterialsWidget({
     super.key,
   });
@@ -328,16 +330,24 @@ class JobMaterialsWidget extends StatelessWidget {
         _tableCell(Text(itemView.supplier?.name ?? "")),
         _tableCell(Text("${item.name}: ${item.description}")),
         _tableCell(
-          // TODO: Implement edit and validation
-          TextFormField(
-            initialValue: item.units.toString(),
-            enableSuggestions: false,
-            autocorrect: false,
-            decoration: const InputDecoration(
-              enabledBorder: InputBorder.none,
-              //errorBorder: InputBorder.none,
-              //hintText: hintText,
-            ),
+          BlocBuilder<ItemsBloc, ItemsState>(
+            builder: (context, state) {
+              return TextFormField(
+                onChanged: (value) {
+                  context.read<ItemsBloc>().add(UpdateItemEvent(
+                      item: item.copyWith(units: int.tryParse(value))));
+                },
+                initialValue: item.units.toString(),
+                enableSuggestions: false,
+                autocorrect: false,
+                validator: validateQuantity,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: const InputDecoration(
+                  enabledBorder: InputBorder.none,
+                ),
+              );
+            },
           ),
           paddingLeft: 1,
           paddingRight: 1,

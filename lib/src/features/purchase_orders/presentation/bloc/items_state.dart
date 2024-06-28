@@ -16,6 +16,8 @@ class ItemsLoaded extends ItemsState {
   final List<PurchaseOrder> orders;
   final List<Contact> suppliers;
   final List<Item> selectedItems;
+  final List<Item> updatedItems;
+  final bool itemModified;
 
   const ItemsLoaded({
     required this.items,
@@ -23,6 +25,8 @@ class ItemsLoaded extends ItemsState {
     required this.orders,
     required this.suppliers,
     this.selectedItems = const [],
+    this.updatedItems = const [],
+    this.itemModified = false,
   });
 
   @override
@@ -32,6 +36,8 @@ class ItemsLoaded extends ItemsState {
         orders,
         suppliers,
         selectedItems,
+        updatedItems,
+        itemModified,
       ];
 
   ItemsLoaded copyWith({
@@ -40,6 +46,8 @@ class ItemsLoaded extends ItemsState {
     List<PurchaseOrder>? orders,
     List<Contact>? suppliers,
     List<Item>? selectedItems,
+    List<Item>? updatedItems,
+    bool? itemModified,
   }) {
     return ItemsLoaded(
       items: items ?? this.items,
@@ -47,6 +55,8 @@ class ItemsLoaded extends ItemsState {
       orders: orders ?? this.orders,
       suppliers: suppliers ?? this.suppliers,
       selectedItems: selectedItems ?? this.selectedItems,
+      updatedItems: updatedItems ?? this.updatedItems,
+      itemModified: itemModified ?? this.itemModified,
     );
   }
 }

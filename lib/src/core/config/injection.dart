@@ -82,6 +82,7 @@ import 'package:bflow_client/src/features/purchase_orders/domain/usecases/delete
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_items_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_order_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_orders_by_job_use_case.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/usecases/update_item_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:bflow_client/src/features/templates/data/implements/templates_repository_imp.dart';
 import 'package:bflow_client/src/features/templates/data/sources/template_remote_data_source.dart';
@@ -197,6 +198,7 @@ class DependencyInjection {
         getSuppliersUseCase: sl(),
         createPurchaseOrderUseCase: sl(),
         deleteItemUseCase: sl(),
+        updateItemUseCase: sl(),
         homeBloc: sl(),
       ),
     );
@@ -378,6 +380,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => UpsertProductsUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => UpdateItemUseCase(repository: sl()),
     );
 
     // Repository
