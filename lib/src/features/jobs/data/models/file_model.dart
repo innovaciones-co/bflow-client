@@ -17,7 +17,6 @@ class FileModel extends File {
       super.category,
       super.tag,
       super.job,
-      super.task,
       super.multipartFile});
 
   factory FileModel.fromEntity(File file) => FileModel(
@@ -29,7 +28,6 @@ class FileModel extends File {
         type: file.type,
         category: file.category,
         tag: file.tag,
-        task: file.task,
         job: file.job,
         multipartFile: file.multipartFile,
       );
@@ -65,7 +63,6 @@ class FileModel extends File {
         "category": category?.toJSON(),
         "tag": tag?.toJSON(),
         "job": job,
-        "task": task,
       };
 
   Future<Map<String, dynamic>> toCreateMap() async {
@@ -85,7 +82,6 @@ class FileModel extends File {
       "tag": tag?.toJSON(),
       "entity": entity.toString(),
       "job": job,
-      "task": task,
     };
   }
 }

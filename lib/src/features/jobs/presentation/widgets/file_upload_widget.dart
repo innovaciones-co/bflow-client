@@ -7,7 +7,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/file_category.dar
 import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_tag.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/files/files_cubit.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:dio/dio.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -244,7 +244,6 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
           category: FileCategory.fromExtension(fileName.split(".").last),
           tag: FileTag.fromFilename(fileName),
           job: widget.jobId,
-          task: widget.taskId,
           multipartFile: multipartFile,
         );
         _selectedFiles.add(file);

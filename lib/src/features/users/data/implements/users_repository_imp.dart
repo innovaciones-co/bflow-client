@@ -72,6 +72,15 @@ class UsersRepositoryImp implements UsersRepository {
   }
 
   @override
+  Future<Either<Failure, List<User>>> getAdministrators() async {
+    try {
+      return Right(await remoteDataSource.fetchAdmin());
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
+  }
+
+  @override
   Future<Either<Failure, User>> updateUser(User user) async {
     try {
       final updatedUser = await remoteDataSource.updateUser(user);

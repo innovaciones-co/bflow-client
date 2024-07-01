@@ -48,6 +48,7 @@ import 'package:bflow_client/src/features/jobs/domain/usecases/create_note_use_c
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_tasks_from_template_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_files_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/delete_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_task_use_case.dart';
@@ -58,7 +59,7 @@ import 'package:bflow_client/src/features/jobs/domain/usecases/update_task_use_c
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/upload_files_use_case.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/files/files_cubit.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/task/task_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/login/data/implements/login_repository_impl.dart';
@@ -141,7 +142,11 @@ class DependencyInjection {
       ),
     );
     sl.registerFactory<JobsBloc>(
-      () => JobsBloc(sl(), sl()),
+      () => JobsBloc(
+        getJobsUseCase: sl(),
+        createJobUseCase: sl(),
+        deleteJobUseCase: sl(),
+      ),
     );
     sl.registerFactory<JobBloc>(
       () => JobBloc(sl(), sl()),
@@ -258,6 +263,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => CreateJobUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => DeleteJobUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => UpdateJobUseCase(repository: sl()),

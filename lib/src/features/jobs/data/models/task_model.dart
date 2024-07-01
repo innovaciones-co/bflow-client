@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/features/contacts/data/models/contact_model.dart';
+import 'package:bflow_client/src/features/jobs/data/models/file_model.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
@@ -48,8 +49,9 @@ class TaskModel extends Task {
   factory TaskModel.fromMap(Map<String, dynamic> json) => TaskModel(
         id: json["id"],
         name: json["name"],
-        callDate:
-            json["callDate"] == null ? null : DateTime.parse(json["callDate"]),
+        callDate: json["bookingDate"] == null
+            ? null
+            : DateTime.parse(json["bookingDate"]),
         startDate: json["startDate"] == null
             ? null
             : DateTime.parse(json["startDate"]),
@@ -65,7 +67,8 @@ class TaskModel extends Task {
             : ContactModel.fromMap(json["supplier"]),
         attachments: json["attachments"] == null
             ? []
-            : List<dynamic>.from(json["attachments"]!.map((x) => x)),
+            : List<FileModel>.from(
+                json["attachments"]!.map((x) => FileModel.fromMap(x))),
         job: json["job"],
         order: json["order"],
       );
@@ -84,7 +87,7 @@ class TaskModel extends Task {
         "supplier": supplier?.id,
         "attachments": attachments == null
             ? []
-            : List<dynamic>.from(attachments!.map((x) => x)),
+            : List<int>.from(attachments!.map((x) => x.id)),
         "job": job,
         "order": order,
       };

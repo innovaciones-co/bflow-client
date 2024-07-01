@@ -39,6 +39,8 @@ class JobsRepositoryImp implements JobsRepository {
       return Right(await remoteDataSource.deleteJob(id));
     } on RemoteDataSourceException catch (e) {
       return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(ClientFailure(message: e.toString()));
     }
   }
 

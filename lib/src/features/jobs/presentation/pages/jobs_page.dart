@@ -1,7 +1,9 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/core/widgets/switch_widget.dart';
+import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/jobs_calendar_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
@@ -48,7 +50,19 @@ class _JobsPageState extends State<JobsPage> {
   }
 
   Widget _jobsGeneralView(BuildContext context) {
-    return BlocBuilder<JobsBloc, JobsState>(
+    return BlocConsumer<JobsBloc, JobsState>(
+      listener: (context, state) {
+        if (state is JobsError) {
+          HomeBloc homeBloc = context.read();
+          homeBloc.add(
+            ShowMessageEvent(
+                message: state.failure.message ?? 'Unexpected error',
+                type: AlertType.error),
+          );
+          JobsBloc jobsBloc = context.read();
+          jobsBloc.add(GetJobsEvent());
+        }
+      },
       builder: (context, state) {
         if (state is JobsInitial) {
           return const SizedBox.shrink();

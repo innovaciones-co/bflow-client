@@ -60,3 +60,9 @@ class UpdateTaskDataEvent extends TasksEvent {
 }
 
 class SaveUpdatedTasks extends TasksEvent {}
+
+class OnReceivedTaskEvent extends TasksEvent {
+  final StompFrame frame;
+
+  const OnReceivedTaskEvent({required this.frame});
+}

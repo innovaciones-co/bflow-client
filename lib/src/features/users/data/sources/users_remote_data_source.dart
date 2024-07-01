@@ -37,8 +37,16 @@ class UsersRemoteDataSource {
         await apiService.get(endpoint: ApiConstants.usersEndpoint);
     return response
         .map((e) => UsersModel.fromMap(e))
-        .toList()
         .where((element) => element.role == UserRole.supervisor)
+        .toList();
+  }
+
+  Future<List<UsersModel>> fetchAdmin() async {
+    List<dynamic> response =
+        await apiService.get(endpoint: ApiConstants.usersEndpoint);
+    return response
+        .map((e) => UsersModel.fromMap(e))
+        .where((element) => element.role == UserRole.admin)
         .toList();
   }
 

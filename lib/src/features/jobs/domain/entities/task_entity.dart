@@ -1,4 +1,5 @@
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
 import 'package:equatable/equatable.dart';
@@ -15,9 +16,9 @@ class Task extends Equatable {
   final TaskStage stage;
   final int? parentTask;
   final Contact? supplier;
-  final List<dynamic>? attachments;
+  final List<File>? attachments;
   final int job;
-  final int order;
+  final int? order;
 
   const Task({
     this.id,
@@ -69,7 +70,7 @@ class Task extends Equatable {
     TaskStage? stage,
     int? parentTask,
     Contact? supplier,
-    List<dynamic>? attachments,
+    List<File>? attachments,
     int? job,
     int? order,
   }) {

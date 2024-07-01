@@ -6,10 +6,12 @@ import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/utils/mixins/validator.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
 import 'package:bflow_client/src/core/widgets/date_picker_widget.dart';
 import 'package:bflow_client/src/core/widgets/dropdown_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/create_job_cubit.dart';
@@ -17,6 +19,7 @@ import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart'
 import 'package:bflow_client/src/features/users/domain/entities/user_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../bloc/create_job_state.dart';
 
@@ -34,6 +37,7 @@ class WriteJobWidget extends StatelessWidget with Validator {
       create: (_) => CreateJobCubit(
         getSupervisorsUseCase: DependencyInjection.sl(),
         getUsersUseCase: DependencyInjection.sl(),
+        getContactUseCase: DependencyInjection.sl(),
         createJobUseCase: DependencyInjection.sl(),
         updateJobUseCase: DependencyInjection.sl(),
         jobsBloc: context.read<JobsBloc>(),
@@ -122,13 +126,30 @@ class WriteJobWidget extends StatelessWidget with Validator {
                           value: () => state.supervisor,
                         ),
                         const SizedBox(height: 20),
-                        DropdownWidget<User>(
-                          label: "Owner name",
-                          items: state.owners,
-                          getLabel: (u) => u.fullName,
-                          onChanged: createJobBloc.updateOwner,
-                          initialValue: state.owner,
-                          value: () => state.owner,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownWidget<User>(
+                                label: "Owner name",
+                                items: state.owners,
+                                getLabel: (u) => u.fullName,
+                                onChanged: createJobBloc.updateOwner,
+                                initialValue: state.owner,
+                                value: () => state.owner,
+                              ),
+                            ),
+                            const SizedBox(width: 15),
+                            Expanded(
+                              child: DropdownWidget<Contact>(
+                                label: "Client",
+                                items: state.clients,
+                                getLabel: (u) => u.name,
+                                onChanged: createJobBloc.updateClient,
+                                initialValue: state.client,
+                                value: () => state.client,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 20),
                         Row(
@@ -160,6 +181,34 @@ class WriteJobWidget extends StatelessWidget with Validator {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
+                            job != null
+                                ? ActionButtonWidget(
+                                    icon: Icons.delete_outlined,
+                                    onPressed: () {
+                                      context.showCustomModal(
+                                        ConfirmationWidget(
+                                          title: "Delete product",
+                                          description:
+                                              "Are you sure you want to delete the job \"${job!.name}\"?",
+                                          onConfirm: () {
+                                            JobsBloc jobsBloc = context.read();
+                                            jobsBloc
+                                                .add(DeleteJobEvent(job: job!));
+                                            context.pop();
+                                            if (context.canPop()) {
+                                              context.pop();
+                                            }
+                                          },
+                                          confirmText: "Delete",
+                                        ),
+                                      );
+                                    },
+                                    type: ButtonType.textButton,
+                                    title: "Delete",
+                                    foregroundColor: AppColor.red,
+                                  )
+                                : const SizedBox.shrink(),
+                            const Spacer(),
                             ActionButtonWidget(
                               onPressed: () {
                                 Navigator.of(context).pop();

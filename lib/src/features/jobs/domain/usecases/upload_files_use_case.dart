@@ -5,22 +5,25 @@ import 'package:bflow_client/src/features/jobs/domain/repositories/files_reposit
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 
-class UploadFilesUseCase extends UseCase<void, UploadFilesParams> {
+class UploadFilesUseCase extends UseCase<List<File>, UploadFilesParams> {
   final FilesRepository repository;
 
   UploadFilesUseCase({required this.repository});
 
   @override
-  Future<Either<Failure, void>> execute(UploadFilesParams params) async {
+  Future<Either<Failure, List<File>>> execute(UploadFilesParams params) async {
+    List<File> uploadedFiles = [];
     for (var file in params.files) {
       debugPrint("Uploading file ${file.name}");
-      final result = await repository.upload(file);
-      if (result.isLeft()) {
-        return result;
-      }
+      final failureOrFile = await repository.upload(file);
+      failureOrFile.fold((failure) {
+        return Left(failure);
+      }, (fileModel) {
+        uploadedFiles.add(fileModel);
+      });
     }
 
-    return const Right(null);
+    return Right(uploadedFiles);
   }
 }
 
