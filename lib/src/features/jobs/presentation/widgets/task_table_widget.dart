@@ -74,7 +74,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
           );
         }
         if (state is TasksLoaded) {
-          var contacts = (state as TasksLoaded).contacts;
+          var contacts = state.contacts;
 
           return ReorderableListView(
             header: _header(),
