@@ -1,71 +1,106 @@
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/core/widgets/footer_bar.dart';
+import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class PageContainerWidget extends StatelessWidget {
-  const PageContainerWidget(
-      {super.key, required this.title, this.child, this.actions});
+class PageContainerWidget extends StatefulWidget {
+  const PageContainerWidget({
+    super.key,
+    required this.title,
+    this.child,
+    this.actions,
+  });
 
   final String title;
   final Widget? child;
   final List<Widget>? actions;
 
   @override
+  State<PageContainerWidget> createState() => _PageContainerWidgetState();
+}
+
+class _PageContainerWidgetState extends State<PageContainerWidget> {
+  Widget? footerBarWidget;
+
+  @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Stack(
-        children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Image.asset(
-              'assets/img/background.png',
-              height: _getHeight(context),
-              fit: BoxFit.fill,
-            ),
-          ),
-          Padding(
-            padding: _getPadding(context),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+    return BlocListener<HomeBloc, HomeState>(
+      listener: (context, state) {
+        if (state is FooterAction) {
+          setState(() {
+            footerBarWidget = FooterBarWidget(
+              actions: state.actions,
+              leading: state.leading,
+              onCancel: state.onCancel,
+            );
+          });
+        }
+      },
+      child: Scaffold(
+        body: SizedBox(
+          width: double.infinity,
+          child: Stack(
+            children: [
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Image.asset(
+                  'assets/img/background.png',
+                  height: _getHeight(context),
+                  fit: BoxFit.fill,
+                ),
+              ),
+              Padding(
+                padding: _getPadding(context),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    context.canPop()
-                        ? IconButton(
-                            onPressed: () => context.pop(),
-                            icon: const Icon(Icons.back_hand_outlined),
-                          )
-                        : const SizedBox.shrink(),
-                    Text(
-                      title,
-                      style: context.displaySmall,
+                    Row(
+                      children: [
+                        context.canPop()
+                            ? IconButton(
+                                onPressed: () => context.pop(),
+                                icon: const Icon(Icons.back_hand_outlined),
+                              )
+                            : const SizedBox.shrink(),
+                        Text(
+                          widget.title,
+                          style: context.displaySmall,
+                        ),
+                        const Spacer(),
+                        widget.actions != null
+                            ? Row(
+                                children: widget.actions!,
+                              )
+                            : const SizedBox.shrink(),
+                      ],
                     ),
-                    const Spacer(),
-                    actions != null
-                        ? Row(
-                            children: actions!,
-                          )
-                        : const SizedBox.shrink(),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Expanded(
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: widget.child ?? const SizedBox.shrink(),
+                      ),
+                    )
                   ],
                 ),
-                const SizedBox(
-                  height: 30,
-                ),
-                Expanded(
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: double.infinity,
-                    child: child ?? const SizedBox.shrink(),
-                  ),
-                )
-              ],
-            ),
+              ),
+              footerBarWidget != null
+                  ? Align(
+                      alignment: Alignment.bottomCenter,
+                      child: footerBarWidget,
+                    )
+                  : const SizedBox.shrink(),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
