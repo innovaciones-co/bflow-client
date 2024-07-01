@@ -155,7 +155,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
           ),
         ),
         _tableCell(Center(
-          child: Text('${task.order + 1}'),
+          child: Text('${task.order ?? 0 + 1}'),
         )),
         _tableCell(
           Tooltip(

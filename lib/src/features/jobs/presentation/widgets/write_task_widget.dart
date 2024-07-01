@@ -18,6 +18,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart'
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/write_task/write_task_cubit.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/file_attach_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,7 +46,8 @@ class WriteTaskWidget extends StatelessWidget with Validator {
         getContactsUseCase: DependencyInjection.sl(),
         getTasksUseCase: DependencyInjection.sl(),
         createTasksUseCase: DependencyInjection.sl(),
-        updateTasksUseCase: DependencyInjection.sl(),
+        updateTaskUseCase: DependencyInjection.sl(),
+        uploadFilesUseCase: DependencyInjection.sl(),
         homeBloc: DependencyInjection.sl(),
         tasksBloc: tasksBloc,
         jobBloc: jobBloc,
@@ -96,7 +98,7 @@ class WriteTaskWidget extends StatelessWidget with Validator {
                   initialValue: state.name,
                   validator: validateName,
                 ),
-                const SizedBox(height: 20),
+                /* const SizedBox(height: 20),
                 DropdownWidget<Task?>(
                   label: "Parent Task",
                   items: state.parentTasks,
@@ -106,7 +108,7 @@ class WriteTaskWidget extends StatelessWidget with Validator {
                       ? state.parentTasks.firstWhere(
                           (element) => element?.id == state.parentTask)
                       : null,
-                ),
+                ), */
                 const SizedBox(height: 20),
                 Row(
                   children: [
@@ -193,6 +195,28 @@ class WriteTaskWidget extends StatelessWidget with Validator {
                   initialValue: state.description,
                 ),
                 const SizedBox(height: 20),
+                task != null
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            child: Text("Attachments"),
+                          ),
+                          const SizedBox(height: 5),
+                          FileAttachWidget(
+                            taskId: task!.id!,
+                            jobId: task!.job,
+                            initialFiles: task?.attachments ?? [],
+                            onChange: writeTaskBloc.updateAttachments,
+                          ),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
+                const SizedBox(
+                  height: 20,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

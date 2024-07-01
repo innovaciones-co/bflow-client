@@ -6,6 +6,7 @@ import 'package:bflow_client/src/features/contacts/domain/entities/contact_entit
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/get_contacts_usecase.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart'
     as t;
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
@@ -13,6 +14,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart'
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_task_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/upload_files_use_case.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
@@ -27,7 +29,8 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
   final GetContactsUseCase getContactsUseCase;
   final GetTasksUseCase getTasksUseCase;
   final CreateTaskUseCase createTasksUseCase;
-  final UpdateTaskUseCase updateTasksUseCase;
+  final UpdateTaskUseCase updateTaskUseCase;
+  final UploadFilesUseCase uploadFilesUseCase;
   final TasksBloc tasksBloc;
   final HomeBloc homeBloc;
   final JobBloc jobBloc;
@@ -38,23 +41,26 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
     required this.getContactsUseCase,
     required this.getTasksUseCase,
     required this.createTasksUseCase,
-    required this.updateTasksUseCase,
+    required this.updateTaskUseCase,
+    required this.uploadFilesUseCase,
     required this.tasksBloc,
     required this.homeBloc,
     required this.jobBloc,
     required this.jobsBloc,
   }) : super(
           WriteTaskCubitInitial(
-            name: task?.name ?? '',
-            parentTask: task?.parentTask,
-            supplier: task?.supplier,
-            startDate: task?.startDate,
-            endDate: task?.endDate,
-            progress: task?.progress ?? 0,
+            attachments: task?.attachments ?? [],
             description: task?.comments,
-            stage: task?.stage ?? TaskStage.slabDown,
-            status: task?.status ?? TaskStatus.created,
+            endDate: task?.endDate,
             formStatus: FormStatus.initialized,
+            name: task?.name ?? '',
+            order: task?.order,
+            parentTask: task?.parentTask,
+            progress: task?.progress ?? 0,
+            stage: task?.stage ?? TaskStage.slabDown,
+            startDate: task?.startDate,
+            status: task?.status ?? TaskStatus.created,
+            supplier: task?.supplier,
           ),
         );
 
@@ -141,6 +147,7 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
       progress: state.progress,
       parentTask: state.parentTask,
       supplier: state.supplier,
+      order: state.order,
     );
 
     var createdTask =
@@ -167,7 +174,7 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
       formStatus: FormStatus.inProgress,
     ));
 
-    t.Task task = t.Task(
+    t.Task task = newTask.copyWith(
       id: newTask.id,
       name: state.name,
       status: state.status,
@@ -179,29 +186,45 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
       progress: state.progress,
       parentTask: state.parentTask,
       supplier: state.supplier,
+      attachments: state.attachments,
+      order: state.order,
     );
 
-    var updateTask =
-        await updateTasksUseCase.execute(UpdateTaskParams(task: task));
+    UploadFilesParams params = UploadFilesParams(files: state.attachments);
+    final result = await uploadFilesUseCase.execute(params);
 
-    updateTask.fold(
-      (l) {
-        emit(state.copyWith(formStatus: FormStatus.failed, failure: l));
-      },
-      (r) {
-        emit(state.copyWith(formStatus: FormStatus.success));
-        tasksBloc.add(GetTasksEvent(jobId: task.job));
-        homeBloc.add(ShowMessageEvent(
-          message: "Task updated!",
-          type: AlertType.success,
-        ));
-        jobsBloc.add(GetJobsEvent());
-        jobBloc.add(GetJobEvent(id: newTask.job));
+    result.fold(
+      (failure) =>
+          emit(state.copyWith(formStatus: FormStatus.failed, failure: failure)),
+      (uploadedFiles) async {
+        task = task.copyWith(attachments: uploadedFiles);
+        var updateTask =
+            await updateTaskUseCase.execute(UpdateTaskParams(task: task));
+
+        updateTask.fold(
+          (l) {
+            emit(state.copyWith(formStatus: FormStatus.failed, failure: l));
+          },
+          (r) {
+            emit(state.copyWith(formStatus: FormStatus.success));
+            tasksBloc.add(GetTasksEvent(jobId: task.job));
+            homeBloc.add(ShowMessageEvent(
+              message: "Task updated!",
+              type: AlertType.success,
+            ));
+            jobsBloc.add(GetJobsEvent());
+            jobBloc.add(GetJobEvent(id: newTask.job));
+          },
+        );
       },
     );
   }
 
   void updateAutovalidateMode(AutovalidateMode autovalidateMode) {
     emit(state.copyWith(autovalidateMode: autovalidateMode));
+  }
+
+  void updateAttachments(List<File>? attachments) {
+    emit(state.copyWith(attachments: attachments));
   }
 }

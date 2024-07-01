@@ -244,7 +244,6 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
           category: FileCategory.fromExtension(fileName.split(".").last),
           tag: FileTag.fromFilename(fileName),
           job: widget.jobId,
-          task: widget.taskId,
           multipartFile: multipartFile,
         );
         _selectedFiles.add(file);

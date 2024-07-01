@@ -10,14 +10,17 @@ sealed class WriteTaskState extends Equatable {
   final List<Contact?> suppliers;
   final Contact? supplier;
   final List<t.Task?> parentTasks;
+  final List<File> attachments;
   final String? description;
   final String name;
   final int? parentTask;
+  final int? order;
   final TaskStage stage;
   final TaskStatus status;
 
   WriteTaskState({
     this.parentTasks = const [],
+    this.attachments = const [],
     DateTime? startDate,
     this.suppliers = const [],
     this.autovalidateMode = AutovalidateMode.disabled,
@@ -28,84 +31,94 @@ sealed class WriteTaskState extends Equatable {
     this.name = '',
     this.parentTask,
     this.progress = 0,
+    this.order = 0,
     this.supplier,
     this.stage = TaskStage.slabDown,
     this.status = TaskStatus.created,
   }) : startDate = startDate ?? DateTime.now();
 
   WriteTaskState copyWith({
-    List<Contact?>? suppliers,
-    List<t.Task?>? parentTasks,
     AutovalidateMode? autovalidateMode,
+    Contact? supplier,
     DateTime? endDate,
     DateTime? startDate,
     Failure? failure,
     FormStatus? formStatus,
+    int? order,
+    int? parentTask,
     int? progress,
-    Contact? supplier,
+    List<Contact?>? suppliers,
+    List<File>? attachments,
+    List<t.Task?>? parentTasks,
     String? description,
     String? name,
-    int? parentTask,
     TaskStage? taskStage,
     TaskStatus? taskStatus,
   });
 
   @override
   List<Object> get props => [
+        attachments,
         autovalidateMode,
         description ?? '',
         endDate ?? '',
         failure ?? '',
         formStatus,
         name,
+        order ?? 0,
         parentTask ?? '',
         parentTasks,
         progress,
+        stage,
         startDate,
+        status,
         supplier ?? '',
         suppliers,
-        stage,
-        status,
       ];
 }
 
 final class WriteTaskCubitInitial extends WriteTaskState {
   WriteTaskCubitInitial({
-    super.parentTasks,
-    super.startDate,
-    super.suppliers,
+    super.attachments,
     super.autovalidateMode,
     super.description,
     super.endDate,
     super.failure,
     super.formStatus,
     super.name,
+    super.order,
     super.parentTask,
+    super.parentTasks,
     super.progress,
-    super.supplier,
     super.stage,
+    super.startDate,
     super.status,
+    super.supplier,
+    super.suppliers,
   });
 
   @override
   WriteTaskState copyWith({
-    List<Contact?>? suppliers,
-    List<t.Task?>? parentTasks,
     AutovalidateMode? autovalidateMode,
+    Contact? supplier,
     DateTime? endDate,
     DateTime? startDate,
     Failure? failure,
     FormStatus? formStatus,
+    int? order,
+    int? parentTask,
     int? progress,
-    Contact? supplier,
+    List<Contact?>? suppliers,
+    List<File>? attachments,
+    List<t.Task?>? parentTasks,
     String? description,
     String? name,
-    int? parentTask,
     TaskStage? taskStage,
     TaskStatus? taskStatus,
   }) {
     return WriteTaskCubitInitial(
       parentTasks: parentTasks ?? this.parentTasks,
+      attachments: attachments ?? this.attachments,
       startDate: startDate ?? this.startDate,
       suppliers: suppliers ?? this.suppliers,
       autovalidateMode: autovalidateMode ?? this.autovalidateMode,
@@ -119,6 +132,7 @@ final class WriteTaskCubitInitial extends WriteTaskState {
       supplier: supplier ?? this.supplier,
       stage: taskStage ?? stage,
       status: taskStatus ?? status,
+      order: order ?? this.order,
     );
   }
 }

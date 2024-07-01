@@ -5,6 +5,7 @@ import 'package:bflow_client/src/core/api/api.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
+import 'package:bflow_client/src/features/jobs/data/models/task_model.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
@@ -13,6 +14,7 @@ import 'package:bflow_client/src/features/jobs/domain/usecases/update_tasks_use_
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 part 'tasks_event.dart';
 part 'tasks_state.dart';
@@ -40,10 +42,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     socketService.addSubscription(
       SocketSubscription(
         topic: SocketConstants.tasksTopic,
-        callback: (_) {
-          if (jobBloc.state is JobLoaded) {
-            add(GetTasksEvent(jobId: (jobBloc.state as JobLoaded).job.id));
-          }
+        callback: (StompFrame frame) {
+          add(OnReceivedTaskEvent(frame: frame));
         },
       ),
     );
@@ -58,6 +58,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<TasksEvent>((event, emit) {});
     on<LoadingTasksEvent>(_loadingTasks);
     on<GetTasksEvent>(_getTasks);
+    on<OnReceivedTaskEvent>(_receiveTaskEvent);
 
     if (jobBloc.state is JobLoaded) {
       add(GetTasksEvent(jobId: (jobBloc.state as JobLoaded).job.id));
@@ -149,7 +150,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     tasksOrFailure.fold(
       (l) => emit(TasksError(failure: l)),
       (t) {
-        t.sort((a, b) => a.order - b.order);
+        t.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
         emit(TasksLoaded(tasks: t));
       },
     );
@@ -241,5 +242,20 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
         );
       },
     );
+  }
+
+  FutureOr<void> _receiveTaskEvent(
+      OnReceivedTaskEvent event, Emitter<TasksState> emit) {
+    if (jobBloc.state is JobLoaded) {
+      if (state is TasksLoaded && event.frame.body != null) {
+        Task updatedTask = TaskModel.fromJson(event.frame.body!);
+        List<Task> currentTasks = (state as TasksLoaded).tasks;
+        currentTasks.removeWhere((element) => element.id == updatedTask.id);
+        currentTasks.add(updatedTask);
+        emit((state as TasksLoaded).copyWith(tasks: currentTasks));
+      } else {
+        add(GetTasksEvent(jobId: (jobBloc.state as JobLoaded).job.id));
+      }
+    }
   }
 }
