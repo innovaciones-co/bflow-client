@@ -56,6 +56,28 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
           builder: (context, selectedTasks) {
             return Row(
               children: [
+                BlocBuilder<TasksBloc, TasksState>(
+                  builder: (context, state) {
+                    if (state is TasksLoaded) {
+                      var taskModified = (state).taskDataModified;
+
+                      return taskModified
+                          ? ActionButtonWidget(
+                              onPressed: () => context
+                                  .read<TasksBloc>()
+                                  .add(SaveUpdatedTasks()),
+                              type: ButtonType.elevatedButton,
+                              title: "Save",
+                              //icon: Icons.save,
+                              backgroundColor: AppColor.blue,
+                              foregroundColor: AppColor.white,
+                            )
+                          : const SizedBox.shrink();
+                    }
+
+                    return const SizedBox.shrink();
+                  },
+                ),
                 selectedTasks
                     ? BlocSelector<TasksBloc, TasksState, bool>(
                         selector: (state) {

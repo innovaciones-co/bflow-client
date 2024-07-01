@@ -155,6 +155,8 @@ class DependencyInjection {
         updateTasksUseCase: sl(),
         homeBloc: sl(),
         socketService: sl(),
+        updateTaskUseCase: sl(),
+        getContactsUseCase: sl(),
       ),
     );
     sl.registerFactory<UsersBloc>(

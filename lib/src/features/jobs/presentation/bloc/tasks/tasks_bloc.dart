@@ -4,11 +4,15 @@ import 'dart:async';
 import 'package:bflow_client/src/core/api/api.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
+import 'package:bflow_client/src/features/contacts/domain/usecases/get_contacts_usecase.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/send_tasks_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/update_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -23,6 +27,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   final DeleteTaskUseCase deleteTaskUseCase;
   final SendTasksUseCase sendTasksUseCase;
   final UpdateTasksUseCase updateTasksUseCase;
+  final UpdateTaskUseCase updateTaskUseCase;
+  final GetContactsUseCase getContactsUseCase;
   final HomeBloc? homeBloc;
   final SocketService socketService;
   List<Task> tasks = [];
@@ -33,6 +39,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     required this.deleteTaskUseCase,
     required this.sendTasksUseCase,
     required this.updateTasksUseCase,
+    required this.updateTaskUseCase,
+    required this.getContactsUseCase,
     required this.homeBloc,
     required this.socketService,
   }) : super(TasksInitial()) {
@@ -58,6 +66,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<TasksEvent>((event, emit) {});
     on<LoadingTasksEvent>(_loadingTasks);
     on<GetTasksEvent>(_getTasks);
+    on<UpdateTaskDataEvent>(_updateTaskData);
+    on<SaveUpdatedTasks>(_saveUpdatedTasks);
 
     if (jobBloc.state is JobLoaded) {
       add(GetTasksEvent(jobId: (jobBloc.state as JobLoaded).job.id));
@@ -144,13 +154,22 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   _getTasks(GetTasksEvent event, Emitter<TasksState> emit) async {
     emit(TasksLoading());
 
-    GetTasksParams params = GetTasksParams(jobId: event.jobId);
-    var tasksOrFailure = await getTasksUseCase.execute(params);
-    tasksOrFailure.fold(
+    GetTasksParams taskParams = GetTasksParams(jobId: event.jobId);
+    var tasksOrFailure = await getTasksUseCase.execute(taskParams);
+    GetContactsParams contactParams =
+        GetContactsParams(contactType: ContactType.supplier);
+    var suppliersOrFailure = await getContactsUseCase.execute(contactParams);
+
+    suppliersOrFailure.fold(
       (l) => emit(TasksError(failure: l)),
-      (t) {
-        t.sort((a, b) => a.order - b.order);
-        emit(TasksLoaded(tasks: t));
+      (s) {
+        tasksOrFailure.fold(
+          (l) => emit(TasksError(failure: l)),
+          (t) {
+            t.sort((a, b) => a.order - b.order);
+            emit(TasksLoaded(tasks: t, contacts: s));
+          },
+        );
       },
     );
   }
@@ -241,5 +260,62 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
         );
       },
     );
+  }
+
+  void _updateTaskData(event, Emitter<TasksState> emit) {
+    if (state is! TasksLoaded) return;
+
+    var loadedState = (state as TasksLoaded);
+    List<Task> updatedTasks = List.of(loadedState.updatedTasksData);
+    Task task = event.task;
+
+    bool exists = updatedTasks.indexWhere((i) => i.id == task.id) != -1;
+    if (exists) {
+      updatedTasks.removeWhere((i) => i.id == task.id);
+    }
+    updatedTasks.add(task);
+
+    emit(loadedState.copyWith(
+        updatedTasksData: updatedTasks, taskDataModified: true));
+  }
+
+  FutureOr<void> _saveUpdatedTasks(
+      SaveUpdatedTasks event, Emitter<TasksState> emit) async {
+    if (state is TasksLoaded) {
+      var loadedState = (state as TasksLoaded);
+      var updatedTasks = List<Task>.from(loadedState.updatedTasksData);
+
+      List<String> errorMessages = [];
+
+      for (var task in updatedTasks) {
+        var updatedTask =
+            await updateTaskUseCase.execute(UpdateTaskParams(task: task));
+        updatedTask.fold(
+          (failure) {
+            errorMessages
+                .add("Task ${task.id} couldn't be updated: ${failure.message}");
+          },
+          (success) {},
+        );
+      }
+
+      if (errorMessages.isNotEmpty) {
+        homeBloc?.add(
+          ShowMessageEvent(
+            message: errorMessages.join('\n'),
+            type: AlertType.error,
+          ),
+        );
+      } else {
+        homeBloc?.add(
+          ShowMessageEvent(
+            message: "All tasks updated successfully!",
+            type: AlertType.success,
+          ),
+        );
+        emit(loadedState.copyWith(taskDataModified: false));
+        add(GetTasksEvent(jobId: updatedTasks.first.job));
+      }
+    }
   }
 }

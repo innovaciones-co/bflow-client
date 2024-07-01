@@ -20,12 +20,18 @@ class TasksLoaded extends TasksState {
   final List<Task> tasks;
   final List<Task> selectedTasks;
   final List<Task> updatedTasks;
+  final List<Task> updatedTasksData;
+  final bool taskDataModified;
+  final List<Contact> contacts;
 
   const TasksLoaded({
     required this.tasks,
     this.selectedTasks = const [],
     this.tasksUpdated = false,
     this.updatedTasks = const [],
+    this.updatedTasksData = const [],
+    this.taskDataModified = false,
+    this.contacts = const [],
   });
 
   @override
@@ -34,19 +40,28 @@ class TasksLoaded extends TasksState {
         selectedTasks,
         tasksUpdated,
         updatedTasks,
+        updatedTasksData,
+        taskDataModified,
+        contacts,
       ];
 
   TasksLoaded copyWith({
     List<Task>? tasks,
     List<Task>? selectedTasks,
     List<Task>? updatedTasks,
+    List<Task>? updatedTasksData,
+    bool? taskDataModified,
     bool? tasksUpdated,
+    List<Contact>? contacts,
   }) {
     return TasksLoaded(
       tasks: tasks ?? this.tasks,
       selectedTasks: selectedTasks ?? this.selectedTasks,
       updatedTasks: updatedTasks ?? this.updatedTasks,
+      updatedTasksData: updatedTasksData ?? this.updatedTasksData,
+      taskDataModified: taskDataModified ?? this.taskDataModified,
       tasksUpdated: tasksUpdated ?? this.tasksUpdated,
+      contacts: contacts ?? this.contacts,
     );
   }
 }

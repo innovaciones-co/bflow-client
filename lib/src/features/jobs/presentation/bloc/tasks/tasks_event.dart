@@ -52,3 +52,11 @@ class UpdateTasksEvent extends TasksEvent {
 
   const UpdateTasksEvent({required this.tasks});
 }
+
+class UpdateTaskDataEvent extends TasksEvent {
+  final Task task;
+
+  const UpdateTaskDataEvent({required this.task});
+}
+
+class SaveUpdatedTasks extends TasksEvent {}
