@@ -5,6 +5,7 @@ import 'package:bflow_client/src/core/extensions/string_utils_extension.dart';
 import 'package:bflow_client/src/core/usecases/usecases.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_job_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/delete_job_use_case.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,10 +17,16 @@ part 'jobs_state.dart';
 class JobsBloc extends Bloc<JobsEvent, JobsState> {
   final GetJobsUseCase getJobsUseCase;
   final CreateJobUseCase createJobUseCase;
+  final DeleteJobUseCase deleteJobUseCase;
 
-  JobsBloc(this.getJobsUseCase, this.createJobUseCase) : super(JobsInitial()) {
+  JobsBloc(
+      {required this.getJobsUseCase,
+      required this.createJobUseCase,
+      required this.deleteJobUseCase})
+      : super(JobsInitial()) {
     on<GetJobsEvent>(_onGetJobsEvent);
     on<FilterJobsEvent>(_onFilterJobsEvent);
+    on<DeleteJobEvent>(_onDeleteJob);
   }
 
   FutureOr<void> _onFilterJobsEvent(event, emit) async {
@@ -39,6 +46,21 @@ class JobsBloc extends Bloc<JobsEvent, JobsState> {
       ),
       (r) {
         emit(JobsLoaded(jobs: r));
+      },
+    );
+  }
+
+  FutureOr<void> _onDeleteJob(
+      DeleteJobEvent event, Emitter<JobsState> emit) async {
+    emit(JobsLoading());
+    var deleteOrFailure =
+        await deleteJobUseCase.execute(DeleteJobParams(id: event.job.id!));
+    deleteOrFailure.fold(
+      (l) => emit(
+        JobsError(l),
+      ),
+      (r) {
+        add(GetJobsEvent());
       },
     );
   }
