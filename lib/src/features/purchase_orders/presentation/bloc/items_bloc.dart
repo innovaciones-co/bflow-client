@@ -1,19 +1,22 @@
+import 'dart:async';
+
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/usecases/usecases.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/get_categories_use_case.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/get_contacts_usecase.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/purchase_order_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_purchase_order_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/delete_item_use_case.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_items_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_orders_by_job_use_case.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'items_event.dart';
@@ -64,25 +67,9 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
     on<LoadingItemsEvent>(
       (event, emit) => emit(ItemsLoading()),
     );
-    on<ToggleSelectedItemEvent>(
-      (event, emit) {
-        if (state is ItemsLoaded) {
-          var loadedState = (state as ItemsLoaded);
-          var selectedItems = List<Item>.from(loadedState.selectedItems);
-          var item = event.item;
-
-          if (selectedItems.contains(item)) {
-            selectedItems.remove(item);
-          } else {
-            selectedItems.add(item);
-          }
-
-          emit(
-            loadedState.copyWith(selectedItems: selectedItems),
-          );
-        }
-      },
-    );
+    on<ToggleSelectedItemEvent>(_onToggleSelectedItem);
+    on<ToggleAllItems>(_onToggleAll);
+    on<SelectItemsByCategory>(_onSelectItemsByCategory);
     on<CreatePurchaseOrderEvent>(_createPurchaseOrder);
     on<GetItemsEvent>((event, emit) async {
       emit(ItemsLoading());
@@ -127,6 +114,54 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
     });
   }
 
+  void _onSelectItemsByCategory(event, emit) {
+    if (state is! ItemsLoaded) return;
+
+    var categoryId = event.categoryId;
+    List<Item> items = (state as ItemsLoaded).items;
+    List<Item> selectedItems = (state as ItemsLoaded).selectedItems.toList();
+
+    bool selected = !_checkIfCategorySelected(categoryId, selectedItems, items);
+
+    var itemsOfCategory = items.where((item) => item.category == categoryId);
+
+    for (var item in itemsOfCategory) {
+      if (selectedItems.contains(item)) {
+        if (!selected) {
+          selectedItems.remove(item);
+        }
+      } else {
+        if (selected) {
+          selectedItems.add(item);
+        }
+      }
+    }
+
+    emit(
+      (state as ItemsLoaded).copyWith(
+        selectedItems: selectedItems,
+      ),
+    );
+  }
+
+  FutureOr<void> _onToggleSelectedItem(event, emit) {
+    if (state is ItemsLoaded) {
+      var loadedState = (state as ItemsLoaded);
+      var selectedItems = List<Item>.from(loadedState.selectedItems);
+      var item = event.item;
+
+      if (selectedItems.contains(item)) {
+        selectedItems.remove(item);
+      } else {
+        selectedItems.add(item);
+      }
+
+      emit(
+        loadedState.copyWith(selectedItems: selectedItems),
+      );
+    }
+  }
+
   _createPurchaseOrder(
       CreatePurchaseOrderEvent event, Emitter<ItemsState> emit) async {
     if (state is! ItemsLoaded) {
@@ -144,8 +179,41 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
     );
 
     failureOrOrders.fold(
-      (l) => print(l.message),
+      (l) => debugPrint(l.message),
       (r) => add(GetItemsEvent(jobId: event.jobId)),
+    );
+  }
+
+  bool _checkIfCategorySelected(
+      int categoryId, List<Item> selectedItems, List<Item> allItems) {
+    var itemsOfCategory = allItems.where((item) => item.category == categoryId);
+
+    if (itemsOfCategory
+        .every((categoryItem) => selectedItems.contains(categoryItem))) {
+      return true;
+    }
+    return false;
+  }
+
+  void _onToggleAll(ToggleAllItems event, Emitter<ItemsState> emit) {
+    if (state is! ItemsLoaded) return;
+
+    var loadedState = (state as ItemsLoaded);
+    var selectedItems = List<Item>.from(loadedState.selectedItems);
+    var items = List<Item>.from(loadedState.items);
+
+    if (selectedItems.isNotEmpty) {
+      if (selectedItems.length < items.length) {
+        selectedItems = List.of(items);
+      } else {
+        selectedItems = [];
+      }
+    } else {
+      selectedItems = List.of(items);
+    }
+
+    emit(
+      loadedState.copyWith(selectedItems: selectedItems),
     );
   }
 }

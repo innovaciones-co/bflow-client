@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
-import 'package:download/download.dart';
 import 'package:flutter/material.dart';
+import 'package:universal_html/html.dart' as html;
 
 class FileDownload {
   static Future<bool> downloadFile(String url, String fileName) async {
@@ -19,8 +21,16 @@ class FileDownload {
             }),
       );
 
-      final stream = Stream.fromIterable(response.data.toString().codeUnits);
-      download(stream, fileName);
+      final base64 = base64Encode(response.data);
+
+      final anchor = html.AnchorElement(
+          href: 'data:application/octet-stream;base64,$base64')
+        ..target = 'blank';
+      anchor.download = fileName;
+      html.document.body?.append(anchor);
+      anchor.click();
+      anchor.remove();
+
       return true;
     } catch (e) {
       debugPrint(e.toString());

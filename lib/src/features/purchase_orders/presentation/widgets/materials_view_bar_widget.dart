@@ -1,10 +1,12 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import 'write_material_widget.dart';
 
@@ -26,9 +28,9 @@ class _MaterialsViewBarWidgetState extends State<MaterialsViewBarWidget> {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Row(
+        /* Row(
           children: [
             const Text("Search"),
             Container(
@@ -38,12 +40,24 @@ class _MaterialsViewBarWidgetState extends State<MaterialsViewBarWidget> {
               color: AppColor.grey,
             ),
           ],
-        ),
+        ), */
         Row(
           children: [
             ActionButtonWidget(
-              onPressed: () =>
-                  context.read<ItemsBloc>().add(DeleteItemsEvent()),
+              onPressed: () {
+                context.showCustomModal(
+                  ConfirmationWidget(
+                    title: "Delete materials",
+                    description:
+                        "Are you sure you want to delete the selected material(s)?",
+                    onConfirm: () {
+                      context.read<ItemsBloc>().add(DeleteItemsEvent());
+                      context.pop();
+                    },
+                    confirmText: "Delete",
+                  ),
+                );
+              },
               type: ButtonType.textButton,
               title: "Delete",
               icon: Icons.delete_outline,

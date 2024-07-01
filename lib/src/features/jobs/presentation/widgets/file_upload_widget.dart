@@ -7,7 +7,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/file_category.dar
 import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_tag.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/files/files_cubit.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:dio/dio.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -34,6 +34,7 @@ class FileUploadWidget extends StatefulWidget {
 
 class _FileUploadWidgetState extends State<FileUploadWidget> {
   bool isHighlighted = false;
+  bool isUploading = false;
   DropzoneViewController? _controller;
   final List<File> _selectedFiles = [];
 
@@ -42,6 +43,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
     return BlocProvider<FilesCubit>(
       create: (context) => FilesCubit(
         uploadFilesUseCase: DependencyInjection.sl(),
+        deleteFilesUseCase: DependencyInjection.sl(),
         jobBloc: widget.jobBloc,
       ),
       child: Builder(builder: (context) {
@@ -52,33 +54,35 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
             Container(
               height: 120,
               margin: const EdgeInsets.all(15),
-              child: Stack(
-                children: [
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                    child: DropzoneView(
-                      onCreated: _onCreated,
-                      onDrop: _addFile,
-                      onHover: () => setState(() {
-                        isHighlighted = true;
-                      }),
-                      onLeave: () => setState(() {
-                        isHighlighted = false;
-                      }),
+              child: isUploading
+                  ? const LoadingWidget()
+                  : Stack(
+                      children: [
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          top: 0,
+                          bottom: 0,
+                          child: DropzoneView(
+                            onCreated: _onCreated,
+                            onDrop: _addFile,
+                            onHover: () => setState(() {
+                              isHighlighted = true;
+                            }),
+                            onLeave: () => setState(() {
+                              isHighlighted = false;
+                            }),
+                          ),
+                        ),
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          top: 0,
+                          bottom: 0,
+                          child: _buildChooseFilesArea(context),
+                        ),
+                      ],
                     ),
-                  ),
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                    child: _buildChooseFilesArea(context),
-                  ),
-                ],
-              ),
             ),
             const SizedBox(
               height: 5,
@@ -225,6 +229,9 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
   }
 
   void _addFile(value) async {
+    setState(() {
+      isUploading = true;
+    });
     final fileName = await _controller?.getFilename(value);
     final url = await _controller?.createFileUrl(value);
     final multipartFile = await createMultipartFile(value);
@@ -237,27 +244,24 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
           category: FileCategory.fromExtension(fileName.split(".").last),
           tag: FileTag.fromFilename(fileName),
           job: widget.jobId,
-          task: widget.taskId,
           multipartFile: multipartFile,
         );
         _selectedFiles.add(file);
       }
       isHighlighted = false;
+      isUploading = false;
     });
 
     debugPrint(fileName);
   }
 
   Future<MultipartFile?> createMultipartFile(dynamic value) async {
-    final stream = _controller?.getFileStream(value);
+    final fileData = await _controller?.getFileData(value);
     final fileName = await _controller?.getFilename(value);
 
-    if (stream != null) {
-      List<int> byteList = await stream
-          .fold<List<int>>([], (prev, chunk) => prev..addAll(chunk));
-
+    if (fileData != null) {
       MultipartFile multipartFile = MultipartFile.fromBytes(
-        byteList,
+        fileData,
         filename: fileName,
       );
       return multipartFile;

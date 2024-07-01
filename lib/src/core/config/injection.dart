@@ -1,12 +1,26 @@
 library dependency_injection;
 
 import 'package:bflow_client/src/core/api/api.dart';
+import 'package:bflow_client/src/features/catalog/data/implements/categories_repository_imp.dart';
 import 'package:bflow_client/src/features/catalog/data/implements/products_repository_imp.dart';
+import 'package:bflow_client/src/features/catalog/data/sources/categories_remote_data_source.dart';
 import 'package:bflow_client/src/features/catalog/data/sources/products_remote_data_source.dart';
+import 'package:bflow_client/src/features/catalog/domain/repositories/category_repository.dart';
 import 'package:bflow_client/src/features/catalog/domain/repositories/product_repository.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/create_category_use_case.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/create_product_usecase.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/delete_category_use_case.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/delete_product_usecase.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/get_categories_by_supplier_use_case.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/get_categories_use_case.dart';
 import 'package:bflow_client/src/features/catalog/domain/usecases/get_products_use_case.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/update_category_use_case.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/update_product_usecase.dart';
+import 'package:bflow_client/src/features/catalog/domain/usecases/upsert_products_use_case.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/categories_cubit.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/upsert_products_cubit/upsert_products_cubit.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/write_category_cubit/write_category_cubit.dart';
 import 'package:bflow_client/src/features/contacts/data/implements/contacts_repository_imp.dart';
 import 'package:bflow_client/src/features/contacts/data/sources/sources.dart';
 import 'package:bflow_client/src/features/contacts/domain/repositories/contacts_repository.dart';
@@ -33,36 +47,38 @@ import 'package:bflow_client/src/features/jobs/domain/usecases/create_job_use_ca
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_note_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_tasks_from_template_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/delete_files_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/send_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_task_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/update_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/upload_files_use_case.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/files/files_cubit.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/task/task_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/login/data/implements/login_repository_impl.dart';
+import 'package:bflow_client/src/features/login/data/sources/login_local_data_source.dart';
 import 'package:bflow_client/src/features/login/data/sources/login_remote_data_source.dart';
 import 'package:bflow_client/src/features/login/domain/repositories/repositories.dart';
+import 'package:bflow_client/src/features/login/domain/usecases/get_logged_user_use_case.dart';
+import 'package:bflow_client/src/features/login/domain/usecases/is_logged_use_case.dart';
 import 'package:bflow_client/src/features/login/domain/usecases/login_use_case.dart';
+import 'package:bflow_client/src/features/login/domain/usecases/logout_use_case.dart';
 import 'package:bflow_client/src/features/login/presentation/bloc/login_bloc.dart';
-import 'package:bflow_client/src/features/purchase_orders/data/implements/categories_repository_imp.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/implements/items_repository_imp.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/implements/purchase_orders_repository_imp.dart';
-import 'package:bflow_client/src/features/purchase_orders/data/sources/categories_remote_data_source.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/sources/items_remote_data_source.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/sources/purchase_orders_remote_data_source.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/repositories/category_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/item_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/purchase_order_repository.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_item_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/create_purchase_order_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/delete_item_use_case.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_by_supplier_use_case.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_categories_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_items_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_order_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_orders_by_job_use_case.dart';
@@ -83,6 +99,7 @@ import 'package:bflow_client/src/features/users/domain/usecases/update_user_use_
 import 'package:bflow_client/src/features/users/presentation/bloc/users_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/jobs/data/implements/jobs_repository_imp.dart';
 import '../../features/jobs/domain/usecases/get_jobs_use_case.dart';
@@ -95,11 +112,19 @@ class DependencyInjection {
     WidgetsFlutterBinding.ensureInitialized();
 
     // API service
-    sl.registerLazySingleton(
-      () => ApiService(),
-    );
+
     sl.registerLazySingleton(
       () => SocketService.instance(url: SocketConstants.endpointUrl),
+    );
+    final sharedPreferences = await SharedPreferences.getInstance();
+    sl.registerSingleton<SharedPreferences>(sharedPreferences);
+    /* sl.registerSingletonAsync<SharedPreferences>(
+      () => SharedPreferences.getInstance(),
+    ); */
+    sl.registerLazySingleton(
+      () => ApiService(
+        sharedPreferences: sharedPreferences,
+      ),
     );
 
     // BLoC
@@ -107,7 +132,12 @@ class DependencyInjection {
       HomeBloc(),
     );
     sl.registerFactory<LoginCubit>(
-      () => LoginCubit(sl()),
+      () => LoginCubit(
+        loginUseCase: sl(),
+        isLoggedUseCase: sl(),
+        getLoggedUserUseCase: sl(),
+        logoutUseCase: sl(),
+      ),
     );
     sl.registerFactory<JobsBloc>(
       () => JobsBloc(sl(), sl()),
@@ -120,6 +150,8 @@ class DependencyInjection {
         jobBloc: sl(),
         getTasksUseCase: sl(),
         deleteTaskUseCase: sl(),
+        sendTasksUseCase: sl(),
+        updateTasksUseCase: sl(),
         homeBloc: sl(),
         socketService: sl(),
       ),
@@ -145,11 +177,15 @@ class DependencyInjection {
         getTaskUseCase: sl(),
         getJobUseCase: sl(),
         deleteTaskUseCase: sl(),
+        updateTaskUseCase: sl(),
+        tasksBloc: sl(),
+        homeBloc: sl(),
       ),
     );
     sl.registerFactory<FilesCubit>(
       () => FilesCubit(
         uploadFilesUseCase: sl(),
+        deleteFilesUseCase: sl(),
         jobBloc: sl(),
       ),
     );
@@ -169,12 +205,43 @@ class DependencyInjection {
         getProductsUseCase: sl(),
         getCategoriesUseCase: sl(),
         getContactUseCase: sl(),
+        deleteProductUseCase: sl(),
+        homeBloc: sl(),
       ),
+    );
+    sl.registerFactory<CategoriesCubit>(
+      () => CategoriesCubit(
+        getCategoriesUseCase: sl(),
+        deleteCategoryUseCase: sl(),
+        homeBloc: sl(),
+      ),
+    );
+    sl.registerFactory<WriteCategoryCubit>(
+      () => WriteCategoryCubit(
+        categoriesCubit: sl(),
+        createCategorytUseCase: sl(),
+        updateCategorytUseCase: sl(),
+      ),
+    );
+    sl.registerFactory<UpsertProductsCubit>(
+      () => UpsertProductsCubit(
+          upsertProductsUseCase: sl(), getCategoriesUseCase: sl()),
     );
 
     // Use cases
     sl.registerLazySingleton(
       () => LoginUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => GetLoggedUserUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => LogoutUseCase(
+        repository: sl(),
+      ),
+    );
+    sl.registerLazySingleton(
+      () => IsLoggedUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => GetJobsUseCase(repository: sl()),
@@ -225,13 +292,22 @@ class DependencyInjection {
       () => UpdateTaskUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
+      () => UpdateTasksUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
       () => GetTaskUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => DeleteTaskUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
+      () => SendTasksUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
       () => UploadFilesUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => DeleteFilesUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => CreateNoteUsecase(notesRepository: sl()),
@@ -253,6 +329,15 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => CreatePurchaseOrderUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => CreateCategoryUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => UpdateCategoryUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => DeleteCategoryUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => GetCategoriesUseCase(repository: sl()),
@@ -285,6 +370,15 @@ class DependencyInjection {
     sl.registerLazySingleton(
       () => CreateProductUseCase(repository: sl()),
     );
+    sl.registerLazySingleton(
+      () => UpdateProductUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => DeleteProductUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => UpsertProductsUseCase(repository: sl()),
+    );
 
     // Repository
     sl.registerLazySingleton<TemplateRepository>(
@@ -300,7 +394,11 @@ class DependencyInjection {
       () => UsersRepositoryImp(remoteDataSource: sl()),
     );
     sl.registerLazySingleton<LoginRepository>(
-      () => LoginRepositoryImp(remoteDataSource: sl()),
+      () => LoginRepositoryImp(
+        remoteDataSource: sl(),
+        localDataSource: sl(),
+        usersRemoteDataSource: sl(),
+      ),
     );
     sl.registerLazySingleton<ContactsRepository>(
       () => ContactsRepositoryImp(remoteDataSource: sl()),
@@ -327,6 +425,9 @@ class DependencyInjection {
     // Data sources
     sl.registerLazySingleton<LoginRemoteDataSource>(
       () => LoginRemoteDataSource(apiService: sl()),
+    );
+    sl.registerLazySingleton<LoginLocalDataSource>(
+      () => LoginLocalDataSource(prefs: sl()),
     );
     sl.registerLazySingleton<TasksRemoteDataSource>(
       () => TasksRemoteDataSource(apiService: sl()),

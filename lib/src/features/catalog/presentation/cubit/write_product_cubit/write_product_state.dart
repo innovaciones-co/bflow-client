@@ -6,9 +6,9 @@ abstract class WriteProductState extends Equatable {
   final String? sku;
   final String? description;
   final double? unitPrice;
-  final int? vat;
+  final double? vat;
   final Unit? unitOfMeasure;
-  final int? uomOrderIncrement;
+  final double? uomOrderIncrement;
   final String? url;
   final int? category;
   final int? supplier;
@@ -17,7 +17,7 @@ abstract class WriteProductState extends Equatable {
   final FormStatus formStatus;
   final AutovalidateMode? autovalidateMode;
 
-  WriteProductState({
+  const WriteProductState({
     this.id,
     this.name,
     this.sku,
@@ -41,9 +41,9 @@ abstract class WriteProductState extends Equatable {
     String? sku,
     String? description,
     double? unitPrice,
-    int? vat,
+    double? vat,
     Unit? unitOfMeasure,
-    int? uomOrderIncrement,
+    double? uomOrderIncrement,
     String? url,
     int? category,
     int? supplier,
@@ -74,7 +74,7 @@ abstract class WriteProductState extends Equatable {
 }
 
 final class WriteProductValidator extends WriteProductState {
-  WriteProductValidator({
+  const WriteProductValidator({
     super.id,
     super.name = '',
     super.sku = '',
@@ -99,9 +99,9 @@ final class WriteProductValidator extends WriteProductState {
     String? sku,
     String? description,
     double? unitPrice,
-    int? vat,
+    double? vat,
     Unit? unitOfMeasure,
-    int? uomOrderIncrement,
+    double? uomOrderIncrement,
     String? url,
     int? category,
     int? supplier,

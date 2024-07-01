@@ -26,6 +26,14 @@ class ToggleSelectedItemEvent extends ItemsEvent {
   const ToggleSelectedItemEvent({required this.item});
 }
 
+class ToggleAllItems extends ItemsEvent {}
+
+class SelectItemsByCategory extends ItemsEvent {
+  final int categoryId;
+
+  const SelectItemsByCategory({required this.categoryId});
+}
+
 class CreatePurchaseOrderEvent extends ItemsEvent {
   final int jobId;
 

@@ -1,7 +1,6 @@
 import 'package:bflow_client/src/core/api/api.dart';
 import 'package:bflow_client/src/core/data/sources/remote_data_source.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/models/item_model.dart';
-import 'package:bflow_client/src/features/purchase_orders/data/models/purchase_order_model.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
 
 class ItemsRemoteDataSource extends RemoteDataSource {
@@ -26,16 +25,6 @@ class ItemsRemoteDataSource extends RemoteDataSource {
       params: {'jobId': jobId.toString()},
     );
     return response.map((e) => ItemModel.fromMap(e)).toList();
-  }
-
-  Future<List<PurchaseOrderModel>> createPurchaseOrder(List<Item> items) async {
-    List<dynamic> response = await apiService.post(
-      endpoint: ApiConstants.createPurchaseOrderEndpoint,
-      //data: itemModel.toMap(),
-    );
-    // TODO: implement createPurchaseOrder
-
-    return response.map((e) => PurchaseOrderModel.fromMap(e)).toList();
   }
 
   Future<ItemModel> createItem(Item item) async {

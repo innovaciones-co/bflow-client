@@ -3,16 +3,19 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/extensions/ui_extensions.dart';
-import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
 import 'package:bflow_client/src/core/widgets/custom_chip_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/task/task_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/no_tasks_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_task_widget.dart';
+import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class TaskTableWidget extends StatefulWidget {
   final List<Task> tasks;
@@ -35,24 +38,21 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     11: const FixedColumnWidth(40),
   };
 
-  final List<Task> parentTasks = [];
-  late final Map<int, List<Task>> childrenTasksMap;
+  List<Task> updatedTasks = [];
 
   @override
   void initState() {
     super.initState();
-    for (var task in widget.tasks) {
-      if (task.parentTask == null) {
-        parentTasks.add(task);
-      }
-    }
-    childrenTasksMap = _tasksToChildrenMap(widget.tasks);
+    updatedTasks = List.of(widget.tasks);
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TasksBloc, TasksState>(
       builder: (context, state) {
+        if (state is TaskLoading) {
+          return const LoadingWidget();
+        }
         // As the tasks from the widget are filtered, we should use the tasks bloc
         if (state is TasksLoaded && state.tasks.isEmpty) {
           return BlocBuilder<JobBloc, JobState>(
@@ -69,104 +69,48 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
         }
 
         return ReorderableListView(
-          header: Table(
-            columnWidths: columnWidths,
-            border: TableBorder(
-              right: BorderSide(width: 1.0, color: AppColor.lightGrey),
-              bottom: BorderSide(width: 0.2, color: AppColor.darkGrey),
-              left: BorderSide(width: 1.0, color: AppColor.lightGrey),
-              verticalInside: BorderSide(width: 1.0, color: AppColor.lightGrey),
-            ),
-            children: [
-              TableRow(
-                decoration: BoxDecoration(
-                  color: AppColor.grey,
-                ),
-                children: [
-                  _tableCell(BlocSelector<TasksBloc, TasksState, List<Task>>(
-                    selector: (state) {
-                      if (state is TasksLoaded) {
-                        return state.selectedTasks;
-                      }
-
-                      return [];
-                    },
-                    builder: (context, selectedTasks) {
-                      TasksBloc tasksBloc = context.read();
-                      return Checkbox(
-                        tristate: true,
-                        value: _checkIfAllTasksSelected(selectedTasks),
-                        onChanged: (val) => _toggleSelectedTasks(
-                          selected: val ?? false,
-                          bloc: tasksBloc,
-                          selectedTasks: selectedTasks,
-                        ),
-                        side: BorderSide(color: AppColor.darkGrey, width: 2),
-                      );
-                    },
-                  )),
-                  _tableCell(
-                    const Center(
-                      child: Text("#"),
-                    ),
+          header: _header(),
+          onReorder: _onReorderTasks,
+          children: updatedTasks
+              .map(
+                (task) => Table(
+                  key: Key('${task.id}'),
+                  columnWidths: columnWidths,
+                  border: TableBorder(
+                    top: BorderSide(width: 0.5, color: AppColor.lightGrey),
+                    right: BorderSide(width: 1.0, color: AppColor.lightGrey),
+                    bottom: BorderSide(width: 0.5, color: AppColor.lightGrey),
+                    left: BorderSide(width: 1.0, color: AppColor.lightGrey),
+                    horizontalInside:
+                        BorderSide(width: 1.0, color: AppColor.lightGrey),
+                    verticalInside:
+                        BorderSide(width: 1.0, color: AppColor.lightGrey),
                   ),
-                  _tableCell(const Text("Task")),
-                  _tableCell(const Text("Supplier")),
-                  _tableCell(const Text("Status")),
-                  _tableCell(const Text("Call date")),
-                  _tableCell(const Text("Booking date")),
-                  _tableCell(const Text("Completion date")),
-                  _tableCell(const Text("Comments")),
-                  _tableCell(const Text("Progress")),
-                  _tableCell(const Text("Actions")),
-                  const SizedBox.shrink(),
-                ],
-              ),
-            ],
-          ),
-          children: [
-            for (int index = 0; index < parentTasks.length; index += 1)
-              Table(
-                key: Key('$index'),
-                columnWidths: columnWidths,
-                border: TableBorder(
-                  top: BorderSide(width: 0.5, color: AppColor.lightGrey),
-                  right: BorderSide(width: 1.0, color: AppColor.lightGrey),
-                  bottom: BorderSide(width: 0.5, color: AppColor.lightGrey),
-                  left: BorderSide(width: 1.0, color: AppColor.lightGrey),
-                  horizontalInside:
-                      BorderSide(width: 1.0, color: AppColor.lightGrey),
-                  verticalInside:
-                      BorderSide(width: 1.0, color: AppColor.lightGrey),
+                  children: [
+                    _tableRow(task: task),
+                  ],
                 ),
-                children: [
-                  _tableRow(
-                      task: parentTasks[index], index: index, parent: true),
-                  for (int index2 = 0;
-                      index2 <
-                          (childrenTasksMap[parentTasks[index].id] ?? [])
-                              .length;
-                      index2 += 1)
-                    _tableRow(
-                      task: childrenTasksMap[parentTasks[index].id]![index2],
-                      index: index2,
-                      parent: false,
-                    ),
-                ],
               )
-          ],
-          onReorder: (int oldIndex, int newIndex) {
-            setState(() {
-              if (oldIndex < newIndex) {
-                newIndex -= 1;
-              }
-              final Task item = parentTasks.removeAt(oldIndex);
-              parentTasks.insert(newIndex, item);
-            });
-          },
+              .toList(),
         );
       },
     );
+  }
+
+  void _onReorderTasks(int oldIndex, int newIndex) {
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    final Task updatedTask = updatedTasks.removeAt(oldIndex);
+    updatedTasks.insert(newIndex, updatedTask);
+
+    setState(() {
+      updatedTasks = updatedTasks
+          .mapIndexed((index, task) => task.copyWith(order: index))
+          .toList();
+    });
+
+    context.read<TasksBloc>().add(UpdateTasksEvent(tasks: updatedTasks));
   }
 
   void _toggleSelectedTasks({
@@ -185,50 +129,41 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
 
   TableRow _tableRow({
     required Task task,
-    required int index,
-    required bool parent,
   }) {
     return TableRow(
       decoration: BoxDecoration(color: task.backgroundStatusColor),
       children: [
         _tableCell(
-          parent
-              ? BlocBuilder<TasksBloc, TasksState>(
-                  builder: (context, state) {
-                    TasksBloc tasksBloc = context.read<TasksBloc>();
-                    if (state is! TasksLoaded) {
-                      return const SizedBox.shrink();
-                    }
+          Builder(
+            builder: (context) {
+              TasksBloc tasksBloc = context.read<TasksBloc>();
+              if (tasksBloc.state is! TasksLoaded) {
+                return const SizedBox.shrink();
+              }
 
-                    var taskSelected = state.selectedTasks.contains(task);
-                    return Checkbox(
-                      value: taskSelected,
-                      onChanged: (val) =>
-                          tasksBloc.add(ToggleSelectedTask(task: task)),
-                      side: BorderSide(color: AppColor.darkGrey, width: 2),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(3)),
-                    );
-                  },
-                )
-              : const SizedBox.shrink(),
+              var taskSelected =
+                  (tasksBloc.state as TasksLoaded).selectedTasks.contains(task);
+              return Checkbox(
+                value: taskSelected,
+                onChanged: (val) =>
+                    tasksBloc.add(ToggleSelectedTask(task: task)),
+                side: BorderSide(color: AppColor.darkGrey, width: 2),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(3)),
+              );
+            },
+          ),
         ),
+        _tableCell(Center(
+          child: Text('${task.order ?? 0 + 1}'),
+        )),
         _tableCell(
-          parent
-              ? Center(
-                  child: Text('${index + 1}'),
-                )
-              : const SizedBox.shrink(),
-        ),
-        _tableCell(
-          Expanded(
-            child: Tooltip(
-              message: task.name,
-              child: Text(
-                task.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+          Tooltip(
+            message: task.name,
+            child: Text(
+              task.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           paddingLeft: 0,
@@ -291,21 +226,43 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
                 ),
                 tooltip: 'Edit',
               ),
-              IconButton(
-                onPressed: () => context
-                    .showModal("Are you sure do you want to delete the task?", [
-                  TaskDeleteConfirmationWidget(
-                    context: context,
-                    task: task,
-                    tasksBloc: context.read(),
-                  ),
-                ]),
-                color: AppColor.blue,
-                icon: const Icon(
-                  Icons.delete_outline_outlined,
-                  size: 20,
+              BlocProvider<TaskCubit>(
+                create: (context) => TaskCubit(
+                  getJobUseCase: DependencyInjection.sl(),
+                  getTaskUseCase: DependencyInjection.sl(),
+                  deleteTaskUseCase: DependencyInjection.sl(),
+                  updateTaskUseCase: DependencyInjection.sl(),
+                  tasksBloc: context.read(),
+                  homeBloc: context.read(),
                 ),
-                tooltip: 'Delete',
+                child: Builder(builder: (context) {
+                  return IconButton(
+                    onPressed: () {
+                      context.showCustomModal(
+                        ConfirmationWidget(
+                          title: "Delete task",
+                          description:
+                              "Are you sure you want to delete task \"${task.name}\"?",
+                          onConfirm: () {
+                            if (task.id != null) {
+                              context
+                                  .read<TaskCubit>()
+                                  .deleteTask(task.id!, task.job);
+                            }
+                            context.pop();
+                          },
+                          confirmText: "Delete",
+                        ),
+                      );
+                    },
+                    color: AppColor.blue,
+                    icon: const Icon(
+                      Icons.delete_outline_outlined,
+                      size: 20,
+                    ),
+                    tooltip: 'Delete',
+                  );
+                }),
               ),
             ],
           ),
@@ -320,16 +277,17 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
       verticalAlignment: TableCellVerticalAlignment.middle,
       child: Padding(
         padding: EdgeInsets.only(
-            right: paddingRight ?? 10,
-            left: paddingLeft ?? 10,
-            top: 5,
-            bottom: 5),
+          right: paddingRight ?? 10,
+          left: paddingLeft ?? 10,
+          top: 5,
+          bottom: 5,
+        ),
         child: widget,
       ),
     );
   }
 
-  _tasksToChildrenMap(List<Task> tasks) {
+  /* _tasksToChildrenMap(List<Task> tasks) {
     Map<int, List<Task>> childrenTasksMap = {};
 
     for (var task in tasks) {
@@ -343,7 +301,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     }
 
     return childrenTasksMap;
-  }
+  } */
 
   bool? _checkIfAllTasksSelected(List<Task> selectedTasks) {
     if (widget.tasks.every((task) => selectedTasks.contains(task))) {
@@ -353,57 +311,60 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     }
     return null;
   }
-}
 
-class TaskDeleteConfirmationWidget extends StatelessWidget {
-  const TaskDeleteConfirmationWidget({
-    super.key,
-    required this.context,
-    required this.task,
-    required this.tasksBloc,
-  });
-
-  final BuildContext context;
-  final Task task;
-  final TasksBloc tasksBloc;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+  _header() {
+    return Table(
+      columnWidths: columnWidths,
+      border: TableBorder(
+        right: BorderSide(width: 1.0, color: AppColor.lightGrey),
+        bottom: BorderSide(width: 0.2, color: AppColor.darkGrey),
+        left: BorderSide(width: 1.0, color: AppColor.lightGrey),
+        verticalInside: BorderSide(width: 1.0, color: AppColor.lightGrey),
+      ),
       children: [
-        ActionButtonWidget(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          type: ButtonType.textButton,
-          title: "Cancel",
-          paddingHorizontal: 15,
-          paddingVertical: 18,
-        ),
-        const SizedBox(width: 12),
-        BlocProvider<TaskCubit>(
-          create: (context) => TaskCubit(
-            getJobUseCase: DependencyInjection.sl(),
-            getTaskUseCase: DependencyInjection.sl(),
-            deleteTaskUseCase: DependencyInjection.sl(),
-            tasksBloc: tasksBloc,
-            homeBloc: context.read(),
+        TableRow(
+          decoration: BoxDecoration(
+            color: AppColor.grey,
           ),
-          child: Builder(builder: (context) {
-            return ActionButtonWidget(
-              onPressed: () {
-                if (task.id != null) {
-                  context.read<TaskCubit>().deleteTask(task.id!, task.job);
-                  Navigator.of(context).pop();
+          children: [
+            _tableCell(BlocSelector<TasksBloc, TasksState, List<Task>>(
+              selector: (state) {
+                if (state is TasksLoaded) {
+                  return state.selectedTasks;
                 }
+
+                return [];
               },
-              type: ButtonType.elevatedButton,
-              title: "Delete Task",
-              backgroundColor: AppColor.blue,
-              foregroundColor: AppColor.white,
-            );
-          }),
+              builder: (context, selectedTasks) {
+                TasksBloc tasksBloc = context.read();
+                return Checkbox(
+                  tristate: true,
+                  value: _checkIfAllTasksSelected(selectedTasks),
+                  onChanged: (val) => _toggleSelectedTasks(
+                    selected: val ?? false,
+                    bloc: tasksBloc,
+                    selectedTasks: selectedTasks,
+                  ),
+                  side: BorderSide(color: AppColor.darkGrey, width: 2),
+                );
+              },
+            )),
+            _tableCell(
+              const Center(
+                child: Text("#"),
+              ),
+            ),
+            _tableCell(const Text("Task")),
+            _tableCell(const Text("Supplier")),
+            _tableCell(const Text("Status")),
+            _tableCell(const Text("Call date")),
+            _tableCell(const Text("Booking date")),
+            _tableCell(const Text("Completion date")),
+            _tableCell(const Text("Comments")),
+            _tableCell(const Text("Progress")),
+            _tableCell(const Text("Actions")),
+            const SizedBox.shrink(),
+          ],
         ),
       ],
     );

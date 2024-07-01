@@ -1,4 +1,4 @@
-import 'package:bflow_client/src/features/login/data/models/models.dart';
+import 'package:bflow_client/src/features/login/data/models/auth_model.dart';
 
 import '../../../../core/api/api.dart';
 

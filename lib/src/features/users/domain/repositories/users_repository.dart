@@ -9,6 +9,8 @@ abstract class UsersRepository {
 
   Future<Either<Failure, List<User>>> getSupervisors();
 
+  Future<Either<Failure, List<User>>> getAdministrators();
+
   Future<Either<Failure, User>> createUser(User user);
 
   Future<Either<Failure, User>> updateUser(User user);

@@ -7,9 +7,9 @@ class Product extends Equatable {
   final String sku;
   final String? description;
   final double unitPrice;
-  final int? vat;
+  final double? vat;
   final Unit unitOfMeasure;
-  final int? uomOrderIncrement;
+  final double? uomOrderIncrement;
   final String? url;
   final int category;
   final int supplier;

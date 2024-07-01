@@ -29,9 +29,19 @@ class ProductsRepositoryImp implements ProductsRepository {
   }
 
   @override
-  Future<Either<Failure, void>> deleteProduct(int productId) {
-    // TODO: implement deleteProduct
-    throw UnimplementedError();
+  Future<Either<Failure, void>> deleteProduct(int productId) async {
+    try {
+      return Right(await remoteDataSource.deleteProduct(productId));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(
+        ClientFailure(
+          message: e.toString(),
+          errorResponse: e.errorResponse,
+        ),
+      );
+    }
   }
 
   @override
@@ -51,8 +61,34 @@ class ProductsRepositoryImp implements ProductsRepository {
   }
 
   @override
-  Future<Either<Failure, Product>> updateProduct(Product product) {
-    // TODO: implement updateProduct
-    throw UnimplementedError();
+  Future<Either<Failure, Product>> updateProduct(Product product) async {
+    try {
+      return Right(await remoteDataSource.updateProduct(product));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(
+        ClientFailure(
+          message: e.toString(),
+          errorResponse: e.errorResponse,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> upsertProducts(List<Product> products) async {
+    try {
+      return Right(await remoteDataSource.upsertProducts(products));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } on BadRequestException catch (e) {
+      return Left(
+        ClientFailure(
+          message: e.toString(),
+          errorResponse: e.errorResponse,
+        ),
+      );
+    }
   }
 }

@@ -1,7 +1,7 @@
 import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/note_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_note_use_case.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

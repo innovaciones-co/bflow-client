@@ -1,14 +1,18 @@
 class ApiConstants {
-  static String baseUrl = 'https://bflowserver.innovaciones.co/api';
+  static String baseUrl = 'http://localhost:8080/api';
+  //static String baseUrl = 'http://10.0.2.2:8080/api';
+  //static String baseUrl = 'https://bflowserver.innovaciones.co/api';
 
   static String listJobsEndpoint = 'jobs';
   static String getJobEndpoint = 'jobs/:id';
 
   static String taskEndpoint = 'tasks/:id';
+  static String tasksEndpoint = 'tasks';
+  static String sendTasksEndpoint = 'tasks/send';
 
-  static String listTasksEndpoint = 'tasks';
   static String usersEndpoint = 'users';
   static String userEndpoint = 'users/:id';
+  static String userByusernameEndpoint = 'users/username/:username';
   static String loginUsersEndpoint = 'users/login';
 
   static String contactsEndpoint = 'contacts';
@@ -28,6 +32,7 @@ class ApiConstants {
 
   static String productsEndpoint = 'products';
   static String productEndpoint = 'products/:id';
+  static String upsertProductsEndpoint = 'products/upsert';
 
   static String listPurchaseOrdersEndpoint = 'purchaseOrders';
   static String getPurchaseOrderEndpoint = 'purchaseOrders/:id';

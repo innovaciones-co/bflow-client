@@ -9,9 +9,9 @@ import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/dropdown_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
-import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
 import 'package:bflow_client/src/features/catalog/domain/entities/product_entity.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/write_item/write_item_cubit.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +37,7 @@ class WriteMaterialWidget extends StatelessWidget with Validator {
         jobId: jobId,
         createItemUseCase: DependencyInjection.sl(),
         getSuppliersUseCase: DependencyInjection.sl(),
-        getCategoriesBySupplierUseCase: DependencyInjection.sl(),
+        getCategoriesUseCase: DependencyInjection.sl(),
         getProductsUseCase: DependencyInjection.sl(),
         getItemsUseCase: DependencyInjection.sl(),
       )..initForm(),
@@ -84,6 +84,7 @@ class WriteMaterialWidget extends StatelessWidget with Validator {
                   validator: state.autovalidateMode == AutovalidateMode.disabled
                       ? null
                       : validateRequired,
+                  value: () => state.supplier,
                 ),
                 const SizedBox(height: 20),
                 DropdownWidget<Category?>(
@@ -95,6 +96,7 @@ class WriteMaterialWidget extends StatelessWidget with Validator {
                   validator: state.autovalidateMode == AutovalidateMode.disabled
                       ? null
                       : validateRequired,
+                  value: () => state.category,
                 ),
                 const SizedBox(height: 20),
                 DropdownWidget<Product>(
@@ -107,6 +109,7 @@ class WriteMaterialWidget extends StatelessWidget with Validator {
                   validator: state.autovalidateMode == AutovalidateMode.disabled
                       ? null
                       : validateRequired,
+                  value: () => state.product,
                 ),
                 const SizedBox(height: 20),
                 InputWidget(

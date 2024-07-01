@@ -1,10 +1,10 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
-import 'package:bflow_client/src/core/utils/map_failure_to_error_message.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/core/widgets/switch_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/jobs_calendar_widget.dart';
+import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,6 +23,12 @@ class _JobsPageState extends State<JobsPage> {
   bool _calendarView = false;
 
   @override
+  void initState() {
+    context.read<JobsBloc>().add(GetJobsEvent());
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageContainerWidget(
@@ -35,52 +41,47 @@ class _JobsPageState extends State<JobsPage> {
           ),
         ],
         child: !_calendarView
-            ? _josGeneralView(context)
+            ? _jobsGeneralView(context)
             : const JobsCalendarWidget(),
       ),
     );
   }
 
-  Widget _josGeneralView(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          _getJobCards(context),
-          const JobsActionBarWidget(),
-          BlocBuilder<JobsBloc, JobsState>(
-            builder: (context, state) {
-              if (state is JobsInitial) {
-                return const SizedBox.shrink();
-              }
+  Widget _jobsGeneralView(BuildContext context) {
+    return BlocBuilder<JobsBloc, JobsState>(
+      builder: (context, state) {
+        if (state is JobsInitial) {
+          return const SizedBox.shrink();
+        }
 
-              if (state is JobsError) {
-                final message = mapFailureToErrorMessage(state.failure);
-                return Center(
-                  child: Text(message),
-                );
-              }
+        if (state is JobsError) {
+          final message = state.failure.message ?? "Unexpected error";
+          return Center(
+            child: Text(message),
+          );
+        }
 
-              if (state is JobsLoaded) {
-                return Column(
+        if (state is JobsLoaded) {
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                _getJobCards(context),
+                const JobsActionBarWidget(),
+                Column(
                   children: state.jobsFiltered
                       .map((job) => JobItemWidget(
                             job: job,
                             viewDetailsEnabled: true,
                           ))
                       .toList(),
-                );
-              }
-
-              return const SizedBox(
-                height: 100,
-                child: Center(
-                  child: CircularProgressIndicator(),
                 ),
-              );
-            },
-          )
-        ],
-      ),
+              ],
+            ),
+          );
+        }
+
+        return const LoadingWidget();
+      },
     );
   }
 

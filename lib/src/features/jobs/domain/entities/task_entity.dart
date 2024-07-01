@@ -1,4 +1,5 @@
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
 import 'package:equatable/equatable.dart';
@@ -15,8 +16,9 @@ class Task extends Equatable {
   final TaskStage stage;
   final int? parentTask;
   final Contact? supplier;
-  final List<dynamic>? attachments;
+  final List<File>? attachments;
   final int job;
+  final int? order;
 
   const Task({
     this.id,
@@ -32,6 +34,7 @@ class Task extends Equatable {
     this.supplier,
     this.attachments,
     required this.job,
+    this.order = 0,
   });
 
   @override
@@ -49,8 +52,43 @@ class Task extends Equatable {
         supplier,
         attachments,
         job,
+        order,
       ];
 
   @override
   bool? get stringify => true;
+
+  Task copyWith({
+    int? id,
+    String? name,
+    DateTime? callDate,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? comments,
+    int? progress,
+    TaskStatus? status,
+    TaskStage? stage,
+    int? parentTask,
+    Contact? supplier,
+    List<File>? attachments,
+    int? job,
+    int? order,
+  }) {
+    return Task(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      callDate: callDate ?? this.callDate,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      comments: comments ?? this.comments,
+      progress: progress ?? this.progress,
+      status: status ?? this.status,
+      stage: stage ?? this.stage,
+      parentTask: parentTask ?? this.parentTask,
+      supplier: supplier ?? this.supplier,
+      attachments: attachments ?? this.attachments,
+      job: job ?? this.job,
+      order: order ?? this.order,
+    );
+  }
 }

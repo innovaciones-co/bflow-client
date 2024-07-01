@@ -17,6 +17,15 @@ class UsersRemoteDataSource {
     return UsersModel.fromMap(response);
   }
 
+  Future<UsersModel> fetchUserByUsername(String username) async {
+    Map<String, dynamic> response = await apiService.get(
+      endpoint:
+          ApiConstants.userByusernameEndpoint.replaceAll(":username", username),
+    );
+
+    return UsersModel.fromMap(response);
+  }
+
   Future<List<UsersModel>> fetchUsers() async {
     List<dynamic> response =
         await apiService.get(endpoint: ApiConstants.usersEndpoint);
@@ -28,8 +37,16 @@ class UsersRemoteDataSource {
         await apiService.get(endpoint: ApiConstants.usersEndpoint);
     return response
         .map((e) => UsersModel.fromMap(e))
-        .toList()
         .where((element) => element.role == UserRole.supervisor)
+        .toList();
+  }
+
+  Future<List<UsersModel>> fetchAdmin() async {
+    List<dynamic> response =
+        await apiService.get(endpoint: ApiConstants.usersEndpoint);
+    return response
+        .map((e) => UsersModel.fromMap(e))
+        .where((element) => element.role == UserRole.admin)
         .toList();
   }
 

@@ -2,11 +2,13 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class InputWidget extends StatelessWidget {
+class InputWidget extends StatefulWidget {
   final String label;
   final bool obscureText;
   final String hintText;
   final Function(String)? onChanged;
+  final Function(String)? onFieldSubmitted;
+  final Iterable<String>? autofillHints;
   final String? Function(String?)? validator;
   final String? initialValue;
   final TextInputType? keyboardType;
@@ -21,8 +23,23 @@ class InputWidget extends StatelessWidget {
     this.obscureText = false,
     this.hintText = "",
     this.onChanged,
+    this.onFieldSubmitted,
+    this.autofillHints,
     this.validator,
   });
+
+  @override
+  State<InputWidget> createState() => _InputWidgetState();
+}
+
+class _InputWidgetState extends State<InputWidget> {
+  bool hidden = true;
+
+  @override
+  void initState() {
+    super.initState();
+    hidden = widget.obscureText;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,20 +48,21 @@ class InputWidget extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(label),
+          child: Text(widget.label),
         ),
         const SizedBox(height: 5),
         TextFormField(
-          onChanged: onChanged,
-          validator: validator,
-          obscureText: obscureText,
-          initialValue: initialValue,
-          enableSuggestions: obscureText ? false : true,
-          autocorrect: obscureText ? false : true,
-          keyboardType: keyboardType,
-          inputFormatters: inputFormatters,
+          autofillHints: widget.autofillHints,
+          onChanged: widget.onChanged,
+          validator: widget.validator,
+          obscureText: widget.obscureText ? hidden : false,
+          initialValue: widget.initialValue,
+          enableSuggestions: widget.obscureText ? false : true,
+          autocorrect: widget.obscureText ? false : true,
+          keyboardType: widget.keyboardType,
+          inputFormatters: widget.inputFormatters,
           decoration: InputDecoration(
-            hintText: hintText,
+            hintText: widget.hintText,
             hintStyle: TextStyle(
               color: AppColor.grey,
             ),
@@ -58,7 +76,22 @@ class InputWidget extends StatelessWidget {
                 color: AppColor.red,
               ),
             ),
+            suffixIcon: widget.obscureText
+                ? IconButton(
+                    onPressed: () {
+                      setState(() {
+                        hidden = !hidden;
+                      });
+                    },
+                    icon: Icon(
+                      hidden
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                    ),
+                  )
+                : null,
           ),
+          onFieldSubmitted: widget.onFieldSubmitted,
         ),
       ],
     );

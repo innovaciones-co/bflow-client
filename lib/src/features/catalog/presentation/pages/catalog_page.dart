@@ -1,16 +1,19 @@
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/catalog/domain/entities/product_entity.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/catalog_view_bar_widget.dart';
+import 'package:bflow_client/src/features/catalog/presentation/widgets/no_products_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/write_product_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/cross_scroll_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class CatalogPage extends StatelessWidget {
   final int supplierId;
@@ -57,18 +60,23 @@ class CatalogPage extends StatelessWidget {
               title: '${state.supplier.name} catalog',
               child: Column(
                 children: [
-                  CatalogViewBarWidget(supplierId: supplierId),
+                  CatalogViewBarWidget(
+                    supplierId: supplierId,
+                    productsCubit: context.read(),
+                  ),
                   const SizedBox(height: 15),
                   Expanded(
-                    child: CrossScrollWidget(
-                      child: Column(
-                        children: [
-                          _tableHeader(),
-                          ...catalogProducts.entries
-                              .map((e) => _categoryTable(context, e.value))
-                        ],
-                      ),
-                    ),
+                    child: catalogProducts.isEmpty
+                        ? const NoProductsWidget()
+                        : CrossScrollWidget(
+                            child: Column(
+                              children: [
+                                _tableHeader(),
+                                ...catalogProducts.entries.map(
+                                    (e) => _categoryTable(context, e.value))
+                              ],
+                            ),
+                          ),
                   ),
                   const SizedBox(height: 10),
                 ],
@@ -148,8 +156,8 @@ class CatalogPage extends StatelessWidget {
           ),
           children: [
             _tableCategoryRow(
-              catalogProducts.first.category.toString(),
-              state.categories
+              categoryId: catalogProducts.first.category,
+              categoryName: state.categories
                   .where(
                       (element) => element.id == catalogProducts.first.category)
                   .first
@@ -163,19 +171,36 @@ class CatalogPage extends StatelessWidget {
     );
   }
 
-  TableRow _tableCategoryRow(String code, String name) {
+  TableRow _tableCategoryRow(
+      {required int categoryId, required String categoryName}) {
     return TableRow(
       decoration: BoxDecoration(
         color: AppColor.lightPurple,
       ),
       children: [
-        _tableCell(Text(code)),
-        _tableCell(Checkbox(
-          value: false,
-          onChanged: null,
-          side: BorderSide(color: AppColor.darkGrey, width: 2),
-        )),
-        _tableCell(Text(name)),
+        _tableCell(Text(categoryId.toString())),
+        _tableCell(
+          BlocBuilder<ProductsCubit, ProductsState>(
+            builder: (context, state) {
+              ProductsCubit productsCubit = context.read<ProductsCubit>();
+              if (state is! ProductsLoaded) return const SizedBox.shrink();
+
+              bool? productSelectedByCategory = _checkIfCategorySelected(
+                categoryId,
+                state.selectedProducts,
+                state.products,
+              );
+              return Checkbox(
+                tristate: true,
+                value: productSelectedByCategory,
+                onChanged: (val) =>
+                    productsCubit.selectProductsByCategory(categoryId),
+                side: BorderSide(color: AppColor.darkGrey, width: 2),
+              );
+            },
+          ),
+        ),
+        _tableCell(Text(categoryName)),
         ...List.generate(
           6,
           (index) => _tableCell(const Text("")),
@@ -192,10 +217,20 @@ class CatalogPage extends StatelessWidget {
       children: [
         _tableCell(const Text("")),
         _tableCell(
-          Checkbox(
-            value: false,
-            onChanged: null,
-            side: BorderSide(color: AppColor.darkGrey, width: 2),
+          BlocBuilder<ProductsCubit, ProductsState>(
+            builder: (context, state) {
+              ProductsCubit productsCubit = context.read<ProductsCubit>();
+              if (state is! ProductsLoaded) return const SizedBox.shrink();
+
+              var productSelected = state.selectedProducts.contains(product);
+
+              return Checkbox(
+                value: productSelected,
+                onChanged: (val) =>
+                    productsCubit.toggleSelectedProduct(product),
+                side: BorderSide(color: AppColor.darkGrey, width: 2),
+              );
+            },
           ),
         ),
         _tableCell(Text(product.sku)),
@@ -214,15 +249,32 @@ class CatalogPage extends StatelessWidget {
                   onPressed: () => context.showLeftDialog(
                     "Edit Product",
                     WriteProductWidget(
-                        productCubit: context.read(),
-                        supplierId: product.supplier),
-                  ), // TODO: Implement edit
+                      productCubit: context.read(),
+                      supplierId: product.supplier,
+                      product: product,
+                    ),
+                  ),
                   color: AppColor.blue,
                   icon: const Icon(Icons.edit_outlined),
                   tooltip: 'Edit',
                 ),
                 IconButton(
-                  onPressed: () {}, // TODO: Implement delete
+                  onPressed: () {
+                    context.showCustomModal(
+                      ConfirmationWidget(
+                        title: "Delete product",
+                        description:
+                            "Are you sure you want to delete product \"${product.sku}\"?",
+                        onConfirm: () {
+                          context
+                              .read<ProductsCubit>()
+                              .deleteProduct(product.id!, product.supplier);
+                          context.pop();
+                        },
+                        confirmText: "Delete",
+                      ),
+                    );
+                  },
                   color: AppColor.blue,
                   icon: const Icon(
                     Icons.delete_outline_outlined,
@@ -257,5 +309,20 @@ class CatalogPage extends StatelessWidget {
     }
 
     return groupedProducts;
+  }
+
+  bool? _checkIfCategorySelected(int categoryId, List<Product> selectedProducts,
+      List<Product> allProducts) {
+    var productsOfCategory =
+        allProducts.where((prod) => prod.category == categoryId);
+
+    if (productsOfCategory.every(
+        (categoryProduct) => selectedProducts.contains(categoryProduct))) {
+      return true;
+    } else if (productsOfCategory.every(
+        (categoryProduct) => !selectedProducts.contains(categoryProduct))) {
+      return false;
+    }
+    return null;
   }
 }

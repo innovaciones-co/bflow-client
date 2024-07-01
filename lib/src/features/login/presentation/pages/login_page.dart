@@ -7,6 +7,7 @@ import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
 import 'package:bflow_client/src/features/login/presentation/bloc/login_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -76,10 +77,12 @@ class LoginPage extends StatelessWidget with Validator {
             Expanded(
               flex: 1,
               child: Center(
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 500),
-                  margin: const EdgeInsets.symmetric(horizontal: 80),
-                  child: _loginForm(context),
+                child: SingleChildScrollView(
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 500),
+                    margin: const EdgeInsets.symmetric(horizontal: 35),
+                    child: _loginForm(context),
+                  ),
                 ),
               ),
             ),
@@ -98,53 +101,73 @@ class LoginPage extends StatelessWidget with Validator {
         return Form(
           key: _loginFormKey,
           autovalidateMode: autovalidateMode,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Welcome back!",
-                style: TextStyle(fontSize: 24),
-              ),
-              const SizedBox(height: 35),
-              const Text(
-                "Please enter your details",
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-              const SizedBox(height: 25),
-              InputWidget(
-                label: "Username",
-                onChanged: loginBloc.updateUsername,
-                validator: validateName,
-                initialValue: loginBloc.state.username,
-              ),
-              const SizedBox(height: 20),
-              InputWidget(
-                label: "Password",
-                obscureText: true,
-                onChanged: loginBloc.updatePassword,
-                validator: validatePassword,
-                initialValue: loginBloc.state.password,
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.only(top: 30, right: 20, left: 20),
-                child: ActionButtonWidget(
-                  onPressed: () {
+          child: AutofillGroup(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "Welcome back!",
+                  style: TextStyle(fontSize: 24),
+                ),
+                const SizedBox(height: 35),
+                const Text(
+                  "Please enter your details",
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+                const SizedBox(height: 25),
+                InputWidget(
+                  label: "Username",
+                  onChanged: loginBloc.updateUsername,
+                  validator: validateName,
+                  initialValue: loginBloc.state.username,
+                  autofillHints: const [AutofillHints.username],
+                ),
+                const SizedBox(height: 20),
+                InputWidget(
+                  label: "Password",
+                  obscureText: true,
+                  onChanged: loginBloc.updatePassword,
+                  validator: validatePassword,
+                  initialValue: loginBloc.state.password,
+                  autofillHints: const [AutofillHints.password],
+                  onFieldSubmitted: (pass) {
+                    TextInput.finishAutofillContext();
+
                     if (_loginFormKey.currentState!.validate()) {
                       loginBloc.login();
                     } else {
                       loginBloc.updateAutovalidateMode(AutovalidateMode.always);
                     }
                   },
-                  type: ButtonType.elevatedButton,
-                  title: "Log in",
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  paddingVertical: 24,
                 ),
-              )
-            ],
+                const SizedBox(height: 20),
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: 30,
+                    right: context.isDesktop ? 20 : 0,
+                    left: context.isDesktop ? 20 : 0,
+                  ),
+                  child: ActionButtonWidget(
+                    onPressed: () {
+                      TextInput.finishAutofillContext();
+
+                      if (_loginFormKey.currentState!.validate()) {
+                        loginBloc.login();
+                      } else {
+                        loginBloc
+                            .updateAutovalidateMode(AutovalidateMode.always);
+                      }
+                    },
+                    type: ButtonType.elevatedButton,
+                    title: "Log in",
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    paddingVertical: 24,
+                  ),
+                )
+              ],
+            ),
           ),
         );
       },

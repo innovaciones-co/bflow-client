@@ -14,10 +14,10 @@ extension BuildContextEntension<T> on BuildContext {
       MediaQuery.of(this).size.width > 500.0;
 
   bool get isTablet =>
-      MediaQuery.of(this).size.width < 1024.0 &&
+      MediaQuery.of(this).size.width <= 1024.0 &&
       MediaQuery.of(this).size.width >= 650.0;
 
-  bool get isDesktop => MediaQuery.of(this).size.width >= 1024.0;
+  bool get isDesktop => MediaQuery.of(this).size.width > 1024.0;
 
   bool get isSmall =>
       MediaQuery.of(this).size.width < 850.0 &&
@@ -182,6 +182,16 @@ extension BuildContextEntension<T> on BuildContext {
           title: title,
           children: children,
         );
+      },
+    );
+  }
+
+  Future<void> showCustomModal(Widget child) {
+    return showDialog<void>(
+      context: this,
+      useRootNavigator: false,
+      builder: (BuildContext context) {
+        return child;
       },
     );
   }

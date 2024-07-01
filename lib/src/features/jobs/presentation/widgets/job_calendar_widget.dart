@@ -3,11 +3,12 @@ import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/tasks_filter_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/no_tasks_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/tasks_view_bar_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/write_task_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -201,10 +202,42 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
                     child: Text('${int.parse(e.key.toString()) + 1}'),
                   )),
                   _tableCell(
-                    Text(
-                      e.value.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Tooltip(
+                            message: e.value.name,
+                            child: Text(
+                              e.value.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: IconButton(
+                            onPressed: () => context.showLeftDialog(
+                              'Edit Activity',
+                              WriteTaskWidget(
+                                jobId: e.value.job,
+                                tasksBloc: context.read(),
+                                jobBloc: context.read(),
+                                task: e.value,
+                              ),
+                            ),
+                            color: AppColor.blue,
+                            icon: const Icon(
+                              Icons.edit_outlined,
+                              size: 15,
+                            ),
+                            tooltip: 'Edit',
+                            padding: const EdgeInsets.all(0),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

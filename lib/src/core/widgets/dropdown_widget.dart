@@ -9,6 +9,7 @@ class DropdownWidget<T> extends StatefulWidget {
   final String Function(T) getLabel;
   final String? Function(T?)? validator;
   final T? initialValue;
+  final T? Function()? value;
 
   const DropdownWidget({
     super.key,
@@ -17,6 +18,7 @@ class DropdownWidget<T> extends StatefulWidget {
     this.onChanged,
     required this.getLabel,
     this.validator,
+    this.value,
     this.initialValue,
     this.labelPadding = const EdgeInsets.symmetric(horizontal: 8),
   });
@@ -32,6 +34,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   @override
   void initState() {
     super.initState();
+
     setState(() {
       if (widget.items.isNotEmpty) {
         dropdownValue = widget.initialValue ?? widget.items.first;
@@ -40,6 +43,15 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
         }
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(DropdownWidget<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.value != null) {
+      _controller.text =
+          widget.value!() == null ? "" : widget.getLabel(widget.value!() as T);
+    }
   }
 
   @override

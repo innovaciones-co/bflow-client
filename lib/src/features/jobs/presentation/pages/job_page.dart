@@ -4,7 +4,7 @@ import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/job_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/tasks_filter_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_calendar_widget.dart';
@@ -35,7 +35,7 @@ class _JobPageState extends State<JobPage> {
   bool _viewJobInfo = false;
   late Widget _body;
   late String _pageTitle;
-  int _selectedIndex = 3;
+  int _selectedIndex = 1;
 
   final List<PageSelector> _content = [
     PageSelector(child: const JobFilesWidget(), title: "Documents"),
@@ -65,6 +65,8 @@ class _JobPageState extends State<JobPage> {
             jobBloc: context.read<JobBloc>(),
             getTasksUseCase: DependencyInjection.sl(),
             deleteTaskUseCase: DependencyInjection.sl(),
+            sendTasksUseCase: DependencyInjection.sl(),
+            updateTasksUseCase: DependencyInjection.sl(),
             homeBloc: context.read<HomeBloc>(),
             socketService: DependencyInjection.sl(),
           ),
@@ -75,27 +77,25 @@ class _JobPageState extends State<JobPage> {
           ),
         ),
       ],
-      child: Scaffold(
-        body: PageContainerWidget(
-          title: _pageTitle,
-          child: BlocBuilder<JobBloc, JobState>(
-            builder: (context, state) {
-              if (state is JobLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
+      child: PageContainerWidget(
+        title: _pageTitle,
+        child: BlocBuilder<JobBloc, JobState>(
+          builder: (context, state) {
+            if (state is JobLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-              if (state is JobLoaded) {
-                return _jobLoaded(state);
-              }
+            if (state is JobLoaded) {
+              return _jobLoaded(state);
+            }
 
-              if (state is JobError) {
-                return FailureWidget(failure: state.failure);
-              }
+            if (state is JobError) {
+              return FailureWidget(failure: state.failure);
+            }
 
-              return const SizedBox.shrink();
-            },
-            buildWhen: (_, a) => true,
-          ),
+            return const SizedBox.shrink();
+          },
+          buildWhen: (_, a) => true,
         ),
       ),
     );

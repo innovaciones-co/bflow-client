@@ -5,6 +5,8 @@ import 'package:bflow_client/src/core/exceptions/bad_response_exception.dart';
 import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.dart';
 import 'package:bflow_client/src/features/shared/data/models/error_response_model.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api.dart';
 
@@ -24,8 +26,13 @@ enum Methods {
 
 class ApiService {
   final Dio client = Dio();
+  SharedPreferences sharedPreferences;
 
-  ApiService();
+  ApiService({
+    required this.sharedPreferences,
+  });
+
+  String? get token => sharedPreferences.getString('token');
 
   Future<dynamic> get(
       {required String endpoint, Map<String, String>? params}) async {
@@ -39,7 +46,7 @@ class ApiService {
 
   Future<dynamic> post({
     required String endpoint,
-    Map<String, dynamic>? data,
+    dynamic data,
     Map<String, dynamic>? queryParams,
     bool encodeJson = true,
     bool formData = false,
@@ -57,8 +64,7 @@ class ApiService {
     return response.data;
   }
 
-  Future<dynamic> put(
-      {required String endpoint, Map<String, dynamic>? data}) async {
+  Future<dynamic> put({required String endpoint, dynamic data}) async {
     final response = await _performRequest(
       Methods.put,
       '${ApiConstants.baseUrl}/$endpoint',
@@ -100,14 +106,21 @@ class ApiService {
     dynamic body,
   }) async {
     try {
+      Map<String, String> usedHeaders = Map<String, String>.from(headers ?? {});
+
+      if (token != null) {
+        usedHeaders.addAll({"Authorization": "Bearer $token"});
+      }
+
       final options = Options(
         method: method.toString(),
-        validateStatus: (status) => status != null ? status < 500 : false,
-        headers: headers,
+        validateStatus: (status) => status != null ? status <= 500 : false,
+        headers: usedHeaders,
       );
 
-      // debugPrint("Request to: ${url.toString()}");
-      // debugPrint("Body: ${body.toString()}");
+      debugPrint("Request to: ${url.toString()}");
+      /* debugPrint("Params: ${queryParams.toString()}");
+      debugPrint("Body: ${body.toString()}"); */
 
       final response = await client.request(
         url,
@@ -116,10 +129,15 @@ class ApiService {
         queryParameters: queryParams,
       );
 
-      // debugPrint("Status code: ${response.statusCode.toString()}");
-      // debugPrint("Response: ${response.toString()}");
+      /* debugPrint("Status code: ${response.statusCode.toString()}");
+      debugPrint("Response: ${response.toString()}"); */
 
       switch (response.statusCode) {
+        case 500:
+          ErrorResponseModel? errorResponse = _getErrorResponse(response);
+
+          throw BadResponseException(
+              errorResponse?.message ?? "Server failure");
         case 400:
           ErrorResponseModel? errorResponse = _getErrorResponse(response);
 
@@ -147,6 +165,8 @@ class ApiService {
         default:
           throw RemoteDataSourceException('Unexpected error: ${e.message}');
       }
+    } on BadResponseException catch (e) {
+      throw RemoteDataSourceException(e.message ?? "Unexpected error");
     }
   }
 

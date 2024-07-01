@@ -6,7 +6,8 @@ class RoutesName {
   static const users = '/users';
   static const contacts = '/contacts';
   static const jobs = '/jobs';
-  static const job = '/job/:id';
+  static const job = '/jobs/:id';
   static const taskConfirmation = '/tasks/:id';
-  static const catalog = '/catalog/:id';
+  static const catalog = '/catalogs/:id';
+  static const catalogs = '/catalogs';
 }

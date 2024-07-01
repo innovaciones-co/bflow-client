@@ -1,13 +1,18 @@
+import 'dart:async';
+
 import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:bflow_client/src/features/catalog/presentation/pages/catalog_page.dart';
+import 'package:bflow_client/src/features/catalog/presentation/pages/catalogs_page.dart';
 import 'package:bflow_client/src/features/contacts/presentation/pages/contacts_page.dart';
 import 'package:bflow_client/src/features/home/presentation/pages/home_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/job_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/jobs_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/task_confirmation_page.dart';
+import 'package:bflow_client/src/features/login/presentation/bloc/login_bloc.dart';
 import 'package:bflow_client/src/features/login/presentation/pages/login_page.dart';
 import 'package:bflow_client/src/features/users/presentation/pages/users_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 const _pageKey = ValueKey('_pageKey');
@@ -32,6 +37,12 @@ const List<CustomNavigationDestination> homeDestinations = [
     route: RoutesName.contacts,
     child: ContactsPage(),
   ),
+  CustomNavigationDestination(
+    label: 'Catalogs',
+    icon: Icon(Icons.menu_book_outlined),
+    route: RoutesName.catalogs,
+    child: CatalogsPage(),
+  ),
 ];
 
 class CustomNavigationDestination {
@@ -54,6 +65,7 @@ final appRouter = GoRouter(
     for (final route in homeDestinations)
       GoRoute(
         path: route.route,
+        redirect: _isLoggedIn,
         pageBuilder: (context, state) => MaterialPage<void>(
           key: _pageKey,
           child: HomePage(
@@ -104,6 +116,7 @@ final appRouter = GoRouter(
     // Job Screen
     GoRoute(
       path: RoutesName.job,
+      redirect: _isLoggedIn,
       pageBuilder: (context, state) {
         final idStr = state.pathParameters["id"];
         final int? jobId = idStr != null ? int.tryParse(idStr) : null;
@@ -135,6 +148,7 @@ final appRouter = GoRouter(
     // Catalog Screen
     GoRoute(
       path: RoutesName.catalog,
+      redirect: _isLoggedIn,
       pageBuilder: (context, state) {
         final idStr = state.pathParameters["id"];
         final int? supplierId = idStr != null ? int.tryParse(idStr) : null;
@@ -144,7 +158,7 @@ final appRouter = GoRouter(
             child: HomePage(
               key: _scaffoldKey,
               currentIndex: homeDestinations.indexWhere(
-                  (element) => element.route == RoutesName.contacts),
+                  (element) => element.route == RoutesName.catalogs),
               child: CatalogPage(
                 supplierId: supplierId,
               ),
@@ -165,3 +179,12 @@ final appRouter = GoRouter(
     ),
   ],
 );
+
+FutureOr<String?> _isLoggedIn(BuildContext context, state) async {
+  LoginCubit loginCubit = context.read<LoginCubit>();
+  if (await loginCubit.isLogged()) {
+    return null;
+  }
+
+  return RoutesName.login;
+}

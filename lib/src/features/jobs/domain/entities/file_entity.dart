@@ -13,7 +13,6 @@ class File extends Equatable {
   final FileCategory? category;
   final FileTag? tag;
   final int? job;
-  final int? task;
   final MultipartFile? multipartFile;
 
   const File({
@@ -26,7 +25,6 @@ class File extends Equatable {
     this.category,
     this.tag,
     this.job,
-    this.task,
     this.multipartFile,
   });
 
@@ -41,7 +39,6 @@ class File extends Equatable {
         category,
         tag,
         job,
-        task,
         multipartFile
       ];
 

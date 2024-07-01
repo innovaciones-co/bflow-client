@@ -12,7 +12,7 @@ import 'package:bflow_client/src/features/catalog/domain/entities/product_entity
 import 'package:bflow_client/src/features/catalog/domain/entities/units.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cubit.dart';
 import 'package:bflow_client/src/features/catalog/presentation/cubit/write_product_cubit/write_product_cubit.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -37,7 +37,8 @@ class WriteProductWidget extends StatelessWidget with Validator {
         productsCubit: productCubit,
         createProductUseCase: DependencyInjection.sl(),
         getCategoriesUseCase: DependencyInjection.sl(),
-      )..initForm(supplier: supplierId),
+        updateProductUseCase: DependencyInjection.sl(),
+      )..initFormFromProduct(product, supplierId),
       child: BlocConsumer<WriteProductCubit, WriteProductState>(
         listener: (context, state) {
           if (state.formStatus == FormStatus.success) {
@@ -91,7 +92,7 @@ class WriteProductWidget extends StatelessWidget with Validator {
                   label: "SKU",
                   validator: validateSku,
                   keyboardType: TextInputType.text,
-                  initialValue: "",
+                  initialValue: state.sku,
                   onChanged: writeProductCubit.updateSku,
                 ),
                 const SizedBox(height: 20),
@@ -99,7 +100,7 @@ class WriteProductWidget extends StatelessWidget with Validator {
                   label: "Product name",
                   validator: validateProductName,
                   keyboardType: TextInputType.text,
-                  initialValue: "",
+                  initialValue: state.name,
                   onChanged: writeProductCubit.updateName,
                 ),
                 const SizedBox(height: 20),
@@ -107,7 +108,7 @@ class WriteProductWidget extends StatelessWidget with Validator {
                   label: "Description",
                   validator: validateDescription,
                   keyboardType: TextInputType.text,
-                  initialValue: "",
+                  initialValue: state.description,
                   onChanged: writeProductCubit.updateDescription,
                 ),
                 const SizedBox(height: 20),
@@ -116,7 +117,7 @@ class WriteProductWidget extends StatelessWidget with Validator {
                   items: Unit.values,
                   getLabel: (s) => s.toString(),
                   onChanged: writeProductCubit.updateUnitOfMeasure,
-                  initialValue: Unit.values.first,
+                  initialValue: state.unitOfMeasure,
                   validator: state.autovalidateMode == AutovalidateMode.disabled
                       ? null
                       : validateRequired,
@@ -127,7 +128,7 @@ class WriteProductWidget extends StatelessWidget with Validator {
                   validator: validateUnitPrice,
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
-                  initialValue: "",
+                  initialValue: state.unitPrice.toString(),
                   onChanged: writeProductCubit.updateUnitPrice,
                 ),
                 const SizedBox(height: 20),
@@ -135,7 +136,7 @@ class WriteProductWidget extends StatelessWidget with Validator {
                   label: "Url",
                   validator: validateUrl,
                   keyboardType: TextInputType.url,
-                  initialValue: "",
+                  initialValue: state.url,
                   onChanged: writeProductCubit.updateUrl,
                 ),
                 const SizedBox(height: 20),
@@ -164,9 +165,10 @@ class WriteProductWidget extends StatelessWidget with Validator {
                             foregroundColor: AppColor.white,
                           )
                         : ActionButtonWidget(
-                            onPressed:
-                                () {}, // _updateProduct(context, productCubit),
-                            //inProgress: state.formStatus == FormStatus.inProgress,
+                            onPressed: () =>
+                                _updateProduct(context, writeProductCubit),
+                            inProgress:
+                                state.formStatus == FormStatus.inProgress,
                             type: ButtonType.elevatedButton,
                             title: "Save Product",
                             backgroundColor: AppColor.blue,
@@ -192,11 +194,11 @@ class WriteProductWidget extends StatelessWidget with Validator {
     }
   }
 
-/*  _updateProduct(BuildContext context, WriteProductCubit productCubit) {
+  _updateProduct(BuildContext context, WriteProductCubit productCubit) {
     if (_formKey.currentState!.validate()) {
       BlocProvider.of<WriteProductCubit>(context).updateProduct();
     } else {
       productCubit.updateAutovalidateMode(AutovalidateMode.always);
     }
-  } */
+  }
 }

@@ -18,3 +18,12 @@ class UpdateTasks extends TasksFilterEvent {
   @override
   List<Object> get props => [statusFilter];
 }
+
+class UpdateTabIndex extends TasksFilterEvent {
+  final int tabIndex;
+
+  const UpdateTabIndex({required this.tabIndex});
+
+  @override
+  List<Object> get props => [tabIndex];
+}

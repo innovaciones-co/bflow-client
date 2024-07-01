@@ -30,6 +30,14 @@ class LoadingTasksEvent extends TasksEvent {}
 
 class DeleteTasksEvent extends TasksEvent {}
 
+class SendSelectedTasksEvent extends TasksEvent {}
+
+class SendTaskEvent extends TasksEvent {
+  final Task task;
+
+  const SendTaskEvent({required this.task});
+}
+
 class GetTasksEvent extends TasksEvent {
   final int? jobId;
 
@@ -37,4 +45,16 @@ class GetTasksEvent extends TasksEvent {
 
   @override
   List<Object> get props => [jobId ?? 0];
+}
+
+class UpdateTasksEvent extends TasksEvent {
+  final List<Task> tasks;
+
+  const UpdateTasksEvent({required this.tasks});
+}
+
+class OnReceivedTaskEvent extends TasksEvent {
+  final StompFrame frame;
+
+  const OnReceivedTaskEvent({required this.frame});
 }

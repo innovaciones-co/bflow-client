@@ -45,9 +45,12 @@ class UsersRepositoryImp implements UsersRepository {
   }
 
   @override
-  Future<Either<Failure, User>> getUser(int id) {
-    // TODO: implement getUser
-    throw UnimplementedError();
+  Future<Either<Failure, User>> getUser(int id) async {
+    try {
+      return Right(await remoteDataSource.fetchUser(id));
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
   }
 
   @override
@@ -63,6 +66,15 @@ class UsersRepositoryImp implements UsersRepository {
   Future<Either<Failure, List<User>>> getSupervisors() async {
     try {
       return Right(await remoteDataSource.fetchSupervisors());
+    } on RemoteDataSourceException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<User>>> getAdministrators() async {
+    try {
+      return Right(await remoteDataSource.fetchAdmin());
     } on RemoteDataSourceException catch (e) {
       return Left(ServerFailure(message: e.message));
     }

@@ -23,7 +23,8 @@ class JobTasksWidget extends StatelessWidget {
 
         if (state is TasksFilterLoaded) {
           var tasks = state.tasks;
-          return _buildTasks(context, tasks);
+          var tabIndex = state.tabIndex;
+          return _buildTasks(context, tasks, tabIndex);
         }
 
         return const SizedBox.shrink();
@@ -31,13 +32,14 @@ class JobTasksWidget extends StatelessWidget {
     );
   }
 
-  _buildTasks(BuildContext context, List<Task> tasks) {
+  _buildTasks(BuildContext context, List<Task> tasks, int tabIndex) {
     return Expanded(
       child: Column(
         children: [
           const TasksViewBarWidget(),
           Expanded(
             child: DefaultTabController(
+              initialIndex: tabIndex,
               key: GlobalKey(),
               length: TaskStage.values.length,
               child: Column(
@@ -46,6 +48,9 @@ class JobTasksWidget extends StatelessWidget {
                     tabs: TaskStage.values
                         .map((e) => Tab(text: e.toString()))
                         .toList(),
+                    onTap: (value) => context
+                        .read<TasksFilterBloc>()
+                        .add(UpdateTabIndex(tabIndex: value)),
                     labelColor: AppColor.blue,
                     indicatorColor: AppColor.blue,
                     indicatorSize: TabBarIndicatorSize.tab,
@@ -53,7 +58,6 @@ class JobTasksWidget extends StatelessWidget {
                   ),
                   Expanded(
                     child: TabBarView(
-                      // TODO: Keep state when task o diferent tab is selected
                       children: TaskStage.values
                           .map(
                             (stage) => context.isDesktop

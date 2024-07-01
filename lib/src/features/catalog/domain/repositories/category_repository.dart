@@ -1,5 +1,5 @@
 import 'package:bflow_client/src/core/exceptions/failure.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/category_entity.dart';
+import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class CategoriesRepository {

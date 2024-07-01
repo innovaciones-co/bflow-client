@@ -1,7 +1,7 @@
 import 'package:bflow_client/src/core/exceptions/failure.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
 import 'package:bflow_client/src/features/catalog/domain/entities/product_entity.dart';
-import 'package:bflow_client/src/features/purchase_orders/domain/repositories/category_repository.dart';
+import 'package:bflow_client/src/features/catalog/domain/repositories/category_repository.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/repositories/item_repository.dart';
 import 'package:dartz/dartz.dart';
 
@@ -18,23 +18,18 @@ class CreateItemUseCase implements UseCase<Item, CreateItemParams> {
   Future<Either<Failure, Item>> execute(params) async {
     Product product = params.item;
 
-    var failureOrcategory =
-        await categoriesRepository.getCategory(product.category);
-
-    return failureOrcategory.fold((failure) => Left(failure), (category) {
-      Item item = Item(
-        name: product.name,
-        description: product.description,
-        supplier: category.tradeCode,
-        category: product.category,
-        job: params.jobId,
-        unitPrice: product.unitPrice,
-        measure: product.unitOfMeasure,
-        //vat: product.vat,
-        units: params.quantity,
-      );
-      return repository.createItem(item);
-    });
+    Item item = Item(
+      name: product.name,
+      description: product.description,
+      supplier: product.supplier,
+      category: product.category,
+      job: params.jobId,
+      unitPrice: product.unitPrice,
+      measure: product.unitOfMeasure,
+      vat: product.vat ?? 0,
+      units: params.quantity,
+    );
+    return repository.createItem(item);
   }
 }
 
