@@ -155,7 +155,8 @@ class UpsertProductsCubit extends Cubit<UpsertProductsState> {
               "${productsSheet.sheetName} sheet - Expected a valid unit: row ${i + 1}, column 'UOM'");
         }
 
-        int categoryId = _categoryIdIfExists(categories, categoryCell, i);
+        int categoryId = _categoryIdIfExists(
+            productsSheet.sheetName, categories, categoryCell, i);
 
         Product product = Product(
           name: nameCell,
@@ -224,21 +225,21 @@ class UpsertProductsCubit extends Cubit<UpsertProductsState> {
 
     if (expectedType != num && expectedType != value.runtimeType) {
       throw TypeMismatchException(
-          "${sheet.sheetName} sheet - Expected type $expectedType but got ${value.runtimeType}: row ${rowIndex + 1}, column ${columnIndex + 1} A");
+          "${sheet.sheetName} sheet - Expected type $expectedType but got ${value.runtimeType}: row ${rowIndex + 1}, column ${columnIndex + 1}");
     } else if (expectedType == num && (value is! num)) {
       throw TypeMismatchException(
-          "${sheet.sheetName} sheet - Expected type $expectedType but got ${value.runtimeType}: row ${rowIndex + 1}, column ${columnIndex + 1} B");
+          "${sheet.sheetName} sheet - Expected type $expectedType but got ${value.runtimeType}: row ${rowIndex + 1}, column ${columnIndex + 1}");
     }
 
     return value;
   }
 
-  int _categoryIdIfExists(
-      List<Category> categories, String categoryName, int rowIndex) {
+  int _categoryIdIfExists(String sheetName, List<Category> categories,
+      String categoryName, int rowIndex) {
     final category = categories.firstWhere(
       (cat) => cat.name == categoryName,
       orElse: () => throw TypeMismatchException(
-          "sheet - Expected a valid category: row $rowIndex, column 'Url'"),
+          "$sheetName sheet - Category doesn't exists: row ${rowIndex + 1}"),
     );
 
     return category.id!;
