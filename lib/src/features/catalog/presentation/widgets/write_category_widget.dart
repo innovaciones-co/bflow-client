@@ -33,7 +33,7 @@ class WriteCategoryWidget extends StatelessWidget with Validator {
         categoriesCubit: categoriesCubit,
         createCategorytUseCase: DependencyInjection.sl(),
         updateCategorytUseCase: DependencyInjection.sl(),
-      ),
+      )..initFormFromCategory(category),
       child: BlocConsumer<WriteCategoryCubit, WriteCategoryState>(
         listener: (context, state) {
           if (state.formStatus == FormStatus.success) {
