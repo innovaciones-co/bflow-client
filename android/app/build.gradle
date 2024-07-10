@@ -22,9 +22,15 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def flutterCompileSdkVersion = localProperties.getProperty('flutter.compileSdkVersion').toInteger()
+if (flutterCompileSdkVersion == null) {
+    flutterCompileSdkVersion = 34
+}
+
+
 android {
     namespace "com.example.bflow_client"
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion flutterCompileSdkVersion
     ndkVersion flutter.ndkVersion
 
     compileOptions {

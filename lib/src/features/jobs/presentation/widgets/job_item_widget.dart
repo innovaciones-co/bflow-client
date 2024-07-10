@@ -56,11 +56,6 @@ class JobItemWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(job.address),
-              ActionButtonWidget(
-                onPressed: () {},
-                type: ButtonType.textButton,
-                title: "Open in Goole maps",
-              ), // THIS ?link
             ],
           ),
         ),
@@ -248,6 +243,7 @@ SizedBox _mobileCellJob(
     width: width,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Text(
           title,

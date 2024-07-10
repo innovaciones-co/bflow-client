@@ -66,13 +66,17 @@ class _JobsPageState extends State<JobsPage> {
             child: Column(
               children: [
                 _getJobCards(context),
-                const JobsActionBarWidget(),
+                context.isDesktop || context.isTablet
+                    ? const JobsActionBarWidget()
+                    : const SizedBox.shrink(),
                 Column(
                   children: state.jobsFiltered
-                      .map((job) => JobItemWidget(
-                            job: job,
-                            viewDetailsEnabled: true,
-                          ))
+                      .map(
+                        (job) => JobItemWidget(
+                          job: job,
+                          viewDetailsEnabled: true,
+                        ),
+                      )
                       .toList(),
                 ),
               ],
@@ -99,7 +103,8 @@ class _JobsPageState extends State<JobsPage> {
         children: [
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              padding: EdgeInsets.symmetric(
+                  horizontal: 20, vertical: context.isMobile ? 10 : 15),
               decoration: BoxDecoration(
                 color: color,
                 border: Border(
@@ -111,25 +116,34 @@ class _JobsPageState extends State<JobsPage> {
               ),
               child: Row(
                 children: [
-                  Image.asset(
-                    imagePath,
-                    height: context.isDesktop ? 60 : null,
-                    width: !context.isDesktop ? 45 : null,
-                  ),
-                  const SizedBox(width: 15),
+                  context.isMobile
+                      ? const SizedBox.shrink()
+                      : Image.asset(
+                          imagePath,
+                          height: context.isDesktop ? 60 : null,
+                          width: !context.isDesktop ? 45 : null,
+                        ),
+                  context.isMobile
+                      ? const SizedBox.shrink()
+                      : const SizedBox(width: 15),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           title,
-                          style: context.titleMedium,
+                          style: context.isMobile
+                              ? context.titleSmall
+                              : context.titleMedium,
                         ),
                         const SizedBox(height: 3),
                         Text(
                           total,
                           style: GoogleFonts.figtree(
-                            textStyle: context.titleLarge,
+                            textStyle: context.isMobile
+                                ? context.titleMedium
+                                : context.titleLarge,
                           ),
                         ),
                       ],
@@ -161,11 +175,7 @@ class _JobsPageState extends State<JobsPage> {
             total: inProgressJobs.toString(),
             imagePath: 'assets/img/digger_1.png'),
         SizedBox(
-          width: context.isDesktop
-              ? 50
-              : context.isTablet
-                  ? 15
-                  : null,
+          width: context.isDesktop ? 50 : 15,
           height: !context.isDesktop ? 10 : null,
         ),
         _jobsTotalCard(context,
@@ -182,8 +192,8 @@ class _JobsPageState extends State<JobsPage> {
         );
       } else {
         return SizedBox(
-          height: 180,
-          child: Column(
+          height: 75,
+          child: Row(
             children: widgets,
           ),
         );
