@@ -1,4 +1,4 @@
-package com.example.bflow_client
+package co.innovaciones.bflow_client
 
 import io.flutter.embedding.android.FlutterActivity
 
