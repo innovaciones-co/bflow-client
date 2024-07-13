@@ -49,12 +49,14 @@ import 'package:bflow_client/src/features/jobs/domain/usecases/create_task_use_c
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_tasks_from_template_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_files_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_job_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/delete_note_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/send_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_job_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/update_note_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/upload_files_use_case.dart';
@@ -323,6 +325,12 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => CreateNoteUsecase(notesRepository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => DeleteNoteUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => UpdateNoteUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => GetItemsUseCase(repository: sl()),
