@@ -22,6 +22,7 @@ class AlertMessage extends HomeState {
 }
 
 class FooterAction extends HomeState {
+  final bool visible;
   final Widget? leading;
   final List<Widget> actions;
   final Function()? onCancel;
@@ -30,5 +31,6 @@ class FooterAction extends HomeState {
     required this.actions,
     this.onCancel,
     required this.leading,
+    this.visible = true,
   });
 }

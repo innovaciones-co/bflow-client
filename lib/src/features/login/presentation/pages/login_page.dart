@@ -134,7 +134,8 @@ class LoginPage extends StatelessWidget with Validator {
                   onFieldSubmitted: (pass) {
                     TextInput.finishAutofillContext();
 
-                    if (_loginFormKey.currentState!.validate()) {
+                    if (_loginFormKey.currentState != null &&
+                        _loginFormKey.currentState!.validate()) {
                       loginBloc.login();
                     } else {
                       loginBloc.updateAutovalidateMode(AutovalidateMode.always);
@@ -152,7 +153,8 @@ class LoginPage extends StatelessWidget with Validator {
                     onPressed: () {
                       TextInput.finishAutofillContext();
 
-                      if (_loginFormKey.currentState!.validate()) {
+                      if (_loginFormKey.currentState != null &&
+                          _loginFormKey.currentState!.validate()) {
                         loginBloc.login();
                       } else {
                         loginBloc

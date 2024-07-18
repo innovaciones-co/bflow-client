@@ -29,3 +29,5 @@ class ShowFooterActionEvent extends HomeEvent {
     required this.leading,
   });
 }
+
+class HideFooterActionEvent extends HomeEvent {}

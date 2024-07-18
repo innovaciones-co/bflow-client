@@ -20,6 +20,12 @@ class AddSelectedTask extends TasksEvent {
   const AddSelectedTask({required this.task});
 }
 
+class AddUpdatedTasks extends TasksEvent {
+  final List<Task> updatedTasks;
+
+  const AddUpdatedTasks({required this.updatedTasks});
+}
+
 class RemoveSelectedTask extends TasksEvent {
   final Task task;
 
@@ -59,7 +65,7 @@ class UpdateTaskDataEvent extends TasksEvent {
   const UpdateTaskDataEvent({required this.task});
 }
 
-class SaveUpdatedTasks extends TasksEvent {}
+// class SaveUpdatedTasks extends TasksEvent {}
 
 class OnReceivedTaskEvent extends TasksEvent {
   final StompFrame frame;

@@ -33,7 +33,6 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   final GetContactsUseCase getContactsUseCase;
   final HomeBloc? homeBloc;
   final SocketService socketService;
-  List<Task> tasks = [];
 
   TasksBloc({
     required this.jobBloc,
@@ -60,6 +59,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<DeleteTasksEvent>(_deleteTasks);
     on<ToggleSelectedTask>(_toggleSelectedTask);
     on<AddSelectedTask>(_addSelectedTask);
+    on<AddUpdatedTasks>(_addUpdatedTasks);
     on<RemoveSelectedTask>(_removeSelectedTask);
     on<SendTaskEvent>(_sendTask);
     on<SendSelectedTasksEvent>(_sendTasks);
@@ -67,7 +67,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<LoadingTasksEvent>(_loadingTasks);
     on<GetTasksEvent>(_getTasks);
     on<UpdateTaskDataEvent>(_updateTaskData);
-    on<SaveUpdatedTasks>(_saveUpdatedTasks);
+    // on<SaveUpdatedTasks>(_saveUpdatedTasks);
     on<OnReceivedTaskEvent>(_receiveTaskEvent);
 
     if (jobBloc.state is JobLoaded) {
@@ -80,7 +80,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       var loadedState = (state as TasksLoaded);
       var selectedTasks = List<Task>.from(loadedState.selectedTasks);
 
-      emit(TasksSending());
+      emit(TasksLoading());
 
       var task =
           await sendTasksUseCase.execute(SendTasksParams(tasks: selectedTasks));
@@ -101,6 +101,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
                     "A confirmation email was sent for the suppliers of the selected tasks.",
                 type: AlertType.success),
           );
+
           add(GetTasksEvent(jobId: loadedState.tasks.first.job));
         },
       );
@@ -163,12 +164,18 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
 
     suppliersOrFailure.fold(
       (l) => emit(TasksError(failure: l)),
-      (s) {
+      (suppliers) {
         tasksOrFailure.fold(
           (l) => emit(TasksError(failure: l)),
           (t) {
             t.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-            emit(TasksLoaded(tasks: t, contacts: s));
+            emit(
+              TasksLoaded(
+                tasks: t,
+                contacts: List.of(suppliers)..add(null),
+                updatedTasks: const [],
+              ),
+            );
           },
         );
       },
@@ -259,6 +266,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
               message: "The tasks were updated successfully",
               type: AlertType.success),
         );
+
+        add(GetTasksEvent(jobId: event.tasks.first.job));
       },
     );
   }
@@ -267,24 +276,52 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     if (state is! TasksLoaded) return;
 
     var loadedState = (state as TasksLoaded);
-    List<Task> updatedTasks = List.of(loadedState.updatedTasksData);
-    Task task = event.task;
+    List<Task> updatedTasks = List.of(loadedState.updatedTasks);
+    List<Task> tasks = List.of(loadedState.tasks);
+    Task newTask = event.task;
+    Map<int, Task> updatedTasksMap = {
+      for (var item in updatedTasks) item.id!: item
+    };
 
-    bool exists = updatedTasks.indexWhere((i) => i.id == task.id) != -1;
-    if (exists) {
-      updatedTasks.removeWhere((i) => i.id == task.id);
+    // Update the tasks list with the updated tasks
+    for (var task in tasks) {
+      if (updatedTasksMap.containsKey(task.id)) {
+        Task updatedTask = updatedTasksMap[task.id]!;
+        task = task.copyWith(
+          id: updatedTask.id,
+          name: updatedTask.name,
+          callDate: updatedTask.callDate,
+          startDate: updatedTask.startDate,
+          endDate: updatedTask.endDate,
+          comments: updatedTask.comments,
+          progress: updatedTask.progress,
+          stage: updatedTask.stage,
+          status: updatedTask.status,
+          supplier: updatedTask.supplier,
+          order: updatedTask.order,
+        );
+      }
     }
-    updatedTasks.add(task);
 
-    emit(loadedState.copyWith(
-        updatedTasksData: updatedTasks, taskDataModified: true));
+    bool exists = updatedTasks.indexWhere((i) => i.id == newTask.id) != -1;
+    if (exists) {
+      updatedTasks.removeWhere((i) => i.id == newTask.id);
+    }
+    updatedTasks.add(newTask);
+
+    emit(
+      loadedState.copyWith(
+        updatedTasks: updatedTasks,
+        tasks: tasks,
+      ),
+    );
   }
 
-  FutureOr<void> _saveUpdatedTasks(
+  /* FutureOr<void> _saveUpdatedTasks(
       SaveUpdatedTasks event, Emitter<TasksState> emit) async {
     if (state is TasksLoaded) {
       var loadedState = (state as TasksLoaded);
-      var updatedTasks = List<Task>.from(loadedState.updatedTasksData);
+      var updatedTasks = List<Task>.from(loadedState.updatedTasks);
 
       List<String> errorMessages = [];
 
@@ -318,7 +355,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
         add(GetTasksEvent(jobId: updatedTasks.first.job));
       }
     }
-  }
+  } */
 
   FutureOr<void> _receiveTaskEvent(
       OnReceivedTaskEvent event, Emitter<TasksState> emit) {
@@ -332,6 +369,14 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       } else {
         add(GetTasksEvent(jobId: (jobBloc.state as JobLoaded).job.id));
       }
+    }
+  }
+
+  FutureOr<void> _addUpdatedTasks(
+      AddUpdatedTasks event, Emitter<TasksState> emit) {
+    var tasks = event.updatedTasks;
+    if (state is TasksLoaded) {
+      emit((state as TasksLoaded).copyWith(updatedTasks: tasks));
     }
   }
 }

@@ -5,11 +5,13 @@ import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/extensions/ui_extensions.dart';
 import 'package:bflow_client/src/core/utils/input_formatters/range_input_formatter.dart';
 import 'package:bflow_client/src/core/utils/mixins/validator.dart';
+import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
 import 'package:bflow_client/src/core/widgets/custom_chip_widget.dart';
 import 'package:bflow_client/src/core/widgets/date_picker_widget.dart';
 import 'package:bflow_client/src/core/widgets/dropdown_controller_widget.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
+import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/task/task_cubit.dart';
@@ -44,17 +46,18 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
     11: const FixedColumnWidth(40),
   };
 
-  List<Task> updatedTasks = [];
+  List<Task> initialTasks = [];
 
   @override
   void initState() {
     super.initState();
-    updatedTasks = List.of(widget.tasks);
+    initialTasks = List.of(widget.tasks);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TasksBloc, TasksState>(
+    return BlocConsumer<TasksBloc, TasksState>(
+      listener: _onTasksStateUpdated,
       builder: (context, state) {
         if (state is TaskLoading) {
           return const LoadingWidget();
@@ -79,7 +82,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
           return ReorderableListView(
             header: _header(),
             onReorder: _onReorderTasks,
-            children: updatedTasks
+            children: initialTasks
                 .map(
                   (task) => Table(
                     key: Key('${task.id}'),
@@ -112,16 +115,17 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
-    final Task updatedTask = updatedTasks.removeAt(oldIndex);
-    updatedTasks.insert(newIndex, updatedTask);
+    final Task updatedTask = initialTasks.removeAt(oldIndex);
+    initialTasks.insert(newIndex, updatedTask);
 
     setState(() {
-      updatedTasks = updatedTasks
+      initialTasks = initialTasks
           .mapIndexed((index, task) => task.copyWith(order: index))
           .toList();
     });
 
-    context.read<TasksBloc>().add(UpdateTasksEvent(tasks: updatedTasks));
+    context.read<TasksBloc>().add(AddUpdatedTasks(updatedTasks: initialTasks));
+    //context.read<TasksBloc>().add(UpdateTasksEvent(tasks: initialTasks));
   }
 
   void _toggleSelectedTasks({
@@ -141,7 +145,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
   TableRow _tableRow({
     required Task task,
     required BuildContext context,
-    required List<Contact> contacts,
+    required List<Contact?> contacts,
   }) {
     return TableRow(
       decoration: BoxDecoration(color: task.backgroundStatusColor),
@@ -195,18 +199,24 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
           paddingRight: 1,
         ),
         _tableCell(
-          Text(
+          /* Text(
             task.supplier?.name ?? '',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-          ),
-          /* DropdownControllerWidget<Contact>(
-            items: contacts,
-            getLabel: (r) => r.name,
-            onChanged: null, //writeTaskBloc.updateSupplier,
-            currentItem: "",
-            editOnTable: true,
           ), */
+          DropdownControllerWidget<Contact?>(
+            items: contacts,
+            getLabel: (r) => r?.name ?? "(No supplier)",
+            onChanged: (supplier) {
+              context.read<TasksBloc>().add(
+                    UpdateTaskDataEvent(
+                      task: task.copyWith(supplier: supplier),
+                    ),
+                  );
+            },
+            currentItem: task.supplier,
+            editOnTable: true,
+          ),
         ),
         _tableCell(
           Row(
@@ -439,5 +449,48 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
         ),
       ],
     );
+  }
+
+  void _onTasksStateUpdated(context, state) {
+    if (state is TasksLoaded) {
+      var taskModified = state.updatedTasks.isNotEmpty;
+
+      if (taskModified) {
+        HomeBloc homeBloc = this.context.read();
+        homeBloc.add(
+          ShowFooterActionEvent(
+            leading: Row(
+              children: [
+                Icon(
+                  Icons.warning_rounded,
+                  color: AppColor.red,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  "(${state.updatedTasks.length}) tasks were updated",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            actions: [
+              ActionButtonWidget(
+                onPressed: () {
+                  this.context.read<TasksBloc>().add(
+                        UpdateTasksEvent(tasks: state.updatedTasks),
+                      );
+                  this.context.read<HomeBloc>().add(
+                        HideFooterActionEvent(),
+                      );
+                },
+                type: ButtonType.elevatedButton,
+                title: "Save changes",
+                backgroundColor: AppColor.blue,
+                foregroundColor: AppColor.white,
+              )
+            ],
+          ),
+        );
+      }
+    }
   }
 }

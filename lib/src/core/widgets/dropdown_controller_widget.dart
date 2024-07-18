@@ -45,10 +45,10 @@ class _DropdownControllerWidgetState<T>
 
     setState(() {
       if (widget.items.isNotEmpty) {
-        _currentItem = widget.currentItem ?? widget.items.first;
-        if (widget.onChanged != null && _currentItem != null) {
+        _currentItem = widget.currentItem;
+        /* if (widget.onChanged != null && _currentItem != null) {
           widget.onChanged!(_currentItem as T);
-        }
+        } */
       }
     });
   }

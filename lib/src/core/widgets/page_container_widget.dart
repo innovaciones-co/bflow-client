@@ -30,11 +30,15 @@ class _PageContainerWidgetState extends State<PageContainerWidget> {
       listener: (context, state) {
         if (state is FooterAction) {
           setState(() {
-            footerBarWidget = FooterBarWidget(
-              actions: state.actions,
-              leading: state.leading,
-              onCancel: state.onCancel,
-            );
+            if (state.visible) {
+              footerBarWidget = FooterBarWidget(
+                actions: state.actions,
+                leading: state.leading,
+                onCancel: state.onCancel,
+              );
+            } else {
+              footerBarWidget = null;
+            }
           });
         }
       },

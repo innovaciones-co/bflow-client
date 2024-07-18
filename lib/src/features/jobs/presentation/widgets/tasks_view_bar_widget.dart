@@ -2,7 +2,6 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
-import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
@@ -57,45 +56,6 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
           builder: (context, selectedTasks) {
             return Row(
               children: [
-                BlocBuilder<TasksBloc, TasksState>(
-                  builder: (context, state) {
-                    if (state is TasksLoaded) {
-                      var taskModified = (state).taskDataModified;
-
-                      if (taskModified) {
-                        HomeBloc homeBloc = context.read();
-                        homeBloc.add(ShowFooterActionEvent(
-                          leading: Row(
-                            children: [
-                              Icon(
-                                Icons.warning_rounded,
-                                color: AppColor.red,
-                              ),
-                              const SizedBox(width: 10),
-                              const Text(
-                                "Some modifications have been made",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          actions: [
-                            ActionButtonWidget(
-                              onPressed: () => context
-                                  .read<TasksBloc>()
-                                  .add(SaveUpdatedTasks()),
-                              type: ButtonType.elevatedButton,
-                              title: "Save changes",
-                              backgroundColor: AppColor.blue,
-                              foregroundColor: AppColor.white,
-                            )
-                          ],
-                        ));
-                      }
-                    }
-
-                    return const SizedBox.shrink();
-                  },
-                ),
                 selectedTasks
                     ? BlocSelector<TasksBloc, TasksState, bool>(
                         selector: (state) {
