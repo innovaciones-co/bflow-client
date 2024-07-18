@@ -48,12 +48,15 @@ import 'package:bflow_client/src/features/jobs/domain/usecases/create_note_use_c
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/create_tasks_from_template_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_files_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/delete_job_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/delete_note_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_job_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/send_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_job_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/update_note_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/upload_files_use_case.dart';
@@ -82,6 +85,7 @@ import 'package:bflow_client/src/features/purchase_orders/domain/usecases/delete
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_items_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_order_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_orders_by_job_use_case.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/usecases/update_item_use_case.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/bloc/items_bloc.dart';
 import 'package:bflow_client/src/features/templates/data/implements/templates_repository_imp.dart';
 import 'package:bflow_client/src/features/templates/data/sources/template_remote_data_source.dart';
@@ -140,7 +144,11 @@ class DependencyInjection {
       ),
     );
     sl.registerFactory<JobsBloc>(
-      () => JobsBloc(sl(), sl()),
+      () => JobsBloc(
+        getJobsUseCase: sl(),
+        createJobUseCase: sl(),
+        deleteJobUseCase: sl(),
+      ),
     );
     sl.registerFactory<JobBloc>(
       () => JobBloc(sl(), sl()),
@@ -154,6 +162,8 @@ class DependencyInjection {
         updateTasksUseCase: sl(),
         homeBloc: sl(),
         socketService: sl(),
+        updateTaskUseCase: sl(),
+        getContactsUseCase: sl(),
       ),
     );
     sl.registerFactory<UsersBloc>(
@@ -197,6 +207,7 @@ class DependencyInjection {
         getSuppliersUseCase: sl(),
         createPurchaseOrderUseCase: sl(),
         deleteItemUseCase: sl(),
+        updateItemUseCase: sl(),
         homeBloc: sl(),
       ),
     );
@@ -256,6 +267,9 @@ class DependencyInjection {
       () => CreateJobUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
+      () => DeleteJobUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
       () => UpdateJobUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
@@ -311,6 +325,12 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => CreateNoteUsecase(notesRepository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => DeleteNoteUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => UpdateNoteUseCase(repository: sl()),
     );
     sl.registerLazySingleton(
       () => GetItemsUseCase(repository: sl()),
@@ -378,6 +398,9 @@ class DependencyInjection {
     );
     sl.registerLazySingleton(
       () => UpsertProductsUseCase(repository: sl()),
+    );
+    sl.registerLazySingleton(
+      () => UpdateItemUseCase(repository: sl()),
     );
 
     // Repository

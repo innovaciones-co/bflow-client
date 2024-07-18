@@ -21,7 +21,7 @@ class NotesRemoteDataSource extends RemoteDataSource {
     final noteModel = NoteModel.fromEntity(note);
     int taskId = await apiService.put(
       endpoint:
-          ApiConstants.taskEndpoint.replaceAll(':id', noteModel.id.toString()),
+          ApiConstants.noteEndpoint.replaceAll(':id', noteModel.id.toString()),
       data: noteModel.toMap(),
     );
 

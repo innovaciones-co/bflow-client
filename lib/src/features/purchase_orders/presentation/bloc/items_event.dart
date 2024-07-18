@@ -39,3 +39,11 @@ class CreatePurchaseOrderEvent extends ItemsEvent {
 
   const CreatePurchaseOrderEvent({required this.jobId});
 }
+
+class UpdateItemEvent extends ItemsEvent {
+  final Item item;
+
+  const UpdateItemEvent({required this.item});
+}
+
+class SaveUpdatedItems extends ItemsEvent {}

@@ -9,6 +9,7 @@ import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.da
 import 'package:bflow_client/src/features/jobs/presentation/bloc/notes/notes_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/file_download_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/file_upload_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/job_note.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -173,23 +174,12 @@ class JobFilesWidget extends StatelessWidget {
     return Column(
       children: state.job.notes!
           .map(
-            (e) => Container(
-              width: context.width / 2,
-              margin: const EdgeInsets.only(bottom: 15),
-              decoration: BoxDecoration(
-                color: AppColor.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColor.grey,
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(2, 2), // changes position of shadow
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(25.0),
-              child: Text(e.body),
-            ),
+            // ignore: unnecessary_cast
+            (e) => JobNote(
+              note: e,
+              jobId: state.job.id!,
+              jobBloc: context.read(),
+            ) as Widget,
           )
           .toList()
         ..add(
@@ -198,7 +188,7 @@ class JobFilesWidget extends StatelessWidget {
     );
   }
 
-  Container _buildAddNote(BuildContext context) {
+  Widget _buildAddNote(BuildContext context) {
     return Container(
       width: context.width / 2,
       margin: const EdgeInsets.only(bottom: 15),
@@ -222,6 +212,8 @@ class JobFilesWidget extends StatelessWidget {
           return BlocProvider(
             create: (context) => NotesCubit(
               createNoteUsecase: DependencyInjection.sl(),
+              deleteNoteUseCase: DependencyInjection.sl(),
+              updateNoteUseCase: DependencyInjection.sl(),
               jobId: (state).job.id!,
               jobBloc: context.read(),
             ),
@@ -241,7 +233,7 @@ class JobFilesWidget extends StatelessWidget {
                       ),
                       minLines: 3,
                       maxLines: 5,
-                      onChanged: bloc.updateNote,
+                      onChanged: bloc.updateNoteBody,
                     ),
                     state.note != null
                         ? Container(

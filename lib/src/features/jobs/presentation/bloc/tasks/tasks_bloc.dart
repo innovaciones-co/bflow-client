@@ -4,12 +4,16 @@ import 'dart:async';
 import 'package:bflow_client/src/core/api/api.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
+import 'package:bflow_client/src/features/contacts/domain/usecases/get_contacts_usecase.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/data/models/task_model.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/delete_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/get_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/send_tasks_use_case.dart';
+import 'package:bflow_client/src/features/jobs/domain/usecases/update_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -25,9 +29,10 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   final DeleteTaskUseCase deleteTaskUseCase;
   final SendTasksUseCase sendTasksUseCase;
   final UpdateTasksUseCase updateTasksUseCase;
+  final UpdateTaskUseCase updateTaskUseCase;
+  final GetContactsUseCase getContactsUseCase;
   final HomeBloc? homeBloc;
   final SocketService socketService;
-  List<Task> tasks = [];
 
   TasksBloc({
     required this.jobBloc,
@@ -35,6 +40,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     required this.deleteTaskUseCase,
     required this.sendTasksUseCase,
     required this.updateTasksUseCase,
+    required this.updateTaskUseCase,
+    required this.getContactsUseCase,
     required this.homeBloc,
     required this.socketService,
   }) : super(TasksInitial()) {
@@ -52,12 +59,15 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<DeleteTasksEvent>(_deleteTasks);
     on<ToggleSelectedTask>(_toggleSelectedTask);
     on<AddSelectedTask>(_addSelectedTask);
+    on<AddUpdatedTasks>(_addUpdatedTasks);
     on<RemoveSelectedTask>(_removeSelectedTask);
     on<SendTaskEvent>(_sendTask);
     on<SendSelectedTasksEvent>(_sendTasks);
     on<TasksEvent>((event, emit) {});
     on<LoadingTasksEvent>(_loadingTasks);
     on<GetTasksEvent>(_getTasks);
+    on<UpdateTaskDataEvent>(_updateTaskData);
+    // on<SaveUpdatedTasks>(_saveUpdatedTasks);
     on<OnReceivedTaskEvent>(_receiveTaskEvent);
 
     if (jobBloc.state is JobLoaded) {
@@ -70,7 +80,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       var loadedState = (state as TasksLoaded);
       var selectedTasks = List<Task>.from(loadedState.selectedTasks);
 
-      emit(TasksSending());
+      emit(TasksLoading());
 
       var task =
           await sendTasksUseCase.execute(SendTasksParams(tasks: selectedTasks));
@@ -91,6 +101,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
                     "A confirmation email was sent for the suppliers of the selected tasks.",
                 type: AlertType.success),
           );
+
           add(GetTasksEvent(jobId: loadedState.tasks.first.job));
         },
       );
@@ -145,13 +156,28 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   _getTasks(GetTasksEvent event, Emitter<TasksState> emit) async {
     emit(TasksLoading());
 
-    GetTasksParams params = GetTasksParams(jobId: event.jobId);
-    var tasksOrFailure = await getTasksUseCase.execute(params);
-    tasksOrFailure.fold(
+    GetTasksParams taskParams = GetTasksParams(jobId: event.jobId);
+    var tasksOrFailure = await getTasksUseCase.execute(taskParams);
+    GetContactsParams contactParams =
+        GetContactsParams(contactType: ContactType.supplier);
+    var suppliersOrFailure = await getContactsUseCase.execute(contactParams);
+
+    suppliersOrFailure.fold(
       (l) => emit(TasksError(failure: l)),
-      (t) {
-        t.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-        emit(TasksLoaded(tasks: t));
+      (suppliers) {
+        tasksOrFailure.fold(
+          (l) => emit(TasksError(failure: l)),
+          (t) {
+            t.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+            emit(
+              TasksLoaded(
+                tasks: t,
+                contacts: List.of(suppliers)..add(null),
+                updatedTasks: const [],
+              ),
+            );
+          },
+        );
       },
     );
   }
@@ -240,9 +266,96 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
               message: "The tasks were updated successfully",
               type: AlertType.success),
         );
+
+        add(GetTasksEvent(jobId: event.tasks.first.job));
       },
     );
   }
+
+  void _updateTaskData(event, Emitter<TasksState> emit) {
+    if (state is! TasksLoaded) return;
+
+    var loadedState = (state as TasksLoaded);
+    List<Task> updatedTasks = List.of(loadedState.updatedTasks);
+    List<Task> tasks = List.of(loadedState.tasks);
+    Task newTask = event.task;
+    Map<int, Task> updatedTasksMap = {
+      for (var item in updatedTasks) item.id!: item
+    };
+
+    // Update the tasks list with the updated tasks
+    for (var task in tasks) {
+      if (updatedTasksMap.containsKey(task.id)) {
+        Task updatedTask = updatedTasksMap[task.id]!;
+        task = task.copyWith(
+          id: updatedTask.id,
+          name: updatedTask.name,
+          callDate: updatedTask.callDate,
+          startDate: updatedTask.startDate,
+          endDate: updatedTask.endDate,
+          comments: updatedTask.comments,
+          progress: updatedTask.progress,
+          stage: updatedTask.stage,
+          status: updatedTask.status,
+          supplier: updatedTask.supplier,
+          order: updatedTask.order,
+        );
+      }
+    }
+
+    bool exists = updatedTasks.indexWhere((i) => i.id == newTask.id) != -1;
+    if (exists) {
+      updatedTasks.removeWhere((i) => i.id == newTask.id);
+    }
+    updatedTasks.add(newTask);
+
+    emit(
+      loadedState.copyWith(
+        updatedTasks: updatedTasks,
+        tasks: tasks,
+      ),
+    );
+  }
+
+  /* FutureOr<void> _saveUpdatedTasks(
+      SaveUpdatedTasks event, Emitter<TasksState> emit) async {
+    if (state is TasksLoaded) {
+      var loadedState = (state as TasksLoaded);
+      var updatedTasks = List<Task>.from(loadedState.updatedTasks);
+
+      List<String> errorMessages = [];
+
+      for (var task in updatedTasks) {
+        var updatedTask =
+            await updateTaskUseCase.execute(UpdateTaskParams(task: task));
+        updatedTask.fold(
+          (failure) {
+            errorMessages
+                .add("Task ${task.id} couldn't be updated: ${failure.message}");
+          },
+          (success) {},
+        );
+      }
+
+      if (errorMessages.isNotEmpty) {
+        homeBloc?.add(
+          ShowMessageEvent(
+            message: errorMessages.join('\n'),
+            type: AlertType.error,
+          ),
+        );
+      } else {
+        homeBloc?.add(
+          ShowMessageEvent(
+            message: "All tasks updated successfully!",
+            type: AlertType.success,
+          ),
+        );
+        emit(loadedState.copyWith(taskDataModified: false));
+        add(GetTasksEvent(jobId: updatedTasks.first.job));
+      }
+    }
+  } */
 
   FutureOr<void> _receiveTaskEvent(
       OnReceivedTaskEvent event, Emitter<TasksState> emit) {
@@ -256,6 +369,14 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       } else {
         add(GetTasksEvent(jobId: (jobBloc.state as JobLoaded).job.id));
       }
+    }
+  }
+
+  FutureOr<void> _addUpdatedTasks(
+      AddUpdatedTasks event, Emitter<TasksState> emit) {
+    var tasks = event.updatedTasks;
+    if (state is TasksLoaded) {
+      emit((state as TasksLoaded).copyWith(updatedTasks: tasks));
     }
   }
 }

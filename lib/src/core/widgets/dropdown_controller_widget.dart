@@ -9,16 +9,18 @@ class DropdownControllerWidget<T> extends StatefulWidget {
   final String Function(T) getLabel;
   final String? Function(T?)? validator;
   final T? currentItem;
+  final bool? editOnTable;
 
   const DropdownControllerWidget({
     super.key,
-    this.label,
+    this.label = "",
     this.items = const [],
     this.onChanged,
     required this.getLabel,
     this.validator,
     this.currentItem,
     this.labelPadding = const EdgeInsets.symmetric(horizontal: 8),
+    this.editOnTable = false,
   });
 
   @override
@@ -43,10 +45,10 @@ class _DropdownControllerWidgetState<T>
 
     setState(() {
       if (widget.items.isNotEmpty) {
-        _currentItem = widget.currentItem ?? widget.items.first;
-        if (widget.onChanged != null && _currentItem != null) {
+        _currentItem = widget.currentItem;
+        /* if (widget.onChanged != null && _currentItem != null) {
           widget.onChanged!(_currentItem as T);
-        }
+        } */
       }
     });
   }
@@ -66,50 +68,97 @@ class _DropdownControllerWidgetState<T>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        widget.label != null
-            ? Padding(
-                padding: widget.labelPadding,
-                child: Text(widget.label!),
-              )
-            : const SizedBox.shrink(),
-        widget.label != null
-            ? const SizedBox(height: 5)
-            : const SizedBox.shrink(),
-        DropdownMenu<T>(
-          controller: _controller,
-          menuStyle: MenuStyle(
-            backgroundColor: MaterialStateProperty.all(AppColor.white),
-            surfaceTintColor: MaterialStateProperty.all(AppColor.grey),
-          ),
-          expandedInsets: EdgeInsets.zero,
-          trailingIcon: const Icon(Icons.keyboard_arrow_down_outlined),
-          selectedTrailingIcon: const Icon(Icons.keyboard_arrow_up_outlined),
-          initialSelection: _currentItem,
-          onSelected: (T? value) {
-            if (widget.onChanged != null && value != null) {
-              widget.onChanged!(value);
-            }
-            setState(() {
-              if (value != null) {
-                _currentItem = value;
+    return widget.editOnTable!
+        ? DropdownMenu<T>(
+            inputDecorationTheme: const InputDecorationTheme(
+              enabledBorder: InputBorder.none,
+              filled: false,
+              contentPadding:
+                  EdgeInsets.only(top: 0, bottom: 0, left: 10, right: 10),
+            ),
+            controller: _controller,
+            menuStyle: MenuStyle(
+              backgroundColor: MaterialStateProperty.all(AppColor.white),
+              surfaceTintColor: MaterialStateProperty.all(AppColor.grey),
+            ),
+            expandedInsets: EdgeInsets.zero,
+            trailingIcon: const Icon(
+              Icons.keyboard_arrow_down_outlined,
+              size: 15,
+            ),
+            selectedTrailingIcon: const Icon(
+              Icons.keyboard_arrow_up_outlined,
+              size: 15,
+            ),
+            initialSelection: _currentItem,
+            onSelected: (T? value) {
+              if (widget.onChanged != null && value != null) {
+                widget.onChanged!(value);
               }
-            });
-          },
-          dropdownMenuEntries: widget.items.map((T value) {
-            String label = widget.getLabel(value);
+              setState(() {
+                if (value != null) {
+                  _currentItem = value;
+                }
+              });
+            },
+            dropdownMenuEntries: widget.items.map((T value) {
+              String label = widget.getLabel(value);
 
-            return DropdownMenuEntry<T>(
-              value: value,
-              label: label,
-            );
-          }).toList(),
-          errorText:
-              widget.validator != null ? widget.validator!(_currentItem) : null,
-        ),
-      ],
-    );
+              return DropdownMenuEntry<T>(
+                value: value,
+                label: label,
+              );
+            }).toList(),
+            errorText: widget.validator != null
+                ? widget.validator!(_currentItem)
+                : null,
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              widget.label != null
+                  ? Padding(
+                      padding: widget.labelPadding,
+                      child: Text(widget.label!),
+                    )
+                  : const SizedBox.shrink(),
+              widget.label != null
+                  ? const SizedBox(height: 5)
+                  : const SizedBox.shrink(),
+              DropdownMenu<T>(
+                controller: _controller,
+                menuStyle: MenuStyle(
+                  backgroundColor: MaterialStateProperty.all(AppColor.white),
+                  surfaceTintColor: MaterialStateProperty.all(AppColor.grey),
+                ),
+                expandedInsets: EdgeInsets.zero,
+                trailingIcon: const Icon(Icons.keyboard_arrow_down_outlined),
+                selectedTrailingIcon:
+                    const Icon(Icons.keyboard_arrow_up_outlined),
+                initialSelection: _currentItem,
+                onSelected: (T? value) {
+                  if (widget.onChanged != null && value != null) {
+                    widget.onChanged!(value);
+                  }
+                  setState(() {
+                    if (value != null) {
+                      _currentItem = value;
+                    }
+                  });
+                },
+                dropdownMenuEntries: widget.items.map((T value) {
+                  String label = widget.getLabel(value);
+
+                  return DropdownMenuEntry<T>(
+                    value: value,
+                    label: label,
+                  );
+                }).toList(),
+                errorText: widget.validator != null
+                    ? widget.validator!(_currentItem)
+                    : null,
+              ),
+            ],
+          );
   }
 }

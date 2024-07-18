@@ -3,8 +3,15 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/extensions/ui_extensions.dart';
+import 'package:bflow_client/src/core/utils/input_formatters/range_input_formatter.dart';
+import 'package:bflow_client/src/core/utils/mixins/validator.dart';
+import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
 import 'package:bflow_client/src/core/widgets/custom_chip_widget.dart';
+import 'package:bflow_client/src/core/widgets/date_picker_widget.dart';
+import 'package:bflow_client/src/core/widgets/dropdown_controller_widget.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
+import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/task/task_cubit.dart';
@@ -14,6 +21,7 @@ import 'package:bflow_client/src/features/jobs/presentation/widgets/write_task_w
 import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -25,7 +33,7 @@ class TaskTableWidget extends StatefulWidget {
   State<TaskTableWidget> createState() => _TaskTableListViewState();
 }
 
-class _TaskTableListViewState extends State<TaskTableWidget> {
+class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
   Map<int, TableColumnWidth> columnWidths = {
     0: const FixedColumnWidth(40),
     1: const FixedColumnWidth(40),
@@ -38,17 +46,18 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     11: const FixedColumnWidth(40),
   };
 
-  List<Task> updatedTasks = [];
+  List<Task> initialTasks = [];
 
   @override
   void initState() {
     super.initState();
-    updatedTasks = List.of(widget.tasks);
+    initialTasks = List.of(widget.tasks);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TasksBloc, TasksState>(
+    return BlocConsumer<TasksBloc, TasksState>(
+      listener: _onTasksStateUpdated,
       builder: (context, state) {
         if (state is TaskLoading) {
           return const LoadingWidget();
@@ -67,32 +76,37 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
             },
           );
         }
+        if (state is TasksLoaded) {
+          var contacts = state.contacts;
 
-        return ReorderableListView(
-          header: _header(),
-          onReorder: _onReorderTasks,
-          children: updatedTasks
-              .map(
-                (task) => Table(
-                  key: Key('${task.id}'),
-                  columnWidths: columnWidths,
-                  border: TableBorder(
-                    top: BorderSide(width: 0.5, color: AppColor.lightGrey),
-                    right: BorderSide(width: 1.0, color: AppColor.lightGrey),
-                    bottom: BorderSide(width: 0.5, color: AppColor.lightGrey),
-                    left: BorderSide(width: 1.0, color: AppColor.lightGrey),
-                    horizontalInside:
-                        BorderSide(width: 1.0, color: AppColor.lightGrey),
-                    verticalInside:
-                        BorderSide(width: 1.0, color: AppColor.lightGrey),
+          return ReorderableListView(
+            header: _header(),
+            onReorder: _onReorderTasks,
+            children: initialTasks
+                .map(
+                  (task) => Table(
+                    key: Key('${task.id}'),
+                    columnWidths: columnWidths,
+                    border: TableBorder(
+                      top: BorderSide(width: 0.5, color: AppColor.lightGrey),
+                      right: BorderSide(width: 1.0, color: AppColor.lightGrey),
+                      bottom: BorderSide(width: 0.5, color: AppColor.lightGrey),
+                      left: BorderSide(width: 1.0, color: AppColor.lightGrey),
+                      horizontalInside:
+                          BorderSide(width: 1.0, color: AppColor.lightGrey),
+                      verticalInside:
+                          BorderSide(width: 1.0, color: AppColor.lightGrey),
+                    ),
+                    children: [
+                      _tableRow(
+                          task: task, context: context, contacts: contacts),
+                    ],
                   ),
-                  children: [
-                    _tableRow(task: task),
-                  ],
-                ),
-              )
-              .toList(),
-        );
+                )
+                .toList(),
+          );
+        }
+        return const SizedBox.shrink();
       },
     );
   }
@@ -101,16 +115,17 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
-    final Task updatedTask = updatedTasks.removeAt(oldIndex);
-    updatedTasks.insert(newIndex, updatedTask);
+    final Task updatedTask = initialTasks.removeAt(oldIndex);
+    initialTasks.insert(newIndex, updatedTask);
 
     setState(() {
-      updatedTasks = updatedTasks
+      initialTasks = initialTasks
           .mapIndexed((index, task) => task.copyWith(order: index))
           .toList();
     });
 
-    context.read<TasksBloc>().add(UpdateTasksEvent(tasks: updatedTasks));
+    context.read<TasksBloc>().add(AddUpdatedTasks(updatedTasks: initialTasks));
+    //context.read<TasksBloc>().add(UpdateTasksEvent(tasks: initialTasks));
   }
 
   void _toggleSelectedTasks({
@@ -129,6 +144,8 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
 
   TableRow _tableRow({
     required Task task,
+    required BuildContext context,
+    required List<Contact?> contacts,
   }) {
     return TableRow(
       decoration: BoxDecoration(color: task.backgroundStatusColor),
@@ -160,19 +177,45 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
         _tableCell(
           Tooltip(
             message: task.name,
-            child: Text(
-              task.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            child: TextFormField(
+              onChanged: (value) {
+                context
+                    .read<TasksBloc>()
+                    .add(UpdateTaskDataEvent(task: task.copyWith(name: value)));
+              },
+              initialValue: task.name,
+              enableSuggestions: false,
+              autocorrect: false,
+              validator: validateName,
+              decoration: const InputDecoration(
+                enabledBorder: InputBorder.none,
+                filled: false,
+                contentPadding:
+                    EdgeInsets.only(top: 8, bottom: 8, left: 10, right: 10),
+              ),
             ),
           ),
-          paddingLeft: 0,
+          paddingLeft: 1,
+          paddingRight: 1,
         ),
         _tableCell(
-          Text(
+          /* Text(
             task.supplier?.name ?? '',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
+          ), */
+          DropdownControllerWidget<Contact?>(
+            items: contacts,
+            getLabel: (r) => r?.name ?? "(No supplier)",
+            onChanged: (supplier) {
+              context.read<TasksBloc>().add(
+                    UpdateTaskDataEvent(
+                      task: task.copyWith(supplier: supplier),
+                    ),
+                  );
+            },
+            currentItem: task.supplier,
+            editOnTable: true,
           ),
         ),
         _tableCell(
@@ -190,10 +233,24 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
           Text(task.callDate?.toMonthDate() ?? ""),
         ),
         _tableCell(
-          Text(task.startDate?.toMonthDate() ?? ""),
+          DatePickerWidget(
+            onChange: (value) {
+              context.read<TasksBloc>().add(
+                  UpdateTaskDataEvent(task: task.copyWith(startDate: value)));
+            },
+            initialValue: task.startDate,
+            editOnTable: true,
+          ),
         ),
         _tableCell(
-          Text(task.endDate?.toMonthDate() ?? ""),
+          DatePickerWidget(
+            onChange: (value) {
+              context.read<TasksBloc>().add(
+                  UpdateTaskDataEvent(task: task.copyWith(endDate: value)));
+            },
+            initialValue: task.endDate,
+            editOnTable: true,
+          ),
         ),
         _tableCell(
           Text(
@@ -203,7 +260,31 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
           ),
         ),
         _tableCell(
-          Text("${task.progress.toString()}%"),
+          TextFormField(
+            onChanged: (value) {
+              context.read<TasksBloc>().add(UpdateTaskDataEvent(
+                  task: task.copyWith(progress: int.tryParse(value))));
+            },
+            initialValue: task.progress.toString(),
+            enableSuggestions: false,
+            autocorrect: false,
+            validator: validateProgress,
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              RangeInputFormatter(),
+            ],
+            textAlign: TextAlign.right,
+            decoration: const InputDecoration(
+              enabledBorder: InputBorder.none,
+              filled: false,
+              suffixText: ' %',
+              contentPadding:
+                  EdgeInsets.only(top: 8, bottom: 8, left: 10, right: 18),
+            ),
+          ),
+          paddingLeft: 1,
+          paddingRight: 1,
         ),
         _tableCell(
           Row(
@@ -368,5 +449,48 @@ class _TaskTableListViewState extends State<TaskTableWidget> {
         ),
       ],
     );
+  }
+
+  void _onTasksStateUpdated(context, state) {
+    if (state is TasksLoaded) {
+      var taskModified = state.updatedTasks.isNotEmpty;
+
+      if (taskModified) {
+        HomeBloc homeBloc = this.context.read();
+        homeBloc.add(
+          ShowFooterActionEvent(
+            leading: Row(
+              children: [
+                Icon(
+                  Icons.warning_rounded,
+                  color: AppColor.red,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  "(${state.updatedTasks.length}) tasks were updated",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            actions: [
+              ActionButtonWidget(
+                onPressed: () {
+                  this.context.read<TasksBloc>().add(
+                        UpdateTasksEvent(tasks: state.updatedTasks),
+                      );
+                  this.context.read<HomeBloc>().add(
+                        HideFooterActionEvent(),
+                      );
+                },
+                type: ButtonType.elevatedButton,
+                title: "Save changes",
+                backgroundColor: AppColor.blue,
+                foregroundColor: AppColor.white,
+              )
+            ],
+          ),
+        );
+      }
+    }
   }
 }

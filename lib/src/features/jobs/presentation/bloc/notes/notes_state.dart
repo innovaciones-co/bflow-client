@@ -24,3 +24,7 @@ final class NotesError extends NotesState {
 }
 
 final class NotesAdded extends NotesState {}
+
+final class NotesEditing extends NotesState {
+  const NotesEditing({super.note});
+}

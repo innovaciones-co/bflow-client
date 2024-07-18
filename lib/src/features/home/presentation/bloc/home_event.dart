@@ -17,3 +17,17 @@ class ShowMessageEvent extends HomeEvent {
   @override
   List<Object> get props => [message, type, timestamp];
 }
+
+class ShowFooterActionEvent extends HomeEvent {
+  final Widget? leading;
+  final List<Widget> actions;
+  final Function()? onCancel;
+
+  const ShowFooterActionEvent({
+    required this.actions,
+    this.onCancel,
+    required this.leading,
+  });
+}
+
+class HideFooterActionEvent extends HomeEvent {}

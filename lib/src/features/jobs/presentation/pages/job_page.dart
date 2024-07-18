@@ -69,6 +69,8 @@ class _JobPageState extends State<JobPage> {
             updateTasksUseCase: DependencyInjection.sl(),
             homeBloc: context.read<HomeBloc>(),
             socketService: DependencyInjection.sl(),
+            updateTaskUseCase: DependencyInjection.sl(),
+            getContactsUseCase: DependencyInjection.sl(),
           ),
         ),
         BlocProvider<TasksFilterBloc>(

@@ -163,7 +163,7 @@ extension BuildContextEntension<T> on BuildContext {
   Future<void> showLeftDialog(String title, Widget child) {
     return showDialog<void>(
       context: this,
-      useRootNavigator: false,
+      useRootNavigator: true,
       builder: (BuildContext context) {
         return LeftDialogWidget(
           title: title,

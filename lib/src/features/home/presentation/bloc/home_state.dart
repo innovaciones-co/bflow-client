@@ -20,3 +20,17 @@ class AlertMessage extends HomeState {
   @override
   List<Object> get props => [message, type, timestamp];
 }
+
+class FooterAction extends HomeState {
+  final bool visible;
+  final Widget? leading;
+  final List<Widget> actions;
+  final Function()? onCancel;
+
+  const FooterAction({
+    required this.actions,
+    this.onCancel,
+    required this.leading,
+    this.visible = true,
+  });
+}

@@ -8,21 +8,20 @@ class JobsRemoteDataSource extends RemoteDataSource {
 
   Future<List<JobModel>> fetchJobs() async {
     List<dynamic> response =
-        await apiService.get(endpoint: ApiConstants.listJobsEndpoint);
+        await apiService.get(endpoint: ApiConstants.jobsEndpoint);
     return response.map((e) => JobModel.fromMap(e)).toList();
   }
 
   Future<JobModel> fetchJob(int id) async {
     Map<String, dynamic> response = await apiService.get(
-        endpoint:
-            ApiConstants.getJobEndpoint.replaceFirst(':id', id.toString()));
+        endpoint: ApiConstants.jobEndpoint.replaceFirst(':id', id.toString()));
     return JobModel.fromMap(response);
   }
 
   Future<JobModel> createJob(Job job) async {
     final jobModel = JobModel.fromEntity(job);
     int jobId = await apiService.post(
-      endpoint: ApiConstants.listJobsEndpoint,
+      endpoint: ApiConstants.jobsEndpoint,
       data: jobModel.toMap(),
     );
 
@@ -32,8 +31,7 @@ class JobsRemoteDataSource extends RemoteDataSource {
   Future<JobModel> updateJob(Job job) async {
     final jobModel = JobModel.fromEntity(job);
     int jobId = await apiService.put(
-      endpoint:
-          ApiConstants.getJobEndpoint.replaceAll(':id', job.id!.toString()),
+      endpoint: ApiConstants.jobEndpoint.replaceAll(':id', job.id!.toString()),
       data: jobModel.toMap(),
     );
 
@@ -42,7 +40,7 @@ class JobsRemoteDataSource extends RemoteDataSource {
 
   Future<void> deleteJob(int id) async {
     await apiService.delete(
-      endpoint: ApiConstants.getJobEndpoint.replaceAll(':id', id.toString()),
+      endpoint: ApiConstants.jobEndpoint.replaceAll(':id', id.toString()),
     );
   }
 }

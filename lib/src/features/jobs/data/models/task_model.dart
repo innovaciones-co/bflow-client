@@ -49,9 +49,8 @@ class TaskModel extends Task {
   factory TaskModel.fromMap(Map<String, dynamic> json) => TaskModel(
         id: json["id"],
         name: json["name"],
-        callDate: json["bookingDate"] == null
-            ? null
-            : DateTime.parse(json["bookingDate"]),
+        callDate:
+            json["callDate"] == null ? null : DateTime.parse(json["callDate"]),
         startDate: json["startDate"] == null
             ? null
             : DateTime.parse(json["startDate"]),
@@ -78,7 +77,7 @@ class TaskModel extends Task {
         "name": name,
         "callDate": callDate?.toDateFormat(),
         "startDate": startDate?.toDateFormat(),
-        "endDate": endDate?.toDateFormat(),
+        "endDate": endDate?.toIso8601String(),
         "description": comments,
         "progress": progress,
         "status": status.toJSON(),
