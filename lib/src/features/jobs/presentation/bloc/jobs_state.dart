@@ -30,13 +30,18 @@ class JobsLoaded extends JobsState {
     }
 
     return jobs
-        .where((e) =>
-            e.name.search(filter!) ||
-            (e.description != null ? e.description!.search(filter!) : false) ||
-            e.jobNumber.search(filter!) ||
-            e.address.search(filter!) ||
-            e.name.search(filter!) ||
-            e.user.fullName.search(filter!))
+        .where(
+          (job) =>
+              job.name.search(filter!) ||
+              (job.description != null
+                  ? job.description!.search(filter!)
+                  : false) ||
+              job.jobNumber.search(filter!) ||
+              job.address.search(filter!) ||
+              job.user.fullName.search(filter!) ||
+              job.client.name.search(filter!) ||
+              job.supervisor.fullName.search(filter!),
+        )
         .toList();
   }
 

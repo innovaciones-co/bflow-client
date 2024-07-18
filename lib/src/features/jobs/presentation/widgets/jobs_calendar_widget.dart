@@ -42,32 +42,60 @@ class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Builder(builder: (context) {
+      if (context.isMobile) {
+        return Column(
+          children: [
+            Flexible(
+              flex: 3,
+              child: _buildCalendar(context),
+            ),
+            Flexible(
+              flex: 4,
+              child: _todayTasks(),
+            ),
+          ],
+        );
+      }
+
+      return Row(
+        children: [
+          Flexible(
+            flex: 3,
+            child: _buildCalendar(context),
+          ),
+          Flexible(
+            flex: 2,
+            child: _todayTasks(),
+          ),
+        ],
+      );
+    });
+  }
+
+  Column _buildCalendar(BuildContext context) {
+    return Column(
       children: [
-        Flexible(
-          flex: 3,
-          child: Column(
-            children: [
-              _calendarNavigator(),
-              SizedBox(
-                height: 30,
-                child: GridView.count(
-                  crossAxisCount: 7,
-                  children: WeekDays.values
-                      .map(
-                        (e) => Text(e.toString()),
-                      )
-                      .toList(),
-                ),
-              ),
-              Expanded(child: _calendarBody(context))
-            ],
+        _calendarNavigator(context),
+        SizedBox(
+          height: context.isMobile ? 20 : 30,
+          child: GridView.count(
+            crossAxisCount: 7,
+            childAspectRatio: 1.5,
+            children: WeekDays.values
+                .map(
+                  (e) => Text(
+                    e.toString(),
+                    textAlign: TextAlign.center,
+                    style: context.isMobile
+                        ? context.bodySmall
+                        : context.bodyMedium,
+                  ),
+                )
+                .toList(),
           ),
         ),
-        Flexible(
-          flex: 2,
-          child: _todayTasks(),
-        ),
+        Flexible(child: _calendarBody(context))
       ],
     );
   }
@@ -76,7 +104,7 @@ class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
     return Container(
       height: double.maxFinite,
       width: double.maxFinite,
-      margin: const EdgeInsets.only(left: 15),
+      margin: EdgeInsets.only(left: context.isMobile ? 0 : 15),
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
         color: AppColor.white,
@@ -177,6 +205,7 @@ class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
     }
     return GridView.count(
       crossAxisCount: 7,
+      childAspectRatio: context.isMobile ? 1.5 : 1,
       children: days
           .map(
             (day) => InkWell(
@@ -194,7 +223,7 @@ class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
                           ? AppColor.white
                           : AppColor.grey,
                 ),
-                padding: const EdgeInsets.all(25),
+                padding: EdgeInsets.all(context.isMobile ? 5 : 25),
                 child: _buildDay(day, context),
               ),
             ),
@@ -240,36 +269,47 @@ class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
     return _selectedDate.isBetweenDates(task.startDate!, task.endDate!);
   }
 
-  _calendarNavigator() {
+  _calendarNavigator(BuildContext context) {
+    var monthSelector = [
+      IconButton(
+        onPressed: _selectPreviousMonth,
+        icon: const Icon(Icons.arrow_back_ios),
+      ),
+      SizedBox(
+        width: 220,
+        child: Text(
+          _selectedMonth.toMonthAndYear(),
+          style:
+              context.isMobile ? context.headlineSmall : context.headlineMedium,
+          textAlign: TextAlign.center,
+        ),
+      ),
+      IconButton(
+        onPressed: _selectNextMonth,
+        icon: const Icon(Icons.arrow_forward_ios),
+      ),
+    ];
+
+    if (!context.isMobile) {
+      monthSelector.addAll([
+        const Spacer(),
+        TextButton(
+          onPressed: _selectCurrentMonth,
+          child: Text(
+            "Current month",
+            style: context.headlineMedium?.copyWith(fontSize: 15),
+          ),
+        ),
+      ]);
+    }
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 15),
+      margin: EdgeInsets.only(bottom: context.isMobile ? 0 : 5),
       child: Row(
-        children: [
-          IconButton(
-            onPressed: _selectPreviousMonth,
-            icon: const Icon(Icons.arrow_back_ios),
-          ),
-          SizedBox(
-            width: 220,
-            child: Text(
-              _selectedMonth.toMonthAndYear(),
-              style: context.headlineMedium,
-              textAlign: TextAlign.center,
-            ),
-          ),
-          IconButton(
-            onPressed: _selectNextMonth,
-            icon: const Icon(Icons.arrow_forward_ios),
-          ),
-          const Spacer(),
-          TextButton(
-            onPressed: _selectCurrentMonth,
-            child: Text(
-              "Current month",
-              style: context.headlineMedium?.copyWith(fontSize: 15),
-            ),
-          )
-        ],
+        mainAxisAlignment: context.isMobile
+            ? MainAxisAlignment.spaceBetween
+            : MainAxisAlignment.start,
+        children: monthSelector,
       ),
     );
   }

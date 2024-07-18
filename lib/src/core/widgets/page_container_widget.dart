@@ -83,8 +83,8 @@ class _PageContainerWidgetState extends State<PageContainerWidget> {
                             : const SizedBox.shrink(),
                       ],
                     ),
-                    const SizedBox(
-                      height: 30,
+                    SizedBox(
+                      height: context.isMobile ? 10 : 30,
                     ),
                     Expanded(
                       child: SizedBox(
@@ -118,7 +118,7 @@ class _PageContainerWidgetState extends State<PageContainerWidget> {
       return const EdgeInsets.symmetric(horizontal: 40, vertical: 30.0);
     }
 
-    return const EdgeInsets.symmetric(horizontal: 14, vertical: 20.0);
+    return const EdgeInsets.only(left: 15, right: 15, top: 20, bottom: 0);
   }
 
   double _getHeight(BuildContext context) {
