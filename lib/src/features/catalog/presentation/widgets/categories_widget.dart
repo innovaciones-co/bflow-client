@@ -86,12 +86,21 @@ class CategoriesWidget extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 15,
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 15,
+                                  ),
+                                  child: Tooltip(
+                                    message: categories[i].name,
+                                    child: Text(
+                                      categories[i].name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
                                 ),
-                                child: Text(categories[i].name),
                               ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
