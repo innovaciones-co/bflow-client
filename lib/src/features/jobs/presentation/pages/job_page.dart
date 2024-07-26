@@ -1,5 +1,6 @@
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
@@ -88,7 +89,7 @@ class _JobPageState extends State<JobPage> {
             }
 
             if (state is JobLoaded) {
-              return _jobLoaded(state);
+              return _jobLoaded(state, context);
             }
 
             if (state is JobError) {
@@ -103,13 +104,13 @@ class _JobPageState extends State<JobPage> {
     );
   }
 
-  Widget _jobLoaded(JobLoaded state) {
+  Widget _jobLoaded(JobLoaded state, BuildContext context) {
     return Column(
       children: [
         _viewJobInfo ? JobItemWidget(job: state.job) : const SizedBox.shrink(),
         _jobViewSelection(),
         const SizedBox(height: 5),
-        _body
+        _body,
       ],
     );
   }
@@ -117,45 +118,72 @@ class _JobPageState extends State<JobPage> {
   Widget _jobViewSelection() {
     return Row(
       children: [
-        ActionButtonWidget(
-          onPressed: () => _selectView(0),
-          type: ButtonType.textButton,
-          title: "View jobs documents",
-          icon: Icons.all_inbox_sharp,
-          foregroundColor: _selectedIndex == 0 ? AppColor.black : AppColor.blue,
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                ActionButtonWidget(
+                  onPressed: () => _selectView(0),
+                  type: ButtonType.textButton,
+                  title: "View jobs documents",
+                  icon: Icons.all_inbox_sharp,
+                  foregroundColor:
+                      _selectedIndex == 0 ? AppColor.blue : AppColor.darkGrey,
+                ),
+                const SizedBox(width: 3),
+                ActionButtonWidget(
+                  onPressed: () => _selectView(1),
+                  type: ButtonType.textButton,
+                  title: "View all tasks",
+                  icon: Icons.task_outlined,
+                  foregroundColor:
+                      _selectedIndex == 1 ? AppColor.blue : AppColor.darkGrey,
+                ),
+                const SizedBox(width: 3),
+                ActionButtonWidget(
+                  onPressed: () => _selectView(2),
+                  type: ButtonType.textButton,
+                  title: "View Calendar",
+                  icon: Icons.calendar_today_outlined,
+                  foregroundColor:
+                      _selectedIndex == 2 ? AppColor.blue : AppColor.darkGrey,
+                ),
+                const SizedBox(width: 3),
+                ActionButtonWidget(
+                  onPressed: () => _selectView(3),
+                  type: ButtonType.textButton,
+                  title: "Bill of materials",
+                  icon: Icons.list_alt_outlined,
+                  foregroundColor:
+                      _selectedIndex == 3 ? AppColor.blue : AppColor.darkGrey,
+                ),
+              ],
+            ),
+          ),
         ),
-        ActionButtonWidget(
-          onPressed: () => _selectView(1),
-          type: ButtonType.textButton,
-          title: "View all tasks",
-          icon: Icons.task_outlined,
-          foregroundColor: _selectedIndex == 1 ? AppColor.black : AppColor.blue,
-        ),
-        ActionButtonWidget(
-          onPressed: () => _selectView(2),
-          type: ButtonType.textButton,
-          title: "View Calendar",
-          icon: Icons.calendar_today_outlined,
-          foregroundColor: _selectedIndex == 2 ? AppColor.black : AppColor.blue,
-        ),
-        ActionButtonWidget(
-          onPressed: () => _selectView(3),
-          type: ButtonType.textButton,
-          title: "Bill of materials",
-          icon: Icons.list_alt_outlined,
-          foregroundColor: _selectedIndex == 3 ? AppColor.black : AppColor.blue,
-        ),
-        const Spacer(),
-        ActionButtonWidget(
-          onPressed: () {
-            setState(() {
-              _viewJobInfo = !_viewJobInfo;
-            });
-          },
-          type: ButtonType.textButton,
-          title: _viewJobInfo ? "Hide Job Details" : "View Job Details",
-          icon: _viewJobInfo ? Icons.arrow_circle_up : Icons.arrow_circle_down,
-        ),
+        context.isMobile || context.isSmallTablet
+            ? const SizedBox.shrink()
+            : Container(
+                width: 1,
+                height: 20,
+                margin: const EdgeInsets.symmetric(horizontal: 10),
+                color: AppColor.grey,
+              ),
+        context.isMobile || context.isSmallTablet
+            ? const SizedBox.shrink()
+            : ActionButtonWidget(
+                onPressed: () {
+                  setState(() {
+                    _viewJobInfo = !_viewJobInfo;
+                  });
+                },
+                type: ButtonType.textButton,
+                title: _viewJobInfo ? "Hide Job Details" : "View Job Details",
+                icon: _viewJobInfo
+                    ? Icons.arrow_circle_up
+                    : Icons.arrow_circle_down,
+              ),
       ],
     );
   }

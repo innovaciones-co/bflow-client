@@ -118,21 +118,23 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
 
                     int? jobId = (state).job.id;
 
-                    return ActionButtonWidget(
-                      onPressed: () => context.showLeftDialog(
-                        'New Activity',
-                        WriteTaskWidget(
-                          jobId: jobId!,
-                          tasksBloc: context.read(),
-                          jobBloc: context.read(),
-                        ),
-                      ),
-                      type: ButtonType.elevatedButton,
-                      title: "New Activity",
-                      icon: Icons.add,
-                      backgroundColor: AppColor.blue,
-                      foregroundColor: AppColor.white,
-                    );
+                    return context.isMobile || context.isSmallTablet
+                        ? const SizedBox.shrink()
+                        : ActionButtonWidget(
+                            onPressed: () => context.showLeftDialog(
+                              'New Activity',
+                              WriteTaskWidget(
+                                jobId: jobId!,
+                                tasksBloc: context.read(),
+                                jobBloc: context.read(),
+                              ),
+                            ),
+                            type: ButtonType.elevatedButton,
+                            title: "New Activity",
+                            icon: Icons.add,
+                            backgroundColor: AppColor.blue,
+                            foregroundColor: AppColor.white,
+                          );
                   },
                 ),
               ],
