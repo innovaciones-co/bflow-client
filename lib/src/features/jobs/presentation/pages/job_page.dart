@@ -12,6 +12,7 @@ import 'package:bflow_client/src/features/jobs/presentation/widgets/job_calendar
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_tasks_widget.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/job_materials_widget.dart';
+import 'package:bflow_client/src/features/shared/presentation/widgets/rounded_tab_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -108,14 +109,16 @@ class _JobPageState extends State<JobPage> {
     return Column(
       children: [
         _viewJobInfo ? JobItemWidget(job: state.job) : const SizedBox.shrink(),
-        _jobViewSelection(),
+        context.isMobile || context.isSmallTablet
+            ? _jobViewSelectionMobile()
+            : _jobViewSelectionDesktop(),
         const SizedBox(height: 5),
         _body,
       ],
     );
   }
 
-  Widget _jobViewSelection() {
+  Widget _jobViewSelectionDesktop() {
     return Row(
       children: [
         Expanded(
@@ -162,28 +165,37 @@ class _JobPageState extends State<JobPage> {
             ),
           ),
         ),
-        context.isMobile || context.isSmallTablet
-            ? const SizedBox.shrink()
-            : Container(
-                width: 1,
-                height: 20,
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                color: AppColor.grey,
-              ),
-        context.isMobile || context.isSmallTablet
-            ? const SizedBox.shrink()
-            : ActionButtonWidget(
-                onPressed: () {
-                  setState(() {
-                    _viewJobInfo = !_viewJobInfo;
-                  });
-                },
-                type: ButtonType.textButton,
-                title: _viewJobInfo ? "Hide Job Details" : "View Job Details",
-                icon: _viewJobInfo
-                    ? Icons.arrow_circle_up
-                    : Icons.arrow_circle_down,
-              ),
+        Container(
+          width: 1,
+          height: 20,
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          color: AppColor.grey,
+        ),
+        ActionButtonWidget(
+          onPressed: () {
+            setState(() {
+              _viewJobInfo = !_viewJobInfo;
+            });
+          },
+          type: ButtonType.textButton,
+          title: _viewJobInfo ? "Hide Job Details" : "View Job Details",
+          icon: _viewJobInfo ? Icons.arrow_circle_up : Icons.arrow_circle_down,
+        ),
+      ],
+    );
+  }
+
+  Widget _jobViewSelectionMobile() {
+    return RoundedTabBarWidget(
+      onPressed: _selectView,
+      defaultIndex: _selectedIndex,
+      items: [
+        RoundedTabBarItem(icon: Icons.all_inbox_sharp, label: 'Jobs documents'),
+        RoundedTabBarItem(icon: Icons.task_outlined, label: 'All tasks'),
+        RoundedTabBarItem(
+            icon: Icons.calendar_today_outlined, label: 'Calendar'),
+        RoundedTabBarItem(
+            icon: Icons.list_alt_outlined, label: 'Bill of materials'),
       ],
     );
   }
