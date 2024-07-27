@@ -8,10 +8,10 @@ import 'package:bflow_client/src/features/jobs/presentation/widgets/tasks_view_b
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class TasksDesktopWidget extends StatelessWidget {
+class ListTasksDesktopWidget extends StatelessWidget {
   final List<Task> tasks;
   final int tabIndex;
-  const TasksDesktopWidget({
+  const ListTasksDesktopWidget({
     super.key,
     required this.tasks,
     required this.tabIndex,

@@ -8,9 +8,9 @@ import 'package:bflow_client/src/features/jobs/presentation/widgets/write_task_w
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class TasksMobileWidget extends StatelessWidget {
+class ListTasksMobileWidget extends StatelessWidget {
   final List<Task> tasks;
-  const TasksMobileWidget({
+  const ListTasksMobileWidget({
     super.key,
     required this.tasks,
   });

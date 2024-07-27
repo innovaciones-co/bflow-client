@@ -1,8 +1,8 @@
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/tasks_filter_bloc.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/tasks_desktop_widget.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/tasks_mobile_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/list_tasks_desktop_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/list_tasks_mobile_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -41,8 +41,8 @@ class JobTasksWidget extends StatelessWidget {
             var tasks = state.tasks;
             var tabIndex = state.tabIndex;
             return context.isMobile || context.isSmallTablet
-                ? TasksMobileWidget(tasks: tasks)
-                : TasksDesktopWidget(tasks: tasks, tabIndex: tabIndex);
+                ? ListTasksMobileWidget(tasks: tasks)
+                : ListTasksDesktopWidget(tasks: tasks, tabIndex: tabIndex);
           }
 
           return const SizedBox.shrink();
