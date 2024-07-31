@@ -19,6 +19,7 @@ import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.da
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/write_task/write_task_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/file_attach_widget.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/entities/purchase_order_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,6 +49,7 @@ class WriteTaskWidget extends StatelessWidget with Validator {
         createTasksUseCase: DependencyInjection.sl(),
         updateTaskUseCase: DependencyInjection.sl(),
         uploadFilesUseCase: DependencyInjection.sl(),
+        getPurchaseOrdersByJobUseCase: DependencyInjection.sl(),
         homeBloc: DependencyInjection.sl(),
         tasksBloc: tasksBloc,
         jobBloc: jobBloc,
@@ -187,6 +189,14 @@ class WriteTaskWidget extends StatelessWidget with Validator {
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 20),
+                DropdownWidget<PurchaseOrder?>(
+                  label: "Purchase Order",
+                  items: state.purchaseOrders,
+                  getLabel: (i) => i?.number ?? "(No purchase order)",
+                  onChanged: writeTaskBloc.updatePurchaseOrder,
+                  initialValue: state.purchaseOrder,
                 ),
                 const SizedBox(height: 20),
                 InputWidget(

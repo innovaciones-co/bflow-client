@@ -18,6 +18,8 @@ import 'package:bflow_client/src/features/jobs/domain/usecases/upload_files_use_
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/entities/purchase_order_entity.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/usecases/get_purchase_orders_by_job_use_case.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,6 +33,7 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
   final CreateTaskUseCase createTasksUseCase;
   final UpdateTaskUseCase updateTaskUseCase;
   final UploadFilesUseCase uploadFilesUseCase;
+  final GetPurchaseOrdersByJobUseCase getPurchaseOrdersByJobUseCase;
   final TasksBloc tasksBloc;
   final HomeBloc homeBloc;
   final JobBloc jobBloc;
@@ -43,6 +46,7 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
     required this.createTasksUseCase,
     required this.updateTaskUseCase,
     required this.uploadFilesUseCase,
+    required this.getPurchaseOrdersByJobUseCase,
     required this.tasksBloc,
     required this.homeBloc,
     required this.jobBloc,
@@ -61,17 +65,24 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
             startDate: task?.startDate,
             status: task?.status ?? TaskStatus.created,
             supplier: task?.supplier,
+            purchaseOrder: task?.purchaseOrder,
           ),
         );
 
-  void initForm(int? jobId) async {
+  void initForm(int jobId) async {
     GetContactsParams getContactParams =
         GetContactsParams(contactType: ContactType.supplier);
     GetTasksParams tasksParams = GetTasksParams(jobId: jobId);
+    GetPurchaseOrdersByJobParams getPurchaseOrdersByJobParams =
+        GetPurchaseOrdersByJobParams(jobId: jobId);
     final suppliers = await getContactsUseCase.execute(getContactParams);
     final parentTasks = await getTasksUseCase.execute(tasksParams);
+    final purchaseOrders = await getPurchaseOrdersByJobUseCase
+        .execute(getPurchaseOrdersByJobParams);
 
-    if (suppliers.isRight() && parentTasks.isRight()) {
+    if (suppliers.isRight() &&
+        parentTasks.isRight() &&
+        purchaseOrders.isRight()) {
       List<Contact?> suppliersList = [
         null,
         ...suppliers.getOrElse(() => []),
@@ -80,13 +91,17 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
         null,
         ...parentTasks.getOrElse(() => [])
       ];
+      List<PurchaseOrder?> purchaseOrdersList = [
+        null,
+        ...purchaseOrders.getOrElse(() => [])
+      ];
       emit(
         state.copyWith(
-          suppliers: suppliersList,
-          parentTasks: parentTasksList,
-          formStatus: FormStatus.loaded,
-          supplier: suppliersList.first,
-        ),
+            suppliers: suppliersList,
+            parentTasks: parentTasksList,
+            formStatus: FormStatus.loaded,
+            supplier: suppliersList.first,
+            purchaseOrders: purchaseOrdersList),
       );
     } else {
       emit(state.copyWith(formStatus: FormStatus.loadFailed));
@@ -129,6 +144,10 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
 
   void updateStatus(TaskStatus? status) {
     emit(state.copyWith(taskStatus: status));
+  }
+
+  void updatePurchaseOrder(PurchaseOrder? purchaseOrder) {
+    emit(state.copyWith(purchaseOrder: purchaseOrder));
   }
 
   void createTask(int jobId) async {
