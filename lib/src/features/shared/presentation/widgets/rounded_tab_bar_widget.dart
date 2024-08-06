@@ -37,6 +37,8 @@ class _RoundedTabBarWidgetState extends State<RoundedTabBarWidget> {
                 onPressed: () => selectIndex(widget.items.indexOf(item)),
                 text: item.label,
                 icon: item.icon,
+                first: widget.items.first == item,
+                last: widget.items.last == item,
               ))
           .toList(),
     );
