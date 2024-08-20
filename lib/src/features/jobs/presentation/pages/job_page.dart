@@ -9,7 +9,7 @@ import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.da
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/tasks_filter_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_calendar_widget.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_desktop_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_tasks_widget.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/job_materials_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/rounded_tab_bar_widget.dart';
@@ -108,7 +108,9 @@ class _JobPageState extends State<JobPage> {
   Widget _jobLoaded(JobLoaded state, BuildContext context) {
     return Column(
       children: [
-        _viewJobInfo ? JobItemWidget(job: state.job) : const SizedBox.shrink(),
+        _viewJobInfo
+            ? JobItemDesktopWidget(job: state.job)
+            : const SizedBox.shrink(),
         context.isMobile || context.isSmallTablet
             ? _jobViewSelectionMobile()
             : _jobViewSelectionDesktop(),

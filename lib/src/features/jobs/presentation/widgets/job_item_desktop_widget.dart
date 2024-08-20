@@ -10,10 +10,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/widgets/custom_chip_widget.dart';
 import '../../domain/entities/job_entity.dart';
 
-class JobItemWidget extends StatelessWidget {
+class JobItemDesktopWidget extends StatelessWidget {
   final Job job;
   final bool viewDetailsEnabled;
-  const JobItemWidget({
+  const JobItemDesktopWidget({
     super.key,
     required this.job,
     this.viewDetailsEnabled = false,

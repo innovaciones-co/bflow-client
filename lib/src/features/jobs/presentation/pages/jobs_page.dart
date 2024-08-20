@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../widgets/job_item_widget.dart';
+import '../widgets/job_item_desktop_widget.dart';
 import '../widgets/jobs_action_bar_widget.dart';
 
 class JobsPage extends StatefulWidget {
@@ -92,7 +92,7 @@ class _JobsPageState extends State<JobsPage> {
                                 job: job,
                                 viewDetailsEnabled: true,
                               )
-                            : JobItemWidget(
+                            : JobItemDesktopWidget(
                                 job: job,
                                 viewDetailsEnabled: true,
                               ),
