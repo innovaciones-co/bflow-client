@@ -26,12 +26,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       leading: event.leading,
       actions: event.actions,
       onCancel: event.onCancel,
+      showCancelButton: event.showCancelButton,
     ));
     emit(HomeInitial());
   }
 
   FutureOr<void> _hideFootrAction(
       HideFooterActionEvent event, Emitter<HomeState> emit) {
-    emit(const FooterAction(actions: [], leading: null, visible: false));
+    emit(const FooterAction(
+        actions: [], leading: null, visible: false, showCancelButton: true));
   }
 }

@@ -22,11 +22,13 @@ class ShowFooterActionEvent extends HomeEvent {
   final Widget? leading;
   final List<Widget> actions;
   final Function()? onCancel;
+  final bool showCancelButton;
 
   const ShowFooterActionEvent({
     required this.actions,
     this.onCancel,
-    required this.leading,
+    this.leading,
+    required this.showCancelButton,
   });
 }
 

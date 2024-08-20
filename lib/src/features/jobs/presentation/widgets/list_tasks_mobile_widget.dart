@@ -3,16 +3,17 @@ import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/extensions/ui_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
 import 'package:bflow_client/src/core/widgets/custom_chip_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/task/task_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_task_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class ListTasksMobileWidget extends StatelessWidget {
   final List<Task> tasks;
@@ -185,40 +186,60 @@ class ListTasksMobileWidget extends StatelessWidget {
 
     if (state is TasksLoaded) {
       var taskModified = state.selectedTasks.isNotEmpty;
-
       if (taskModified) {
         homeBloc.add(
           ShowFooterActionEvent(
-            leading: Row(
-              children: [
-                Icon(
-                  Icons.warning_rounded,
-                  color: AppColor.red,
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  "(${state.updatedTasks.length}) tasks were updated",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
+            showCancelButton: false,
             actions: [
-              ActionButtonWidget(
-                onPressed: () {
-                  tasksBloc.add(
-                    UpdateTasksEvent(tasks: state.updatedTasks),
-                  );
-                  homeBloc.add(
-                    HideFooterActionEvent(),
-                  );
-                },
-                type: ButtonType.elevatedButton,
-                title: "Save changes",
-                backgroundColor: AppColor.blue,
-                foregroundColor: AppColor.white,
-              )
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ActionButtonWidget(
+                      onPressed: () {
+                        context.showCustomModal(
+                          ConfirmationWidget(
+                            title: "Delete tasks",
+                            description:
+                                "Are you sure you want to delete the selected task(s)?",
+                            onConfirm: () {
+                              tasksBloc.add(DeleteTasksEvent());
+                              context.pop();
+                            },
+                            confirmText: "Delete",
+                          ),
+                        );
+                        homeBloc.add(
+                          HideFooterActionEvent(),
+                        );
+                      },
+                      type: ButtonType.textButton,
+                      title: "Delete",
+                      icon: Icons.delete_outline,
+                      paddingHorizontal: 15,
+                      paddingVertical: 18,
+                    ),
+                    const SizedBox(width: 12),
+                    ActionButtonWidget(
+                      onPressed: () {
+                        tasksBloc.add(SendSelectedTasksEvent());
+                        homeBloc.add(
+                          HideFooterActionEvent(),
+                        );
+                      },
+                      type: ButtonType.elevatedButton,
+                      title: "Send tasks",
+                      icon: Icons.email_outlined,
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
+        );
+      } else {
+        homeBloc.add(
+          HideFooterActionEvent(),
         );
       }
     }

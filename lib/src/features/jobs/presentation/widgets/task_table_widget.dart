@@ -467,11 +467,16 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  "(${state.updatedTasks.length}) tasks were updated",
+                  "(${state.updatedTasks.length}) tasks have been modified",
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ],
             ),
+            showCancelButton: true,
+            onCancel: () => this
+                .context
+                .read<TasksBloc>()
+                .add(GetTasksEvent(jobId: state.tasks.first.job)),
             actions: [
               ActionButtonWidget(
                 onPressed: () {
