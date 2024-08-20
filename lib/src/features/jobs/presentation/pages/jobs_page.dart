@@ -5,6 +5,7 @@ import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
 import 'package:bflow_client/src/core/widgets/switch_widget.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_mobile_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/jobs_calendar_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
@@ -80,16 +81,21 @@ class _JobsPageState extends State<JobsPage> {
             child: Column(
               children: [
                 _getJobCards(context),
-                context.isDesktop || context.isTablet
-                    ? const JobsActionBarWidget()
-                    : const SizedBox.shrink(),
+                context.isMobile || context.isSmallTablet
+                    ? const SizedBox.shrink()
+                    : const JobsActionBarWidget(),
                 Column(
                   children: state.jobsFiltered
                       .map(
-                        (job) => JobItemWidget(
-                          job: job,
-                          viewDetailsEnabled: true,
-                        ),
+                        (job) => context.isMobile || context.isSmallTablet
+                            ? JobItemMobileWidget(
+                                job: job,
+                                viewDetailsEnabled: true,
+                              )
+                            : JobItemWidget(
+                                job: job,
+                                viewDetailsEnabled: true,
+                              ),
                       )
                       .toList(),
                 ),
