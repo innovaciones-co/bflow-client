@@ -11,13 +11,14 @@ final class TemplatesInitial extends TemplatesState {}
 
 final class TemplatesLoaded extends TemplatesState {
   final List<TemplateEntity> templates;
-  final TemplateEntity selectedTemplate;
+  final TemplateEntity? selectedTemplate;
 
   TemplatesLoaded({required this.templates, TemplateEntity? selectedTemplate})
-      : selectedTemplate = selectedTemplate ?? templates.first;
+      : selectedTemplate =
+            selectedTemplate ?? (templates.isNotEmpty ? templates.first : null);
 
   @override
-  List<Object> get props => [templates, selectedTemplate];
+  List<Object> get props => [templates, selectedTemplate ?? ""];
 
   TemplatesLoaded copyWith({
     List<TemplateEntity>? templates,

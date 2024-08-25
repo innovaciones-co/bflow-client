@@ -40,8 +40,10 @@ class TemplatesCubit extends Cubit<TemplatesState> {
   void createFromTemplate(int jobId) async {
     if (state is TemplatesLoaded) {
       var state = (this.state as TemplatesLoaded);
+      if (state.selectedTemplate == null) return;
+
       var params = CreateFromTemplateParams(
-          templateId: state.selectedTemplate.id, jobId: jobId);
+          templateId: state.selectedTemplate!.id, jobId: jobId);
       emit(TemplatesInitial());
       if (onLoading != null) {
         onLoading!();

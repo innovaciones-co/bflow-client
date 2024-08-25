@@ -26,11 +26,22 @@ class FooterAction extends HomeState {
   final Widget? leading;
   final List<Widget> actions;
   final Function()? onCancel;
+  final bool showCancelButton;
 
   const FooterAction({
     required this.actions,
     this.onCancel,
-    required this.leading,
+    this.leading,
     this.visible = true,
+    required this.showCancelButton,
   });
+
+  @override
+  List<Object> get props => [
+        visible,
+        leading ?? const SizedBox.shrink(),
+        actions,
+        onCancel ?? () {},
+        showCancelButton,
+      ];
 }

@@ -1,5 +1,6 @@
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
@@ -8,9 +9,10 @@ import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.da
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/tasks_filter_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_calendar_widget.dart';
-import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_widget.dart';
+import 'package:bflow_client/src/features/jobs/presentation/widgets/job_item_desktop_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/job_tasks_widget.dart';
 import 'package:bflow_client/src/features/purchase_orders/presentation/widgets/job_materials_widget.dart';
+import 'package:bflow_client/src/features/shared/presentation/widgets/rounded_tab_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -88,7 +90,7 @@ class _JobPageState extends State<JobPage> {
             }
 
             if (state is JobLoaded) {
-              return _jobLoaded(state);
+              return _jobLoaded(state, context);
             }
 
             if (state is JobError) {
@@ -103,49 +105,74 @@ class _JobPageState extends State<JobPage> {
     );
   }
 
-  Widget _jobLoaded(JobLoaded state) {
+  Widget _jobLoaded(JobLoaded state, BuildContext context) {
     return Column(
       children: [
-        _viewJobInfo ? JobItemWidget(job: state.job) : const SizedBox.shrink(),
-        _jobViewSelection(),
+        _viewJobInfo
+            ? JobItemDesktopWidget(job: state.job)
+            : const SizedBox.shrink(),
+        context.isMobile || context.isSmallTablet
+            ? _jobViewSelectionMobile()
+            : _jobViewSelectionDesktop(),
         const SizedBox(height: 5),
-        _body
+        _body,
       ],
     );
   }
 
-  Widget _jobViewSelection() {
+  Widget _jobViewSelectionDesktop() {
     return Row(
       children: [
-        ActionButtonWidget(
-          onPressed: () => _selectView(0),
-          type: ButtonType.textButton,
-          title: "View jobs documents",
-          icon: Icons.all_inbox_sharp,
-          foregroundColor: _selectedIndex == 0 ? AppColor.black : AppColor.blue,
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                ActionButtonWidget(
+                  onPressed: () => _selectView(0),
+                  type: ButtonType.textButton,
+                  title: "View jobs documents",
+                  icon: Icons.all_inbox_sharp,
+                  foregroundColor:
+                      _selectedIndex == 0 ? AppColor.blue : AppColor.darkGrey,
+                ),
+                const SizedBox(width: 3),
+                ActionButtonWidget(
+                  onPressed: () => _selectView(1),
+                  type: ButtonType.textButton,
+                  title: "View all tasks",
+                  icon: Icons.task_outlined,
+                  foregroundColor:
+                      _selectedIndex == 1 ? AppColor.blue : AppColor.darkGrey,
+                ),
+                const SizedBox(width: 3),
+                ActionButtonWidget(
+                  onPressed: () => _selectView(2),
+                  type: ButtonType.textButton,
+                  title: "View Calendar",
+                  icon: Icons.calendar_today_outlined,
+                  foregroundColor:
+                      _selectedIndex == 2 ? AppColor.blue : AppColor.darkGrey,
+                ),
+                const SizedBox(width: 3),
+                ActionButtonWidget(
+                  onPressed: () => _selectView(3),
+                  type: ButtonType.textButton,
+                  title: "Bill of materials",
+                  icon: Icons.list_alt_outlined,
+                  foregroundColor:
+                      _selectedIndex == 3 ? AppColor.blue : AppColor.darkGrey,
+                ),
+              ],
+            ),
+          ),
         ),
-        ActionButtonWidget(
-          onPressed: () => _selectView(1),
-          type: ButtonType.textButton,
-          title: "View all tasks",
-          icon: Icons.task_outlined,
-          foregroundColor: _selectedIndex == 1 ? AppColor.black : AppColor.blue,
+        Container(
+          width: 1,
+          height: 20,
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          color: AppColor.grey,
         ),
-        ActionButtonWidget(
-          onPressed: () => _selectView(2),
-          type: ButtonType.textButton,
-          title: "View Calendar",
-          icon: Icons.calendar_today_outlined,
-          foregroundColor: _selectedIndex == 2 ? AppColor.black : AppColor.blue,
-        ),
-        ActionButtonWidget(
-          onPressed: () => _selectView(3),
-          type: ButtonType.textButton,
-          title: "Bill of materials",
-          icon: Icons.list_alt_outlined,
-          foregroundColor: _selectedIndex == 3 ? AppColor.black : AppColor.blue,
-        ),
-        const Spacer(),
         ActionButtonWidget(
           onPressed: () {
             setState(() {
@@ -156,6 +183,21 @@ class _JobPageState extends State<JobPage> {
           title: _viewJobInfo ? "Hide Job Details" : "View Job Details",
           icon: _viewJobInfo ? Icons.arrow_circle_up : Icons.arrow_circle_down,
         ),
+      ],
+    );
+  }
+
+  Widget _jobViewSelectionMobile() {
+    return RoundedTabBarWidget(
+      onPressed: _selectView,
+      defaultIndex: _selectedIndex,
+      items: [
+        RoundedTabBarItem(icon: Icons.all_inbox_sharp, label: 'Jobs documents'),
+        RoundedTabBarItem(icon: Icons.task_outlined, label: 'All tasks'),
+        RoundedTabBarItem(
+            icon: Icons.calendar_today_outlined, label: 'Calendar'),
+        RoundedTabBarItem(
+            icon: Icons.list_alt_outlined, label: 'Bill of materials'),
       ],
     );
   }

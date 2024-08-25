@@ -40,6 +40,10 @@ createFromTemplate({
                 }
 
                 if (state is TemplatesLoaded) {
+                  if (state.templates.isEmpty) {
+                    return const Text("You don't have templates yet");
+                  }
+
                   return DropdownWidget<TemplateEntity>(
                     label:
                         "Choose the template you want to use to create the ${type.pluralName}:",

@@ -35,6 +35,7 @@ class _PageContainerWidgetState extends State<PageContainerWidget> {
                 actions: state.actions,
                 leading: state.leading,
                 onCancel: state.onCancel,
+                showCancelButton: state.showCancelButton,
               );
             } else {
               footerBarWidget = null;

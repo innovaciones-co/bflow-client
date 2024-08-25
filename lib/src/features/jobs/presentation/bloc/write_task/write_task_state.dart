@@ -15,6 +15,8 @@ sealed class WriteTaskState extends Equatable {
   final String name;
   final int? parentTask;
   final int? order;
+  final List<PurchaseOrder?> purchaseOrders;
+  final PurchaseOrder? purchaseOrder;
   final TaskStage stage;
   final TaskStatus status;
 
@@ -33,6 +35,8 @@ sealed class WriteTaskState extends Equatable {
     this.progress = 0,
     this.order = 0,
     this.supplier,
+    this.purchaseOrders = const [],
+    this.purchaseOrder,
     this.stage = TaskStage.slabDown,
     this.status = TaskStatus.created,
   }) : startDate = startDate ?? DateTime.now();
@@ -52,6 +56,8 @@ sealed class WriteTaskState extends Equatable {
     List<t.Task?>? parentTasks,
     String? description,
     String? name,
+    List<PurchaseOrder?>? purchaseOrders,
+    PurchaseOrder? purchaseOrder,
     TaskStage? taskStage,
     TaskStatus? taskStatus,
   });
@@ -69,6 +75,8 @@ sealed class WriteTaskState extends Equatable {
         parentTask ?? '',
         parentTasks,
         progress,
+        purchaseOrder ?? '',
+        purchaseOrders,
         stage,
         startDate,
         status,
@@ -90,6 +98,8 @@ final class WriteTaskCubitInitial extends WriteTaskState {
     super.parentTask,
     super.parentTasks,
     super.progress,
+    super.purchaseOrder,
+    super.purchaseOrders,
     super.stage,
     super.startDate,
     super.status,
@@ -112,6 +122,8 @@ final class WriteTaskCubitInitial extends WriteTaskState {
     List<File>? attachments,
     List<t.Task?>? parentTasks,
     String? description,
+    PurchaseOrder? purchaseOrder,
+    List<PurchaseOrder?>? purchaseOrders,
     String? name,
     TaskStage? taskStage,
     TaskStatus? taskStatus,
@@ -130,6 +142,8 @@ final class WriteTaskCubitInitial extends WriteTaskState {
       parentTask: parentTask ?? this.parentTask,
       progress: progress ?? this.progress,
       supplier: supplier ?? this.supplier,
+      purchaseOrder: purchaseOrder ?? this.purchaseOrder,
+      purchaseOrders: purchaseOrders ?? this.purchaseOrders,
       stage: taskStage ?? stage,
       status: taskStatus ?? status,
       order: order ?? this.order,

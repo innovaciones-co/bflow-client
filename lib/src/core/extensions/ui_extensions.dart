@@ -7,7 +7,7 @@ extension TaskUIExtension on Task {
   Color get statusColor {
     switch (status) {
       case TaskStatus.created:
-        return AppColor.lightGrey;
+        return AppColor.grey;
       case TaskStatus.completed:
         return AppColor.lightGreen;
       case TaskStatus.reschedule:

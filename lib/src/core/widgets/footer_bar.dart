@@ -6,12 +6,14 @@ class FooterBarWidget extends StatefulWidget {
   final Widget? leading;
   final List<Widget> actions;
   final Function()? onCancel;
+  final bool showCancelButton;
 
   const FooterBarWidget({
     super.key,
     this.leading,
     required this.actions,
     this.onCancel,
+    required this.showCancelButton,
   });
 
   @override
@@ -79,12 +81,12 @@ class _FooterBarWidgetState extends State<FooterBarWidget>
             ),
           ],
         ),
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              widget.leading ?? const SizedBox.shrink(),
-              const Spacer(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            widget.leading ?? const SizedBox.shrink(),
+            widget.leading != null ? const Spacer() : const SizedBox.shrink(),
+            if (widget.showCancelButton) ...[
               ActionButtonWidget(
                 onPressed: () {
                   _controller.reverse();
@@ -94,13 +96,16 @@ class _FooterBarWidgetState extends State<FooterBarWidget>
                 },
                 title: 'Cancel',
                 type: ButtonType.textButton,
+                paddingHorizontal: 15,
+                paddingVertical: 18,
               ),
               const SizedBox(
                 width: 10,
-              ),
-              ...widget.actions
-            ],
-          ),
+              )
+            ] else
+              const SizedBox.shrink(),
+            ...widget.actions
+          ],
         ),
       ),
     );

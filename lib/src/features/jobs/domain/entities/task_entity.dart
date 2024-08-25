@@ -2,6 +2,7 @@ import 'package:bflow_client/src/features/contacts/domain/entities/contact_entit
 import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
+import 'package:bflow_client/src/features/purchase_orders/domain/entities/purchase_order_entity.dart';
 import 'package:equatable/equatable.dart';
 
 class Task extends Equatable {
@@ -19,6 +20,7 @@ class Task extends Equatable {
   final List<File>? attachments;
   final int job;
   final int? order;
+  final PurchaseOrder? purchaseOrder;
 
   const Task({
     this.id,
@@ -35,6 +37,7 @@ class Task extends Equatable {
     this.attachments,
     required this.job,
     this.order = 0,
+    this.purchaseOrder,
   });
 
   @override
@@ -53,6 +56,7 @@ class Task extends Equatable {
         attachments,
         job,
         order,
+        purchaseOrder,
       ];
 
   @override
@@ -73,6 +77,7 @@ class Task extends Equatable {
     List<File>? attachments,
     int? job,
     int? order,
+    PurchaseOrder? purchaseOrder,
   }) {
     return Task(
       id: id ?? this.id,
@@ -89,6 +94,7 @@ class Task extends Equatable {
       attachments: attachments ?? this.attachments,
       job: job ?? this.job,
       order: order ?? this.order,
+      purchaseOrder: purchaseOrder ?? this.purchaseOrder,
     );
   }
 }
