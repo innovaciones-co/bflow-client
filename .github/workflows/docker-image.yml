@@ -13,4 +13,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag sdtorresl/bflow-client:$(grep version: pubspec.yaml | grep -oP '(?<=version:\s)[^+]+')
+      run: docker build . --file Dockerfile --tag sdtorresl/bflow-client:$(grep "version:" pubspec.yaml | grep -oP '(?<=version:\s)[^+]+')
