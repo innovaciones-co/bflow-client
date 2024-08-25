@@ -28,7 +28,7 @@ jobs:
         password: ${{ secrets.DOCKER_SECRET }}
     - name: Extract version from pubspec.yaml
       id: extract_version
-      run: echo "VERSION=$(grep \"version:\" pubspec.yaml | grep -oP '(?<=version:\s)[^+]+')" >> $GITHUB_ENV
+      run: echo "VERSION=$(grep "version:" pubspec.yaml | grep -oP '(?<=version:\s)[^+]+')" >> $GITHUB_ENV
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
