@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/domain/entities/form_status.dart';
 
@@ -81,7 +82,35 @@ class LoginPage extends StatelessWidget with Validator {
                   child: Container(
                     constraints: const BoxConstraints(maxWidth: 500),
                     margin: const EdgeInsets.symmetric(horizontal: 35),
-                    child: _loginForm(context),
+                    child: LayoutBuilder(builder: (context, constraints) {
+                      double height = context.height / 8;
+                      return Column(
+                        children: [
+                          SizedBox(
+                            height: height,
+                          ),
+                          _loginForm(context),
+                          SizedBox(
+                            height: height,
+                          ),
+                          FutureBuilder(
+                            future: PackageInfo.fromPlatform(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Center(
+                                  child: Text(
+                                    "Version : ${snapshot.data?.version}",
+                                    style: context.labelSmall,
+                                  ),
+                                );
+                              }
+
+                              return const SizedBox();
+                            },
+                          ),
+                        ],
+                      );
+                    }),
                   ),
                 ),
               ),

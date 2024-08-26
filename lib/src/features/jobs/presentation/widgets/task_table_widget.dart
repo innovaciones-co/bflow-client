@@ -473,10 +473,15 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
               ],
             ),
             showCancelButton: true,
-            onCancel: () => this
-                .context
-                .read<TasksBloc>()
-                .add(GetTasksEvent(jobId: state.tasks.first.job)),
+            onCancel: () {
+              this
+                  .context
+                  .read<TasksBloc>()
+                  .add(GetTasksEvent(jobId: state.tasks.first.job));
+              this.context.read<HomeBloc>().add(
+                    HideFooterActionEvent(),
+                  );
+            },
             actions: [
               ActionButtonWidget(
                 onPressed: () {

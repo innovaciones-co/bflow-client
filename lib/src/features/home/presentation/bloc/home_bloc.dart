@@ -13,7 +13,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeInitial()) {
     on<ShowMessageEvent>(_showMessage);
     on<ShowFooterActionEvent>(_showFooterAction);
-    on<HideFooterActionEvent>(_hideFootrAction);
+    on<HideFooterActionEvent>(_hideFooterAction);
   }
 
   FutureOr<void> _showMessage(event, emit) {
@@ -31,7 +31,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(HomeInitial());
   }
 
-  FutureOr<void> _hideFootrAction(
+  FutureOr<void> _hideFooterAction(
       HideFooterActionEvent event, Emitter<HomeState> emit) {
     emit(const FooterAction(
         actions: [], leading: null, visible: false, showCancelButton: true));
