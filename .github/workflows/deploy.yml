@@ -25,12 +25,7 @@ jobs:
     - name: Build project
       run: flutter build web
     
-    - name: Check if release is needed
-      id: check_release
-      run: dart run release_tools should_release
-    
     - name: Log in to Docker Hub
-      if: steps.check_release.conclusion == 'yes'
       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
@@ -41,7 +36,6 @@ jobs:
       run: echo "VERSION=$(grep "version:" pubspec.yaml | grep -oP '(?<=version:\s)[^+]+')" >> $GITHUB_ENV
       
     - name: Build and push Docker image
-      if: steps.check_release.conclusion == 'yes'
       uses: docker/build-push-action@v5
       with:
         context: .
