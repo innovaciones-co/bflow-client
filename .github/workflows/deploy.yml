@@ -1,8 +1,8 @@
-name: Docker Image CI
+name: Deploy Docker Image
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "release" ]
 
 jobs:
       
