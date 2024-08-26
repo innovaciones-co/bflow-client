@@ -7,7 +7,7 @@ mixin Validator {
   String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Email is required';
-    } else if (!RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
+    } else if (!RegExp(r'^[^\s@]+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
         .hasMatch(value)) {
       return 'Please enter a valid email';
     }
