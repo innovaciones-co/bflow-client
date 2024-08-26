@@ -53,49 +53,52 @@ class _JobNoteState extends State<JobNote> {
               _isHovering = false;
             });
           },
-          child: Stack(
-            alignment: Alignment.topRight,
-            children: [
-              Container(
-                width: context.width / 2,
-                margin: const EdgeInsets.only(bottom: 15),
-                decoration: BoxDecoration(
-                  color: AppColor.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColor.grey,
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(2, 2), // changes position of shadow
-                    ),
-                  ],
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 15),
+            decoration: BoxDecoration(
+              color: AppColor.white,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColor.grey,
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: const Offset(2, 2),
                 ),
-                padding: const EdgeInsets.all(25.0),
-                child: BlocBuilder<NotesCubit, NotesState>(
-                  builder: (context, state) {
-                    if (state is NotesLoading) {
-                      return const LoadingWidget();
-                    }
+              ],
+            ),
+            child: Stack(
+              alignment: Alignment.topRight,
+              children: [
+                Container(
+                  width: context.width /
+                      (context.isMobile || context.isSmallTablet ? 1.2 : 2),
+                  padding: const EdgeInsets.all(25.0),
+                  child: BlocBuilder<NotesCubit, NotesState>(
+                    builder: (context, state) {
+                      if (state is NotesLoading) {
+                        return const LoadingWidget();
+                      }
 
-                    if (state is NotesEditing) {
-                      return _buildEditNote(state, context);
-                    }
+                      if (state is NotesEditing) {
+                        return _buildEditNote(state, context);
+                      }
 
-                    return Text(widget.note.body);
+                      return Text(widget.note.body);
+                    },
+                  ),
+                ),
+                BlocSelector<NotesCubit, NotesState, bool>(
+                  selector: (state) {
+                    return state is NotesEditing;
+                  },
+                  builder: (context, isEditing) {
+                    return isEditing
+                        ? const SizedBox.shrink()
+                        : _listNoteOptions(context);
                   },
                 ),
-              ),
-              BlocSelector<NotesCubit, NotesState, bool>(
-                selector: (state) {
-                  return state is NotesEditing;
-                },
-                builder: (context, isEditing) {
-                  return isEditing
-                      ? const SizedBox.shrink()
-                      : _listNoteOptions(context);
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         );
       }),
@@ -104,42 +107,77 @@ class _JobNoteState extends State<JobNote> {
 
   AnimatedPositioned _listNoteOptions(BuildContext context) {
     return AnimatedPositioned(
-      top: _isHovering ? 10 : -50,
-      right: 10,
+      top: _isHovering ? 12 : -50,
+      right: 12,
       duration: const Duration(milliseconds: 250),
       child: Row(
         children: [
-          IconButton(
-            onPressed: () {
-              context.read<NotesCubit>().editNote(widget.note);
-            },
-            color: AppColor.blue,
-            icon: const Icon(
-              Icons.edit_outlined,
-              size: 20,
-            ),
-            tooltip: 'Edit',
-          ),
-          IconButton(
-            onPressed: () {
-              context.showCustomModal(
-                ConfirmationWidget(
-                  title: "Delete note",
-                  description: "Are you sure you want to delete this note?",
-                  onConfirm: () {
-                    context.read<NotesCubit>().deleteNote(widget.note.id!);
-                    context.pop();
-                  },
-                  confirmText: "Delete",
+          Container(
+            width: 35,
+            height: 35,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColor.white,
+                  spreadRadius: 10,
+                  blurRadius: 5,
                 ),
-              );
-            },
-            color: AppColor.blue,
-            icon: const Icon(
-              Icons.delete_outline_outlined,
-              size: 20,
+              ],
             ),
-            tooltip: 'Delete',
+            child: IconButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(AppColor.lightBlue),
+              ),
+              onPressed: () {
+                context.read<NotesCubit>().editNote(widget.note);
+              },
+              color: AppColor.blue,
+              icon: const Icon(
+                Icons.edit_outlined,
+                size: 15,
+              ),
+              tooltip: 'Edit',
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            width: 35,
+            height: 35,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColor.white,
+                  spreadRadius: 10,
+                  blurRadius: 5,
+                ),
+              ],
+            ),
+            child: IconButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(AppColor.lightBlue),
+              ),
+              onPressed: () {
+                context.showCustomModal(
+                  ConfirmationWidget(
+                    title: "Delete note",
+                    description: "Are you sure you want to delete this note?",
+                    onConfirm: () {
+                      context.read<NotesCubit>().deleteNote(widget.note.id!);
+                      context.pop();
+                    },
+                    confirmText: "Delete",
+                  ),
+                );
+              },
+              color: AppColor.blue,
+              icon: const Icon(
+                Icons.delete_outline_outlined,
+                size: 15,
+              ),
+              tooltip: 'Delete',
+            ),
           ),
         ],
       ),

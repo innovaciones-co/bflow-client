@@ -54,6 +54,10 @@ class JobFilesWidget extends StatelessWidget {
               child: Expanded(
                 child: ListView(
                   children: [
+                    SizedBox(
+                      height:
+                          (context.isMobile || context.isSmallTablet ? 10 : 5),
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -190,7 +194,8 @@ class JobFilesWidget extends StatelessWidget {
 
   Widget _buildAddNote(BuildContext context) {
     return Container(
-      width: context.width / 2,
+      width:
+          context.width / (context.isMobile || context.isSmallTablet ? 1.2 : 2),
       margin: const EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
         color: AppColor.white,
@@ -199,7 +204,7 @@ class JobFilesWidget extends StatelessWidget {
             color: AppColor.grey,
             spreadRadius: 2,
             blurRadius: 5,
-            offset: const Offset(2, 2), // changes position of shadow
+            offset: const Offset(2, 2),
           ),
         ],
       ),
