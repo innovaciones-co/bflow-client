@@ -19,7 +19,7 @@ class DialogWidget extends StatelessWidget {
       child: Container(
         constraints: BoxConstraints(
           maxWidth:
-              context.isDesktop ? context.width * 0.3 : context.width * 0.8,
+              context.isDesktop ? context.width * 0.35 : context.width * 0.8,
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
