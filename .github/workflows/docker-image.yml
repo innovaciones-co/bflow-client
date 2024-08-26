@@ -13,23 +13,35 @@ jobs:
     steps:
     - name: Clone repository
       uses: actions/checkout@v4
+    
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         flutter-version: 3.16.5
+    
     - name: Install dependencies
       run: flutter pub get
+    
     - name: Build project
       run: flutter build web
+    
+    - name: Check if release is needed
+      id: check_release
+      run: dart run release_tools should_release
+    
     - name: Log in to Docker Hub
+      if: steps.check_release.conclusion == 'yes'
       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_SECRET }}
+        
     - name: Extract version from pubspec.yaml
       id: extract_version
       run: echo "VERSION=$(grep "version:" pubspec.yaml | grep -oP '(?<=version:\s)[^+]+')" >> $GITHUB_ENV
+      
     - name: Build and push Docker image
+      if: steps.check_release.conclusion == 'yes'
       uses: docker/build-push-action@v5
       with:
         context: .
