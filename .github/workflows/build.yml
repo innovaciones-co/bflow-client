@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Build
 
 on:
   push:
@@ -27,10 +27,13 @@ jobs:
     
     - name: Check if release is needed
       id: check_release
-      run: dart run release_tools should_release
+      run: |
+        dart run release_tools current_version
+        dart run release_tools next_version
+        dart run release_tools should_release
     
     - name: Prepare release 
-      if: steps.check_release.output == 'yes'
+      if: steps.check_release.conclusion == 'yes'
       run: dart run release_tools prepare_release
 
     - name: Extract version from pubspec.yaml
@@ -43,4 +46,4 @@ jobs:
       with:
         message: "ci: Release version ${{ env.VERSION }}"
         new-branch: release
-        tag: ${{ env.VERSION }}
+        tag: 'v${{ env.VERSION }}'
