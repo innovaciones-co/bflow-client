@@ -4,6 +4,7 @@ import 'bflow.dart';
 import 'src/core/config/config.dart';
 
 Future<void> main() async {
+  //Test commit
   await DependencyInjection.init();
   runApp(const BflowApp());
 }
