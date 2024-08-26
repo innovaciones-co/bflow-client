@@ -1,0 +1,46 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+      
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: 3.16.5
+    
+    - name: Install dependencies
+      run: flutter pub get
+    
+    - name: Build project
+      run: flutter build web
+    
+    - name: Check if release is needed
+      id: check_release
+      run: dart run release_tools should_release
+    
+    - name: Prepare release 
+      if: steps.check_release.output == 'yes'
+      run: dart run release_tools prepare_release
+
+    - name: Extract version from pubspec.yaml
+      id: extract_version
+      run: echo "VERSION=$(grep "version:" pubspec.yaml | grep -oP '(?<=version:\s)[^+]+')" >> $GITHUB_ENV
+      
+    - name: Release version ${{ env.VERSION }}
+      if: steps.check_release.conclusion == 'yes'
+      uses: EndBug/add-and-commit@v9 
+      with:
+        message: "ci: Release version ${{ env.VERSION }}"
+        new-branch: release
+        tag: ${{ env.VERSION }}
