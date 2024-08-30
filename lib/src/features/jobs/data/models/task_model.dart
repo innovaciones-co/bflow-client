@@ -6,6 +6,7 @@ import 'package:bflow_client/src/features/jobs/data/models/file_model.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
+import 'package:bflow_client/src/features/purchase_orders/data/models/purchase_order_model.dart';
 
 class TaskModel extends Task {
   const TaskModel({
@@ -23,6 +24,7 @@ class TaskModel extends Task {
     super.attachments,
     required super.job,
     super.order,
+    super.purchaseOrder,
   });
 
   factory TaskModel.fromEntity(Task task) => TaskModel(
@@ -40,6 +42,7 @@ class TaskModel extends Task {
         attachments: task.attachments,
         job: task.job,
         order: task.order,
+        purchaseOrder: task.purchaseOrder,
       );
 
   factory TaskModel.fromJson(String str) => TaskModel.fromMap(json.decode(str));
@@ -70,6 +73,9 @@ class TaskModel extends Task {
                 json["attachments"]!.map((x) => FileModel.fromMap(x))),
         job: json["job"],
         order: json["order"],
+        purchaseOrder: json["purchaseOrder"] == null
+            ? null
+            : PurchaseOrderModel.fromMap(json["purchaseOrder"]),
       );
 
   Map<String, dynamic> toMap() => {
@@ -89,5 +95,6 @@ class TaskModel extends Task {
             : List<int>.from(attachments!.map((x) => x.id)),
         "job": job,
         "order": order,
+        "purchaseOrder": purchaseOrder?.id,
       };
 }
