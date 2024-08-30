@@ -81,9 +81,9 @@ class TaskModel extends Task {
   Map<String, dynamic> toMap() => {
         "id": id,
         "name": name,
-        "callDate": callDate?.toDateFormat(),
+        "callDate": callDate?.toIso8601String(),
         "startDate": startDate?.toDateFormat(),
-        "endDate": endDate?.toIso8601String(),
+        "endDate": endDate?.toDateFormat(),
         "description": comments,
         "progress": progress,
         "status": status.toJSON(),
