@@ -1,6 +1,8 @@
 import 'dart:convert';
 
-class JwtPayloadModel {
+import 'package:bflow_client/src/core/data/models/json_serializable.dart';
+
+class JwtPayloadModel with JsonSerializable {
   String sub;
   String iss;
   DateTime iat;
@@ -16,8 +18,6 @@ class JwtPayloadModel {
   factory JwtPayloadModel.fromJson(String str) =>
       JwtPayloadModel.fromMap(json.decode(str));
 
-  String toJson() => json.encode(toMap());
-
   factory JwtPayloadModel.fromMap(Map<String, dynamic> json) => JwtPayloadModel(
         sub: json["sub"],
         iss: json["iss"],
@@ -25,6 +25,7 @@ class JwtPayloadModel {
         exp: DateTime.fromMillisecondsSinceEpoch(json['exp'] * 1000),
       );
 
+  @override
   Map<String, dynamic> toMap() => {
         "sub": sub,
         "iss": iss,

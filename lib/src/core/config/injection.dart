@@ -72,7 +72,10 @@ import 'package:bflow_client/src/features/login/domain/usecases/get_logged_user_
 import 'package:bflow_client/src/features/login/domain/usecases/is_logged_use_case.dart';
 import 'package:bflow_client/src/features/login/domain/usecases/login_use_case.dart';
 import 'package:bflow_client/src/features/login/domain/usecases/logout_use_case.dart';
-import 'package:bflow_client/src/features/login/presentation/bloc/login_bloc.dart';
+import 'package:bflow_client/src/features/login/domain/usecases/request_password_update._use_case.dart';
+import 'package:bflow_client/src/features/login/domain/usecases/update_password_use_case.dart';
+import 'package:bflow_client/src/features/login/presentation/bloc/login/login_bloc.dart';
+import 'package:bflow_client/src/features/login/presentation/bloc/recover-password/request_password_update_cubit.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/implements/items_repository_imp.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/implements/purchase_orders_repository_imp.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/sources/items_remote_data_source.dart';
@@ -141,6 +144,16 @@ class DependencyInjection {
         isLoggedUseCase: sl(),
         getLoggedUserUseCase: sl(),
         logoutUseCase: sl(),
+      ),
+    );
+    sl.registerFactory<RequestPasswordUpdateCubit>(
+      () => RequestPasswordUpdateCubit(
+        requestPasswordUpdateUseCase: sl(),
+      ),
+    );
+    sl.registerFactory<UpdatePasswordUseCase>(
+      () => UpdatePasswordUseCase(
+        loginRepository: sl(),
       ),
     );
     sl.registerFactory<JobsBloc>(
@@ -249,6 +262,11 @@ class DependencyInjection {
     sl.registerLazySingleton(
       () => LogoutUseCase(
         repository: sl(),
+      ),
+    );
+    sl.registerLazySingleton(
+      () => RequestPasswordUpdateUseCase(
+        loginRepository: sl(),
       ),
     );
     sl.registerLazySingleton(
