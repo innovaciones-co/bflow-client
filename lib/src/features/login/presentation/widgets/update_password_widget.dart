@@ -1,6 +1,5 @@
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
-import 'package:bflow_client/src/core/routes/routes.dart';
 import 'package:bflow_client/src/core/utils/mixins/validator.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
@@ -9,7 +8,6 @@ import 'package:bflow_client/src/features/login/presentation/bloc/recover-passwo
 import 'package:bflow_client/src/features/login/presentation/bloc/recover-password/update_password_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class UpdatePasswordWidget extends StatelessWidget with Validator {
   final Function()? onSuccess;
