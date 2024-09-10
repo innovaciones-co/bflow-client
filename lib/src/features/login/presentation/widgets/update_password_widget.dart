@@ -1,5 +1,7 @@
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
+import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/utils/mixins/validator.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
@@ -28,10 +30,7 @@ class UpdatePasswordWidget extends StatelessWidget with Validator {
       child: BlocListener<UpdatePasswordCubit, UpdatePasswordState>(
         listener: (context, state) {
           if (state.message != null) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(state.message!),
-              backgroundColor: AppColor.green,
-            ));
+            context.showAlert(message: state.message!, type: AlertType.success);
             tokenController.text = '';
             passwordController.text = '';
             confirmPasswordController.text = '';
@@ -39,10 +38,9 @@ class UpdatePasswordWidget extends StatelessWidget with Validator {
               onSuccess!();
             }
           } else if (state.error != null) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(state.error!.message ?? 'Unexpected error'),
-              backgroundColor: AppColor.red,
-            ));
+            context.showAlert(
+                message: state.error!.message ?? 'Unexpected error',
+                type: AlertType.error);
           }
         },
         child: Padding(

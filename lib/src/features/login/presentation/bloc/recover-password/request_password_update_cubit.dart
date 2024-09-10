@@ -44,12 +44,17 @@ class RequestPasswordUpdateCubit extends Cubit<RequestPasswordUpdateState> {
         );
         return;
       }
+
+      emit(RequestPasswordUpdateLoading());
+
       var response = await requestPasswordUpdateUseCase
           .execute(RequestPasswordUpdateParams(username: username));
 
       response.fold(
         (l) => emit(RequestPasswordUpdateError(failure: l)),
-        (r) => emit(const RequestPasswordUpdateDone(tokenRequested: true)),
+        (r) => emit(const RequestPasswordUpdateDone(
+            tokenRequested: true,
+            message: "A token was sent to the registered email.")),
       );
     }
   }

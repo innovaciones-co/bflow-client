@@ -1,5 +1,6 @@
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
+import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/utils/mixins/validator.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
@@ -18,36 +19,57 @@ class ResetPasswordWidget extends StatelessWidget with Validator {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Row(
-          children: [
-            IconButton(
-              onPressed: onBackPressed,
-              icon: const Icon(Icons.arrow_back_ios_outlined),
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            const Text(
-              "Reset your password",
-              style: TextStyle(fontSize: 24),
-            ),
-          ],
-        ),
-        const SizedBox(height: 35),
-        BlocBuilder<RequestPasswordUpdateCubit, RequestPasswordUpdateState>(
-          builder: (context, state) {
-            return state.tokenRequested
-                ? UpdatePasswordWidget(
-                    onSuccess: onBackPressed,
-                  )
-                : _requestTokenForm();
+    return BlocProvider<RequestPasswordUpdateCubit>(
+      create: (context) => DependencyInjection.sl(),
+      child: Builder(builder: (context) {
+        return BlocListener<RequestPasswordUpdateCubit,
+            RequestPasswordUpdateState>(
+          listener: (context, state) {
+            if (state is RequestPasswordUpdateError) {
+              context.showAlert(
+                  message: state.failure.message!, type: AlertType.error);
+            } else if (state is RequestPasswordUpdateDone) {
+              if (state.message != null) {
+                context.showAlert(
+                    message: state.message!, type: AlertType.success);
+              }
+            }
           },
-        ),
-      ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: onBackPressed,
+                    icon: const Icon(Icons.arrow_back_ios_outlined),
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  const Text(
+                    "Reset your password",
+                    style: TextStyle(fontSize: 24),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 35),
+              BlocSelector<RequestPasswordUpdateCubit,
+                  RequestPasswordUpdateState, bool>(
+                selector: (state) => state.tokenRequested,
+                builder: (context, tokenRequested) {
+                  return tokenRequested
+                      ? UpdatePasswordWidget(
+                          onSuccess: onBackPressed,
+                        )
+                      : _requestTokenForm();
+                },
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 
@@ -92,23 +114,32 @@ class ResetPasswordWidget extends StatelessWidget with Validator {
                     right: context.isDesktop ? 20 : 0,
                     left: context.isDesktop ? 20 : 0,
                   ),
-                  child: ActionButtonWidget(
-                    onPressed: () {
-                      TextInput.finishAutofillContext();
-
-                      if (_passwordFormKey.currentState != null &&
-                          _passwordFormKey.currentState!.validate()) {
-                        requestPasswordUpdateBloc.requestToken();
-                      } else {
-                        requestPasswordUpdateBloc
-                            .updateAutovalidateMode(AutovalidateMode.always);
-                      }
+                  child: BlocSelector<RequestPasswordUpdateCubit,
+                      RequestPasswordUpdateState, bool>(
+                    selector: (state) {
+                      return state is RequestPasswordUpdateLoading;
                     },
-                    type: ButtonType.elevatedButton,
-                    title: "Request token",
-                    backgroundColor: AppColor.blue,
-                    foregroundColor: AppColor.white,
-                    paddingVertical: 24,
+                    builder: (context, isLoading) {
+                      return ActionButtonWidget(
+                        inProgress: isLoading,
+                        onPressed: () {
+                          TextInput.finishAutofillContext();
+
+                          if (_passwordFormKey.currentState != null &&
+                              _passwordFormKey.currentState!.validate()) {
+                            requestPasswordUpdateBloc.requestToken();
+                          } else {
+                            requestPasswordUpdateBloc.updateAutovalidateMode(
+                                AutovalidateMode.always);
+                          }
+                        },
+                        type: ButtonType.elevatedButton,
+                        title: "Request token",
+                        backgroundColor: AppColor.blue,
+                        foregroundColor: AppColor.white,
+                        paddingVertical: 24,
+                      );
+                    },
                   ),
                 ),
                 Container(

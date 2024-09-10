@@ -44,70 +44,66 @@ class _LoginPageState extends State<LoginPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocProvider<RequestPasswordUpdateCubit>(
-        create: (context) => DependencyInjection.sl(),
-        child: BlocListener<LoginCubit, LoginFormState>(
-          listener: (context, state) {
-            if (state.status == FormStatus.success) {
-              context.go(RoutesName.initial);
-            }
-            if (state.status == FormStatus.failed) {
-              context.read<LoginCubit>().updateStatus(FormStatus.initialized);
-              context.showAlert(
-                message: state.errorMessage ?? "Unexpected error.",
-                type: AlertType.error,
-              );
-            }
-          },
-          child: Row(
-            children: [
-              context.isDesktop
-                  ? Expanded(
-                      flex: 1,
-                      child: _backgroungWithLogo(),
-                    )
-                  : const SizedBox.shrink(),
-              Expanded(
-                flex: 1,
-                child: Center(
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 500),
-                    margin: const EdgeInsets.symmetric(horizontal: 35),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        double height = context.height / 8;
-                        return Column(
-                          children: [
-                            SizedBox(
-                              height: height,
+      body: BlocListener<LoginCubit, LoginFormState>(
+        listener: (context, state) {
+          if (state.status == FormStatus.success) {
+            context.go(RoutesName.initial);
+          }
+          if (state.status == FormStatus.failed) {
+            context.read<LoginCubit>().updateStatus(FormStatus.initialized);
+            context.showAlert(
+              message: state.errorMessage ?? "Unexpected error.",
+              type: AlertType.error,
+            );
+          }
+        },
+        child: Row(
+          children: [
+            context.isDesktop
+                ? Expanded(
+                    flex: 1,
+                    child: _backgroungWithLogo(),
+                  )
+                : const SizedBox.shrink(),
+            Expanded(
+              flex: 1,
+              child: Center(
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  margin: const EdgeInsets.symmetric(horizontal: 35),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      double height = context.height / 8;
+                      return Column(
+                        children: [
+                          SizedBox(
+                            height: height,
+                          ),
+                          SizedBox(
+                            width: double.maxFinite,
+                            height: height * 6,
+                            child: TabBarView(
+                              controller: _controller,
+                              children: [
+                                _loginForm(context),
+                                ResetPasswordWidget(
+                                  onBackPressed: () => _controller.animateTo(0),
+                                ),
+                              ],
                             ),
-                            SizedBox(
-                              width: double.maxFinite,
-                              height: height * 6,
-                              child: TabBarView(
-                                controller: _controller,
-                                children: [
-                                  _loginForm(context),
-                                  ResetPasswordWidget(
-                                    onBackPressed: () =>
-                                        _controller.animateTo(0),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: height,
-                              child: _versionInfo(),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
+                          ),
+                          SizedBox(
+                            height: height,
+                            child: _versionInfo(),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

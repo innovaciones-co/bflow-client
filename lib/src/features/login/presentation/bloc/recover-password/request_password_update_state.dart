@@ -31,14 +31,17 @@ final class RequestPasswordUpdateInitial extends RequestPasswordUpdateState {
 final class RequestPasswordUpdateLoading extends RequestPasswordUpdateState {}
 
 final class RequestPasswordUpdateDone extends RequestPasswordUpdateState {
-  const RequestPasswordUpdateDone({super.tokenRequested});
+  final String? message;
+  const RequestPasswordUpdateDone({super.tokenRequested, this.message});
 }
 
 final class RequestPasswordUpdateError extends RequestPasswordUpdateState {
   final Failure failure;
 
-  const RequestPasswordUpdateError(
-      {required this.failure, super.tokenRequested});
+  const RequestPasswordUpdateError({
+    required this.failure,
+    super.tokenRequested,
+  });
 
   @override
   List<Object> get props => [failure];
