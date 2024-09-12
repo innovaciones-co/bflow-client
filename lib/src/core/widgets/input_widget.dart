@@ -13,10 +13,12 @@ class InputWidget extends StatefulWidget {
   final String? initialValue;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
+  final TextEditingController? controller;
 
   const InputWidget({
     super.key,
     required this.label,
+    this.controller,
     this.initialValue,
     this.keyboardType,
     this.inputFormatters,
@@ -52,6 +54,7 @@ class _InputWidgetState extends State<InputWidget> {
         ),
         const SizedBox(height: 5),
         TextFormField(
+          controller: widget.controller,
           autofillHints: widget.autofillHints,
           onChanged: widget.onChanged,
           validator: widget.validator,

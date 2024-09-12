@@ -144,7 +144,7 @@ class WriteMaterialWidget extends StatelessWidget with Validator {
                         }
                       },
                       type: ButtonType.elevatedButton,
-                      title: "Create Material",
+                      title: "Add Material",
                       backgroundColor: AppColor.blue,
                       foregroundColor: AppColor.white,
                     ),

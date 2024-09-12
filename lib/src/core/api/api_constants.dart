@@ -1,7 +1,7 @@
 class ApiConstants {
-  //static String baseUrl = 'http://localhost:8080/api';
+  static String baseUrl = 'http://localhost:8080/api';
   //static String baseUrl = 'http://10.0.2.2:8080/api';
-  static String baseUrl = 'https://bflowserver.innovaciones.co/api';
+  //static String baseUrl = 'https://bflowserver.innovaciones.co/api';
 
   static String jobsEndpoint = 'jobs';
   static String jobEndpoint = 'jobs/:id';
@@ -14,6 +14,8 @@ class ApiConstants {
   static String userEndpoint = 'users/:id';
   static String userByusernameEndpoint = 'users/username/:username';
   static String loginUsersEndpoint = 'users/login';
+  static String recoverPasswordEndpoint = 'users/recover-password';
+  static String setNewPasswordEndpoint = 'users/create-new-password';
 
   static String contactsEndpoint = 'contacts';
   static String contactEndpoint = 'contacts/:id';

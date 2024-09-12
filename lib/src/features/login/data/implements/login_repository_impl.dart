@@ -2,8 +2,11 @@ import 'dart:convert';
 
 import 'package:bflow_client/src/core/exceptions/bad_response_exception.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
+import 'package:bflow_client/src/core/exceptions/not_found_exception.dart';
 import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.dart';
 import 'package:bflow_client/src/features/login/data/models/jwt_payload_model.dart';
+import 'package:bflow_client/src/features/login/data/models/password_change_model.dart';
+import 'package:bflow_client/src/features/login/data/models/update_password_request_model.dart';
 import 'package:bflow_client/src/features/login/data/sources/login_local_data_source.dart';
 import 'package:bflow_client/src/features/login/domain/entities/auth_entity.dart';
 import 'package:bflow_client/src/features/users/data/sources/users_remote_data_source.dart';
@@ -107,5 +110,35 @@ class LoginRepositoryImp implements LoginRepository {
         utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
 
     return JwtPayloadModel.fromJson(payloadStr);
+  }
+
+  @override
+  Future<Either<Failure, void>> requestToken(
+      UpdatePasswordRequestModel passwordRequestModel) async {
+    try {
+      return Right(await remoteDataSource
+          .recoverPassword(passwordRequestModel.username));
+    } on RemoteDataSourceException catch (e) {
+      return Left(
+        ServerFailure(message: e.message),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updatePassword(
+      PasswordChangeModel request) async {
+    try {
+      return Right(
+        await remoteDataSource.setNewPassword(
+          request.token,
+          request.password,
+        ),
+      );
+    } on RemoteDataSourceException catch (e) {
+      return Left(
+        ServerFailure(message: e.message),
+      );
+    }
   }
 }

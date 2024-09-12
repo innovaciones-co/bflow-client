@@ -2,7 +2,7 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/routes/routes.dart';
-import 'package:bflow_client/src/features/login/presentation/bloc/login_bloc.dart';
+import 'package:bflow_client/src/features/login/presentation/bloc/login/login_bloc.dart';
 import 'package:bflow_client/src/features/users/domain/entities/user_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
