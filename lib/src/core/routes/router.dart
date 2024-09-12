@@ -8,7 +8,7 @@ import 'package:bflow_client/src/features/home/presentation/pages/home_page.dart
 import 'package:bflow_client/src/features/jobs/presentation/pages/job_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/jobs_page.dart';
 import 'package:bflow_client/src/features/jobs/presentation/pages/task_confirmation_page.dart';
-import 'package:bflow_client/src/features/login/presentation/bloc/login_bloc.dart';
+import 'package:bflow_client/src/features/login/presentation/bloc/login/login_bloc.dart';
 import 'package:bflow_client/src/features/login/presentation/pages/login_page.dart';
 import 'package:bflow_client/src/features/users/presentation/pages/users_page.dart';
 import 'package:flutter/material.dart';

@@ -18,8 +18,8 @@ mixin Validator {
   String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Password is required';
-    } else if (value.length < 6) {
-      return 'Password must be at least 6 characters';
+    } else if (value.length < 8) {
+      return 'Password must be at least 8 characters';
     }
     return null;
   }
@@ -87,6 +87,17 @@ mixin Validator {
   String? validateCity(String? value) {
     if (value == null || value.isEmpty) {
       return 'City is required';
+    }
+    return null;
+  }
+
+  // Token validation
+  String? validateToken(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Token is required';
+    }
+    if (value.length < 32 || value.length > 38) {
+      return 'Token lenght is invalid';
     }
     return null;
   }

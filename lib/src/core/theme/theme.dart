@@ -375,6 +375,7 @@ class MaterialTheme {
         appBarTheme: _abbBarTheme(),
         elevatedButtonTheme: _elevatedButtonTheme(colorScheme),
         inputDecorationTheme: _inputDecorationTheme(colorScheme),
+        textButtonTheme: _textButtonTheme(colorScheme),
       );
 
   AppBarTheme _abbBarTheme() {
@@ -543,6 +544,15 @@ class MaterialTheme {
       isDense: true,
       filled: true,
       fillColor: AppColor.white,
+    );
+  }
+
+  _textButtonTheme(ColorScheme colorScheme) {
+    return TextButtonThemeData(
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+      ),
     );
   }
 }

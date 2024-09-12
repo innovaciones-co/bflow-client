@@ -17,4 +17,23 @@ class LoginRemoteDataSource {
     );
     return AuthModel.fromMap(response);
   }
+
+  Future<void> recoverPassword(String username) async {
+    await apiService.post(
+      endpoint: ApiConstants.recoverPasswordEndpoint,
+      data: {
+        'username': username,
+      },
+    );
+  }
+
+  Future<void> setNewPassword(String token, String password) async {
+    await apiService.post(
+      endpoint: ApiConstants.setNewPasswordEndpoint,
+      data: {
+        'token': token,
+        'password': password,
+      },
+    );
+  }
 }

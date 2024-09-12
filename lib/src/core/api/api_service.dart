@@ -148,11 +148,13 @@ class ApiService {
             errorResponse: errorResponse,
           );
         case 401:
-          throw BadResponseException('Unauthorized');
+          ErrorResponseModel? errorResponse = _getErrorResponse(response);
+          throw BadResponseException(errorResponse?.message ?? 'Unauthorized');
         case 403:
           throw BadResponseException('Forbidden');
         case 404:
-          throw BadResponseException('Not found');
+          ErrorResponseModel? errorResponse = _getErrorResponse(response);
+          throw BadResponseException(errorResponse?.message ?? 'Not found');
         case 413:
           throw BadResponseException('Maximum upload size exceeded');
       }
