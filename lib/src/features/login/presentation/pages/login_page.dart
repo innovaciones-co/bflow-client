@@ -6,7 +6,6 @@ import 'package:bflow_client/src/core/utils/mixins/validator.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
 import 'package:bflow_client/src/features/login/presentation/bloc/login/login_bloc.dart';
-import 'package:bflow_client/src/features/login/presentation/bloc/recover-password/request_password_update_cubit.dart';
 import 'package:bflow_client/src/features/login/presentation/widgets/reset_password_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

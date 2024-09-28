@@ -53,9 +53,10 @@ class _ImportProductsFileWidgetState extends State<ImportProductsFileWidget> {
                 children: [
                   const Row(
                     children: [
-                      Text(
-                        'Please upload the file to import the products data:',
-                        textAlign: TextAlign.end,
+                      Expanded(
+                        child: Text(
+                          'Please upload the file to import the products data:',
+                        ),
                       ),
                     ],
                   ),
@@ -145,8 +146,10 @@ class _ImportProductsFileWidgetState extends State<ImportProductsFileWidget> {
         borderType: BorderType.RRect,
         child: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Wrap(
+                alignment: WrapAlignment.center,
                 children: [
                   Icon(
                     Icons.upload_file_outlined,
@@ -219,8 +222,11 @@ class _ImportProductsFileWidgetState extends State<ImportProductsFileWidget> {
         _selectedFile != null
             ? const SizedBox.shrink()
             : Container(
-                height: 120,
-                margin: const EdgeInsets.all(15),
+                height: context.isMobile || context.isSmallTablet ? 160 : 140,
+                margin: EdgeInsets.symmetric(
+                  horizontal: context.isMobile ? 0 : 15,
+                  vertical: 15,
+                ),
                 child: Stack(
                   children: [
                     Positioned(
