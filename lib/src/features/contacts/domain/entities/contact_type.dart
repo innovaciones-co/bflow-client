@@ -2,7 +2,7 @@ import '../../../../core/exceptions/invalid_argument_exception.dart';
 
 enum ContactType {
   client('Client'),
-  contractor('Contractor'),
+  //contractor('Contractor'),
   supplier('Supplier');
 
   final String name;
@@ -18,7 +18,6 @@ enum ContactType {
       case "client":
         return ContactType.client;
       case "contractor":
-        return ContactType.contractor;
       case "supplier":
         return ContactType.supplier;
       default:

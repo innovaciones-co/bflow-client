@@ -28,18 +28,17 @@ class JobItemDesktopWidget extends StatelessWidget {
       ),
       height: 120, // THIS
       margin: const EdgeInsets.symmetric(vertical: 10),
-      child: context.isMobile || context.isTablet || context.isSmallTablet
-          ? _mobileLayout(context)
-          : _desktopLayout(context),
+      child:
+          context.isTablet ? _tabletLayout(context) : _desktopLayout(context),
     );
   }
 
-  Widget _mobileLayout(BuildContext context) {
+  Widget _tabletLayout(BuildContext context) {
     return ListView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.only(left: 15, right: 8, top: 15, bottom: 15),
       children: [
-        _mobileCellJob(
+        _tabletCellJob(
           title: "Job Number",
           width: 110,
           child: ActionButtonWidget(
@@ -49,7 +48,7 @@ class JobItemDesktopWidget extends StatelessWidget {
             icon: Icons.edit_outlined,
           ),
         ),
-        _mobileCellJob(
+        _tabletCellJob(
           title: "Address",
           width: 160,
           child: Column(
@@ -59,11 +58,11 @@ class JobItemDesktopWidget extends StatelessWidget {
             ],
           ),
         ),
-        _mobileCellJob(
+        _tabletCellJob(
             title: "Supervisor",
             width: 140,
             child: Text(job.supervisor.fullName)),
-        _mobileCellJob(
+        _tabletCellJob(
           title: "Job Stage",
           width: 110,
           child: Column(
@@ -75,11 +74,11 @@ class JobItemDesktopWidget extends StatelessWidget {
             ],
           ),
         ),
-        _mobileCellJob(
+        _tabletCellJob(
             title: "Weeks",
             width: 160,
             child: Text(job.weeksOfConstruction.toString())),
-        _mobileCellJob(
+        _tabletCellJob(
           title: "Progress",
           width: 150,
           child: _progressBar(percentage: job.progress, width: 140),
@@ -237,7 +236,7 @@ Widget _progressBar({required double percentage, required double width}) {
   );
 }
 
-SizedBox _mobileCellJob(
+SizedBox _tabletCellJob(
     {required String title, required double width, required Widget child}) {
   return SizedBox(
     width: width,

@@ -2,6 +2,7 @@ import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/routes/routes.dart';
+import 'package:bflow_client/src/features/home/presentation/widgets/logo_widget.dart';
 import 'package:bflow_client/src/features/login/presentation/bloc/login/login_bloc.dart';
 import 'package:bflow_client/src/features/users/domain/entities/user_entity.dart';
 import 'package:flutter/material.dart';
@@ -16,20 +17,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   PreferredSizeWidget build(BuildContext context) {
     return AppBar(
       title: Center(
-        child: Row(
-          children: [
-            Image.asset(
-              'assets/img/sh_logo.png',
-              height: 50,
-              width: 50,
-            ),
-            Image.asset(
-              'assets/img/sh_text.png',
-              height: 50,
-              width: 100,
-            ),
-          ],
-        ),
+        child: context.isMobile ? const SizedBox.shrink() : const LogoWidget(),
       ),
       actions: [
         FutureBuilder(

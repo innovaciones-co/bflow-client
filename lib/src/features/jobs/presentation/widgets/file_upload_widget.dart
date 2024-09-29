@@ -52,8 +52,11 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
         return Column(
           children: [
             Container(
-              height: 120,
-              margin: const EdgeInsets.all(15),
+              height: context.isMobile || context.isSmallTablet ? 160 : 140,
+              margin: EdgeInsets.symmetric(
+                horizontal: context.isMobile ? 0 : 15,
+                vertical: 15,
+              ),
               child: isUploading
                   ? const LoadingWidget()
                   : Stack(
@@ -186,8 +189,10 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
             borderType: BorderType.RRect,
             child: Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Wrap(
+                    alignment: WrapAlignment.center,
                     children: [
                       Icon(
                         Icons.upload_file_outlined,

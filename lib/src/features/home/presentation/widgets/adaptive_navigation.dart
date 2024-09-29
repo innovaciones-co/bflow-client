@@ -1,5 +1,7 @@
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/features/home/presentation/widgets/app_bar_widget.dart';
+import 'package:bflow_client/src/features/home/presentation/widgets/logo_widget.dart';
 import 'package:flutter/material.dart';
 
 class AdaptiveNavigation extends StatefulWidget {
@@ -21,7 +23,7 @@ class AdaptiveNavigation extends StatefulWidget {
 }
 
 class _AdaptiveNavigationState extends State<AdaptiveNavigation> {
-  bool isExtended = false;
+  bool isExtended = true;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +54,8 @@ class _AdaptiveNavigationState extends State<AdaptiveNavigation> {
                       .toList(),
                   selectedIndex: widget.selectedIndex,
                   onDestinationSelected: widget.onDestinationSelected,
-                  elevation: 1,
+                  elevation: 30.0,
+                  labelType: isExtended ? null : NavigationRailLabelType.all,
                 ),
                 Expanded(child: widget.child),
               ],
@@ -61,13 +64,49 @@ class _AdaptiveNavigationState extends State<AdaptiveNavigation> {
         }
         // Mobile Layout
         return Scaffold(
+          drawer: Drawer(
+            child: Column(
+              children: [
+                Container(
+                  color: AppColor.black,
+                  padding: const EdgeInsets.all(10),
+                  child: const LogoWidget(),
+                ),
+                Expanded(
+                  child: NavigationRail(
+                    extended: true,
+                    minExtendedWidth: 180,
+                    leading: !context.isMobile
+                        ? IconButton(
+                            onPressed: _toggleExtended,
+                            icon: Icon(isExtended
+                                ? Icons.toggle_on
+                                : Icons.toggle_off),
+                          )
+                        : const SizedBox.shrink(),
+                    destinations: widget.destinations
+                        .map((e) => NavigationRailDestination(
+                              icon: e.icon,
+                              label: Text(e.label),
+                            ))
+                        .toList(),
+                    selectedIndex: widget.selectedIndex,
+                    onDestinationSelected: (index) {
+                      widget.onDestinationSelected(index);
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
           appBar: const AppBarWidget(),
           body: widget.child,
-          bottomNavigationBar: NavigationBar(
-            destinations: widget.destinations,
-            selectedIndex: widget.selectedIndex,
-            onDestinationSelected: widget.onDestinationSelected,
-          ),
+          // bottomNavigationBar: NavigationBar(
+          //   destinations: widget.destinations,
+          //   selectedIndex: widget.selectedIndex,
+          //   onDestinationSelected: widget.onDestinationSelected,
+          // ),
         );
       },
     );

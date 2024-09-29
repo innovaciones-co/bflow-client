@@ -167,6 +167,7 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
       parentTask: state.parentTask,
       supplier: state.supplier,
       order: state.order,
+      purchaseOrder: state.purchaseOrder,
     );
 
     var createdTask =
@@ -188,7 +189,7 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
   }
 
   void updateTask(t.Task newTask) async {
-    debugPrint(newTask.toString());
+    //debugPrint(newTask.toString());
     emit(state.copyWith(
       formStatus: FormStatus.inProgress,
     ));
@@ -207,6 +208,7 @@ class WriteTaskCubit extends Cubit<WriteTaskState> {
       supplier: state.supplier,
       attachments: state.attachments,
       order: state.order,
+      purchaseOrder: state.purchaseOrder,
     );
 
     UploadFilesParams params = UploadFilesParams(files: state.attachments);

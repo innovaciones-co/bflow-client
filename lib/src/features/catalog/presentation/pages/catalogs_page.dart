@@ -40,18 +40,19 @@ class CatalogsPage extends StatelessWidget {
               children: [
                 Expanded(
                   child: GridView.count(
-                    crossAxisCount: context.isMobile || context.isSmallTablet
-                        ? 2
-                        : 3,
+                    crossAxisCount:
+                        context.isMobile || context.isSmallTablet ? 2 : 3,
                     childAspectRatio:
-                        context.isMobile || context.isTablet ? 2 : 2,
+                        context.isMobile || context.isSmallTablet ? 2 : 2,
                     children: suppliers
                         .mapIndexed((index, supplier) =>
                             _supplierItem(index, supplier, context))
                         .toList(),
                   ),
                 ),
-                context.isDesktop ? const CategoriesWidget() : const SizedBox.shrink()
+                context.isDesktop
+                    ? const CategoriesWidget()
+                    : const SizedBox.shrink()
               ],
             );
           },
