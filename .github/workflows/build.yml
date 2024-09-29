@@ -27,18 +27,21 @@ jobs:
 
       - name: Check if release is needed
         id: check_release
-        run: dart run release_tools should_release
+        run: |
+          RELEASE_OUTPUT=$(dart run release_tools should_release)
+          echo "release_output=$RELEASE_OUTPUT" 
+          echo "::set-output name=should_release::$RELEASE_OUTPUT"
 
       - name: Prepare release
-        if: steps.check_release.outputs == 'yes'
+        if: steps.check_release.outputs.should_release == 'yes'
         run: dart run release_tools prepare_release
 
       - name: Extract version from pubspec.yaml
         id: extract_version
         run: echo "VERSION=$(grep "version:" pubspec.yaml | grep -oP '(?<=version:\s)[^+]+')" >> $GITHUB_ENV
 
-      - name: Release version ${{ env.VERSION }}
-        if: steps.check_release.conclusion == 'yes'
+      - name: Release version
+        if: steps.check_release.outputs.should_release == 'yes'
         uses: EndBug/add-and-commit@v9
         with:
           message: "ci: Release version ${{ env.VERSION }}"
