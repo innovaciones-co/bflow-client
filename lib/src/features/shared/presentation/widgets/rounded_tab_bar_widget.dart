@@ -52,8 +52,9 @@ class _RoundedTabBarWidgetState extends State<RoundedTabBarWidget> {
     bool first = false,
     bool last = false,
   }) {
-    Color foregroundColor = isExpanded ? AppColor.lightBlue : AppColor.darkGrey;
-    Color backgroundColor = isExpanded ? AppColor.blue : AppColor.grey;
+    Color foregroundColor = isExpanded ? AppColor.blue : AppColor.darkGrey;
+    Color backgroundColor =
+        isExpanded ? AppColor.blue.withOpacity(0.1) : AppColor.lightGrey;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       width: isExpanded ? 180 : 55,
