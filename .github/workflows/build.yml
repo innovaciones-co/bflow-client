@@ -29,8 +29,7 @@ jobs:
         id: check_release
         run: |
           RELEASE_OUTPUT=$(dart run release_tools should_release)
-          echo "release_output=$RELEASE_OUTPUT" 
-          echo "::set-output name=should_release::$RELEASE_OUTPUT"
+          echo "should_release=$RELEASE_OUTPUT" >> $GITHUB_OUTPUT
 
       - name: Prepare release
         if: steps.check_release.outputs.should_release == 'yes'
