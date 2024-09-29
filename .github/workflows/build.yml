@@ -2,8 +2,11 @@ name: Build
 permissions:
   contents: write
 on:
-  push:
-    branches: ["main"]
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
 
 jobs:
   build:
@@ -45,5 +48,19 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           message: "ci: Release version ${{ env.VERSION }}"
-          new_branch: release
           tag: "v${{ env.VERSION }}"
+
+      - name: Log in to Docker Hub
+        if: steps.check_release.outputs.should_release == 'yes'
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_SECRET }}
+
+      - name: Build and push Docker image
+        if: steps.check_release.outputs.should_release == 'yes'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/bflow-client:${{ env.VERSION }}
