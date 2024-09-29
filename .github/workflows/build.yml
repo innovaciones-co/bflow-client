@@ -26,6 +26,8 @@ jobs:
       - name: Check if release is needed
         id: check_release
         run: |
+          git fetch --tags
+          git log
           ls
           dart run release_tools current_version
           dart run release_tools next_version
