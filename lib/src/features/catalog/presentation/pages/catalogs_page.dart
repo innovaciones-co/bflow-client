@@ -36,28 +36,57 @@ class CatalogsPage extends StatelessWidget {
 
             var suppliers = (state as ContactsLoaded).contacts;
 
-            return Row(
-              children: [
-                Expanded(
-                  child: GridView.count(
-                    crossAxisCount:
-                        context.isMobile || context.isSmallTablet ? 2 : 3,
-                    childAspectRatio:
-                        context.isMobile || context.isSmallTablet ? 2 : 2,
-                    children: suppliers
-                        .mapIndexed((index, supplier) =>
-                            _supplierItem(index, supplier, context))
-                        .toList(),
+            return DefaultTabController(
+              length: 2,
+              child: Column(
+                children: [
+                  TabBar(
+                    tabs: const [
+                      Tab(text: "Supplier"),
+                      Tab(text: "Categories"),
+                    ],
+                    labelColor: AppColor.blue,
+                    indicatorColor: AppColor.blue,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicatorWeight: 3,
                   ),
-                ),
-                context.isDesktop
-                    ? const CategoriesWidget()
-                    : const SizedBox.shrink()
-              ],
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        _catalogsGrid(context, suppliers),
+                        const CategoriesWidget(),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             );
           },
         ),
       ),
+    );
+  }
+
+  GridView _catalogsGrid(BuildContext context, List<Contact> suppliers) {
+    return GridView.count(
+      crossAxisCount:
+          context.isMobile || context.isSmallTablet || context.isSmall
+              ? 2
+              : context.isLargeDesktop
+                  ? 4
+                  : 3,
+      childAspectRatio: context.isMobile || context.isSmallTablet
+          ? 2
+          : context.isLargeDesktop
+              ? 3
+              : 2.2,
+      children: suppliers
+          .mapIndexed(
+              (index, supplier) => _supplierItem(index, supplier, context))
+          .toList(),
     );
   }
 

@@ -188,17 +188,30 @@ class _JobPageState extends State<JobPage> {
   }
 
   Widget _jobViewSelectionMobile() {
+    List<RoundedTabBarItem> items = [
+      RoundedTabBarItem(icon: Icons.all_inbox_sharp, label: 'Jobs documents'),
+      RoundedTabBarItem(icon: Icons.task_outlined, label: 'All tasks'),
+      RoundedTabBarItem(
+          icon: Icons.list_alt_outlined, label: 'Bill of materials'),
+    ];
+
+    if (!(context.isMobile || context.isSmallTablet)) {
+      items.insert(
+          2,
+          RoundedTabBarItem(
+              icon: Icons.calendar_today_outlined, label: 'Calendar'));
+    }
+
     return RoundedTabBarWidget(
-      onPressed: _selectView,
+      onPressed: (index) {
+        int adjustedIndex =
+            (context.isMobile || context.isSmallTablet) && index >= 2
+                ? index + 1
+                : index;
+        _selectView(adjustedIndex);
+      },
       defaultIndex: _selectedIndex,
-      items: [
-        RoundedTabBarItem(icon: Icons.all_inbox_sharp, label: 'Jobs documents'),
-        RoundedTabBarItem(icon: Icons.task_outlined, label: 'All tasks'),
-        RoundedTabBarItem(
-            icon: Icons.calendar_today_outlined, label: 'Calendar'),
-        RoundedTabBarItem(
-            icon: Icons.list_alt_outlined, label: 'Bill of materials'),
-      ],
+      items: items,
     );
   }
 
