@@ -38,7 +38,6 @@ class CatalogsPage extends StatelessWidget {
 
             return DefaultTabController(
               length: 2,
-              initialIndex: 1,
               child: Column(
                 children: [
                   TabBar(
@@ -73,8 +72,17 @@ class CatalogsPage extends StatelessWidget {
 
   GridView _catalogsGrid(BuildContext context, List<Contact> suppliers) {
     return GridView.count(
-      crossAxisCount: context.isMobile || context.isSmallTablet ? 2 : 3,
-      childAspectRatio: context.isMobile || context.isSmallTablet ? 2 : 2,
+      crossAxisCount:
+          context.isMobile || context.isSmallTablet || context.isSmall
+              ? 2
+              : context.isLargeDesktop
+                  ? 4
+                  : 3,
+      childAspectRatio: context.isMobile || context.isSmallTablet
+          ? 2
+          : context.isLargeDesktop
+              ? 3
+              : 2.2,
       children: suppliers
           .mapIndexed(
               (index, supplier) => _supplierItem(index, supplier, context))
