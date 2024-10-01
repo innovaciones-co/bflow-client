@@ -124,7 +124,9 @@ class _JobsPageState extends State<JobsPage> {
           Expanded(
             child: Container(
               padding: EdgeInsets.symmetric(
-                  horizontal: 20, vertical: context.isMobile ? 10 : 15),
+                  horizontal: context.isSmallTablet ? 15 : 20,
+                  vertical:
+                      context.isMobile || context.isSmallTablet ? 10 : 15),
               decoration: BoxDecoration(
                 color: color,
                 border: Border(
@@ -153,15 +155,16 @@ class _JobsPageState extends State<JobsPage> {
                       children: [
                         Text(
                           title,
-                          style: context.isMobile
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.isMobile || context.isSmallTablet
                               ? context.titleSmall
                               : context.titleMedium,
                         ),
-                        const SizedBox(height: 3),
                         Text(
                           total,
                           style: GoogleFonts.figtree(
-                            textStyle: context.isMobile
+                            textStyle: context.isMobile || context.isSmallTablet
                                 ? context.titleMedium
                                 : context.titleLarge,
                           ),

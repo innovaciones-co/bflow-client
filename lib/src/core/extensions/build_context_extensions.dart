@@ -23,6 +23,8 @@ extension BuildContextEntension<T> on BuildContext {
       MediaQuery.of(this).size.width < 850.0 &&
       MediaQuery.of(this).size.width >= 560.0;
 
+  bool get isLargeDesktop => MediaQuery.of(this).size.width > 1440.0;
+
   double get width => MediaQuery.of(this).size.width;
 
   double get height => MediaQuery.of(this).size.height;

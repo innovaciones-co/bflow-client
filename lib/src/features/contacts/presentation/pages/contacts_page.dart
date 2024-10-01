@@ -104,11 +104,11 @@ class ContactsPage extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColor.grey,
             ),
-            children: const [
-              TableHeaderWidget(label: "Name"),
-              TableHeaderWidget(label: "Email"),
-              TableHeaderWidget(label: "Address"),
-              TableHeaderWidget(label: "Actions"),
+            children: [
+              const TableHeaderWidget(label: "Name"),
+              const TableHeaderWidget(label: "Email"),
+              if (!context.isMobile) const TableHeaderWidget(label: "Address"),
+              const TableHeaderWidget(label: "Actions"),
             ],
           ),
           ...contacts.map(
@@ -119,8 +119,8 @@ class ContactsPage extends StatelessWidget {
               children: [
                 _tableData(context, e.name),
                 _tableData(context, e.email),
-                _tableData(context, e.address),
-                _tableActions(context, e), // TODO: check
+                if (!context.isMobile) _tableData(context, e.address),
+                _tableActions(context, e),
               ],
             ),
           )
@@ -141,7 +141,8 @@ class ContactsPage extends StatelessWidget {
   _tableActions(BuildContext context, Contact contact) {
     return TableCell(
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.symmetric(
+            horizontal: context.isMobile ? 2 : 10, vertical: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
