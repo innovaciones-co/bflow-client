@@ -195,8 +195,6 @@ class _JobPageState extends State<JobPage> {
         RoundedTabBarItem(icon: Icons.all_inbox_sharp, label: 'Jobs documents'),
         RoundedTabBarItem(icon: Icons.task_outlined, label: 'All tasks'),
         RoundedTabBarItem(
-            icon: Icons.calendar_today_outlined, label: 'Calendar'),
-        RoundedTabBarItem(
             icon: Icons.list_alt_outlined, label: 'Bill of materials'),
       ],
     );
