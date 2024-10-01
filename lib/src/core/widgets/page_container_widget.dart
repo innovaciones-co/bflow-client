@@ -85,7 +85,11 @@ class _PageContainerWidgetState extends State<PageContainerWidget> {
                       ],
                     ),
                     SizedBox(
-                      height: context.isMobile ? 10 : 30,
+                      height: context.isMobile || context.isSmallTablet
+                          ? 10
+                          : context.isTablet
+                              ? 15
+                              : 30,
                     ),
                     Expanded(
                       child: SizedBox(
