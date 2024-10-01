@@ -37,9 +37,9 @@ class _AdaptiveNavigationState extends State<AdaptiveNavigation> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 NavigationRail(
-                  extended: isExtended,
+                  extended: context.isDesktop ? isExtended : false,
                   minExtendedWidth: 180,
-                  leading: !context.isMobile
+                  leading: context.isDesktop
                       ? IconButton(
                           onPressed: _toggleExtended,
                           icon: Icon(
@@ -55,7 +55,11 @@ class _AdaptiveNavigationState extends State<AdaptiveNavigation> {
                   selectedIndex: widget.selectedIndex,
                   onDestinationSelected: widget.onDestinationSelected,
                   elevation: 30.0,
-                  labelType: isExtended ? null : NavigationRailLabelType.all,
+                  labelType: isExtended
+                      ? context.isDesktop
+                          ? null
+                          : NavigationRailLabelType.all
+                      : NavigationRailLabelType.all,
                 ),
                 Expanded(child: widget.child),
               ],
