@@ -57,7 +57,7 @@ class _RoundedTabBarWidgetState extends State<RoundedTabBarWidget> {
         isExpanded ? AppColor.blue.withOpacity(0.1) : AppColor.lightGrey;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      width: isExpanded ? 180 : 55,
+      width: isExpanded ? 180 : 60,
       child: TextButton(
         onPressed: onPressed,
         style: ButtonStyle(
