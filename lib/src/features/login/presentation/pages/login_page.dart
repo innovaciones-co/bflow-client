@@ -1,4 +1,5 @@
 import 'package:bflow_client/src/core/config/config.dart';
+import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/routes/names.dart';
@@ -67,38 +68,67 @@ class _LoginPageState extends State<LoginPage>
             Expanded(
               flex: 1,
               child: Center(
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 500),
-                  margin: const EdgeInsets.symmetric(horizontal: 35),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      double height = context.height / 8;
-                      return Column(
-                        children: [
-                          SizedBox(
-                            height: height,
-                          ),
-                          SizedBox(
-                            width: double.maxFinite,
-                            height: height * 6,
-                            child: TabBarView(
-                              controller: _controller,
-                              children: [
-                                _loginForm(context),
-                                ResetPasswordWidget(
-                                  onBackPressed: () => _controller.animateTo(0),
+                child: LayoutBuilder(
+                  builder: (context, state) {
+                    double height = context.height / 8;
+                    return Stack(
+                      children: [
+                        Container(
+                          constraints: const BoxConstraints(maxWidth: 500),
+                          margin: const EdgeInsets.symmetric(horizontal: 35),
+                          child: Column(
+                            children: [
+                              Container(
+                                height: height *
+                                    (context.isMobile || context.isSmallTablet
+                                        ? 2
+                                        : 1),
+                              ),
+                              SizedBox(
+                                width: double.maxFinite,
+                                height: height *
+                                    (context.isMobile || context.isSmallTablet
+                                        ? 5.5
+                                        : 6),
+                                child: TabBarView(
+                                  controller: _controller,
+                                  children: [
+                                    _loginForm(context),
+                                    ResetPasswordWidget(
+                                      onBackPressed: () =>
+                                          _controller.animateTo(0),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                              SizedBox(
+                                height: height *
+                                    (context.isMobile || context.isSmallTablet
+                                        ? 0.5
+                                        : 1),
+                                child: _versionInfo(),
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                            height: height,
-                            child: _versionInfo(),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                        ),
+                        context.isMobile || context.isSmallTablet
+                            ? Positioned(
+                                right: 0,
+                                left: 0,
+                                top: 0,
+                                bottom: height * 6,
+                                child: Container(
+                                  color: AppColor.black,
+                                  padding: const EdgeInsets.all(15),
+                                  child: Image.asset(
+                                    'assets/img/sh_logo_and_text.png',
+                                  ),
+                                ),
+                              )
+                            : const SizedBox.shrink()
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -179,12 +209,16 @@ class _LoginPageState extends State<LoginPage>
                   "Welcome back!",
                   style: TextStyle(fontSize: 24),
                 ),
-                const SizedBox(height: 35),
+                SizedBox(
+                    height:
+                        context.isMobile || context.isSmallTablet ? 25 : 35),
                 const Text(
                   "Please enter your details",
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
-                const SizedBox(height: 25),
+                SizedBox(
+                    height:
+                        context.isMobile || context.isSmallTablet ? 20 : 25),
                 InputWidget(
                   label: "Username",
                   onChanged: loginBloc.updateUsername,
@@ -211,7 +245,9 @@ class _LoginPageState extends State<LoginPage>
                     }
                   },
                 ),
-                const SizedBox(height: 50),
+                SizedBox(
+                    height:
+                        context.isMobile || context.isSmallTablet ? 25 : 50),
                 Padding(
                   padding: EdgeInsets.only(
                     right: context.isDesktop ? 20 : 0,
@@ -237,7 +273,8 @@ class _LoginPageState extends State<LoginPage>
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(top: 15),
+                  margin: EdgeInsets.only(
+                      top: context.isMobile || context.isSmallTablet ? 10 : 15),
                   child: Center(
                     child: TextButton(
                       onPressed: () {
