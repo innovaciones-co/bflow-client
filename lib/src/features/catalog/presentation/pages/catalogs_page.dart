@@ -2,9 +2,12 @@ import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/routes/routes.dart';
+import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/widgets/page_container_widget.dart';
+import 'package:bflow_client/src/features/catalog/presentation/cubit/categories_cubit.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/categories_widget.dart';
+import 'package:bflow_client/src/features/catalog/presentation/widgets/write_category_widget.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/contacts/presentation/cubit/contacts_cubit.dart';
@@ -14,33 +17,77 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class CatalogsPage extends StatelessWidget {
+class CatalogsPage extends StatefulWidget {
   const CatalogsPage({super.key});
 
   @override
+  State<CatalogsPage> createState() => _CatalogsPageState();
+}
+
+class _CatalogsPageState extends State<CatalogsPage>
+    with TickerProviderStateMixin {
+  late TabController? tabController;
+
+  @override
+  void initState() {
+    tabController = TabController(length: 2, vsync: this);
+    super.initState();
+
+    tabController!.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return PageContainerWidget(
-      title: 'Catalogs',
-      child: BlocProvider<ContactsCubit>(
-        create: (context) =>
-            DependencyInjection.sl()..loadContacts(ContactType.supplier),
-        child: BlocBuilder<ContactsCubit, ContactsState>(
-          builder: (context, state) {
-            if (state is ContactsLoading) {
-              return const LoadingWidget();
-            }
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ContactsCubit>(
+          create: (context) =>
+              DependencyInjection.sl()..loadContacts(ContactType.supplier),
+        ),
+        BlocProvider<CategoriesCubit>(
+          create: (context) => DependencyInjection.sl()..loadCategories(),
+        ),
+      ],
+      child: Builder(builder: (myContext) {
+        return PageContainerWidget(
+          title: 'Catalogs',
+          actions: tabController?.index == 0
+              ? null
+              : [
+                  !(context.isMobile || context.isSmallTablet)
+                      ? ActionButtonWidget(
+                          onPressed: () => myContext.showLeftDialog(
+                            "New Category",
+                            WriteCategoryWidget(
+                              categoriesCubit: myContext.read(),
+                            ),
+                          ),
+                          type: ButtonType.elevatedButton,
+                          title: "New Category",
+                          backgroundColor: AppColor.blue,
+                          foregroundColor: AppColor.white,
+                          icon: Icons.add,
+                        )
+                      : const SizedBox.shrink(),
+                ],
+          child: BlocBuilder<ContactsCubit, ContactsState>(
+            builder: (context, state) {
+              if (state is ContactsLoading) {
+                return const LoadingWidget();
+              }
 
-            if (state is ContactsError) {
-              return FailureWidget(failure: state.failure);
-            }
+              if (state is ContactsError) {
+                return FailureWidget(failure: state.failure);
+              }
 
-            var suppliers = (state as ContactsLoaded).contacts;
+              var suppliers = (state as ContactsLoaded).contacts;
 
-            return DefaultTabController(
-              length: 2,
-              child: Column(
+              return Column(
                 children: [
                   TabBar(
+                    controller: tabController,
                     tabs: const [
                       Tab(text: "Supplier"),
                       Tab(text: "Categories"),
@@ -55,6 +102,7 @@ class CatalogsPage extends StatelessWidget {
                   ),
                   Expanded(
                     child: TabBarView(
+                      controller: tabController,
                       children: [
                         _catalogsGrid(context, suppliers),
                         const CategoriesWidget(),
@@ -62,11 +110,11 @@ class CatalogsPage extends StatelessWidget {
                     ),
                   )
                 ],
-              ),
-            );
-          },
-        ),
-      ),
+              );
+            },
+          ),
+        );
+      }),
     );
   }
 

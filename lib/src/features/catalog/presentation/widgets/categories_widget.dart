@@ -1,4 +1,3 @@
-import 'package:bflow_client/src/core/config/injection.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
@@ -17,38 +16,34 @@ class CategoriesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<CategoriesCubit>(
-      create: (context) => DependencyInjection.sl()..loadCategories(),
-      child: SizedBox(
-        height: double.maxFinite,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: BlocBuilder<CategoriesCubit, CategoriesState>(
-                builder: (context, state) {
-                  if (state is CategoriesLoading ||
-                      state is CategoriesInitial) {
-                    return const LoadingWidget();
-                  }
+    return SizedBox(
+      height: double.maxFinite,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: BlocBuilder<CategoriesCubit, CategoriesState>(
+              builder: (context, state) {
+                if (state is CategoriesLoading || state is CategoriesInitial) {
+                  return const LoadingWidget();
+                }
 
-                  if (state is CategoriesError) {
-                    return FailureWidget(failure: state.failure);
-                  }
+                if (state is CategoriesError) {
+                  return FailureWidget(failure: state.failure);
+                }
 
-                  if (state is CategoriesLoaded) {
-                    var categories = state.categories;
+                if (state is CategoriesLoaded) {
+                  var categories = state.categories;
 
-                    return context.isMobile || context.isSmallTablet
-                        ? _categoriesViewMobile(categories, context, state)
-                        : _categoriesViewDesktop(categories, context, state);
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
+                  return context.isMobile || context.isSmallTablet
+                      ? _categoriesViewMobile(categories, context, state)
+                      : _categoriesViewDesktop(categories, context, state);
+                }
+                return const SizedBox.shrink();
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
