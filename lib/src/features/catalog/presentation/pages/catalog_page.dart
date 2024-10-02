@@ -1,6 +1,7 @@
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/core/extensions/format_extensions.dart';
@@ -10,6 +11,7 @@ import 'package:bflow_client/src/features/catalog/presentation/cubit/products_cu
 import 'package:bflow_client/src/features/catalog/presentation/widgets/catalog_view_bar_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/no_products_widget.dart';
 import 'package:bflow_client/src/features/catalog/presentation/widgets/write_product_widget.dart';
+import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/cross_scroll_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,7 +42,8 @@ class CatalogPage extends StatelessWidget {
     return BlocProvider<ProductsCubit>(
       create: (context) =>
           DependencyInjection.sl()..loadSupplierProducts(supplierId),
-      child: BlocBuilder<ProductsCubit, ProductsState>(
+      child: BlocConsumer<ProductsCubit, ProductsState>(
+        listener: _onProductsStateUpdated,
         builder: (context, state) {
           if (state is ProductsLoading) {
             return const Center(
@@ -57,28 +60,35 @@ class CatalogPage extends StatelessWidget {
                 _productsPerCategoryMap(state.products);
 
             return PageContainerWidget(
-              title: '${state.supplier.name} catalog',
-              child: Column(
+              title: '${state.supplier.name}\'s catalog',
+              child: Stack(
                 children: [
-                  CatalogViewBarWidget(
-                    supplierId: supplierId,
-                    productsCubit: context.read(),
-                  ),
-                  const SizedBox(height: 15),
-                  Expanded(
-                    child: catalogProducts.isEmpty
-                        ? const NoProductsWidget()
-                        : CrossScrollWidget(
-                            child: Column(
-                              children: [
-                                _tableHeader(),
-                                ...catalogProducts.entries.map(
-                                    (e) => _categoryTable(context, e.value))
-                              ],
+                  Column(
+                    children: [
+                      context.isMobile || context.isSmallTablet
+                          ? const SizedBox.shrink()
+                          : CatalogViewBarWidget(
+                              supplierId: supplierId,
+                              productsCubit: context.read(),
                             ),
-                          ),
+                      const SizedBox(height: 15),
+                      Expanded(
+                        child: catalogProducts.isEmpty
+                            ? const NoProductsWidget()
+                            : CrossScrollWidget(
+                                child: Column(
+                                  children: [
+                                    _tableHeader(),
+                                    ...catalogProducts.entries.map(
+                                        (e) => _categoryTable(context, e.value))
+                                  ],
+                                ),
+                              ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
                   ),
-                  const SizedBox(height: 10),
+                  _addButton(context, supplierId),
                 ],
               ),
             );
@@ -88,6 +98,27 @@ class CatalogPage extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Widget _addButton(BuildContext context, int supplierId) {
+    return context.isMobile || context.isSmallTablet
+        ? Positioned(
+            bottom: 30.0,
+            right: 5,
+            child: FloatingActionButton(
+              onPressed: () => context.showLeftDialog(
+                "New Product",
+                WriteProductWidget(
+                  productCubit: context.read(),
+                  supplierId: supplierId,
+                ),
+              ),
+              backgroundColor: AppColor.blue,
+              shape: const CircleBorder(),
+              child: const Icon(Icons.add),
+            ),
+          )
+        : const SizedBox.shrink();
   }
 
   Table _tableHeader() {
@@ -108,7 +139,7 @@ class CatalogPage extends StatelessWidget {
             _tableCell(const Text("Trade code")),
             _tableCell(Checkbox(
               value: false,
-              onChanged: null,
+              onChanged: null, // TODO Implement
               side: BorderSide(color: AppColor.darkGrey, width: 2),
             )),
             _tableCell(const Text("Sku")),
@@ -324,5 +355,57 @@ class CatalogPage extends StatelessWidget {
       return false;
     }
     return null;
+  }
+
+  void _onProductsStateUpdated(BuildContext context, ProductsState state) {
+    HomeBloc homeBloc = context.read();
+
+    if (state is ProductsLoaded) {
+      var productsModified = state.selectedProducts.isNotEmpty;
+      if (productsModified) {
+        homeBloc.add(
+          ShowFooterActionEvent(
+            showCancelButton: false,
+            actions: [
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ActionButtonWidget(
+                      onPressed: () {
+                        context.showCustomModal(
+                          ConfirmationWidget(
+                            title: "Delete products",
+                            description:
+                                "Are you sure you want to delete the selected product(s)?",
+                            onConfirm: () {
+                              context.read<ProductsCubit>().deleteProducts();
+                              context.pop();
+                            },
+                            confirmText: "Delete",
+                          ),
+                        );
+                        homeBloc.add(
+                          HideFooterActionEvent(),
+                        );
+                      },
+                      type: ButtonType.textButton,
+                      title: "Delete",
+                      icon: Icons.delete_outline,
+                      paddingHorizontal: 15,
+                      paddingVertical: 18,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      } else {
+        homeBloc.add(
+          HideFooterActionEvent(),
+        );
+      }
+    }
   }
 }

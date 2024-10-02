@@ -27,47 +27,45 @@ class CatalogViewBarWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            Container(
-              width: 1,
-              height: 25,
-              margin: const EdgeInsets.symmetric(horizontal: 15),
-              color: AppColor.grey,
-            ),
-            Container(
-              constraints: const BoxConstraints(
-                maxWidth: 400,
-              ),
-              child: TextField(
-                onChanged: null,
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(22),
-                    borderSide: BorderSide(color: AppColor.grey, width: 1),
+        context.isTablet
+            ? const SizedBox.shrink()
+            : Row(
+                children: [
+                  Container(
+                    constraints: const BoxConstraints(
+                      maxWidth: 400,
+                    ),
+                    child: TextField(
+                      onChanged: null,
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(22),
+                          borderSide:
+                              BorderSide(color: AppColor.grey, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(22),
+                          borderSide:
+                              BorderSide(color: AppColor.grey, width: 1.5),
+                        ),
+                        contentPadding:
+                            const EdgeInsets.only(top: 0, bottom: 0, right: 10),
+                        isDense: true,
+                        filled: true,
+                        fillColor: AppColor.white,
+                        prefixIcon: const Icon(Icons.search),
+                        hintText: "Search",
+                      ),
+                    ),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(22),
-                    borderSide: BorderSide(color: AppColor.grey, width: 1.5),
+                  Container(
+                    width: 1,
+                    height: 25,
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    color: AppColor.grey,
                   ),
-                  contentPadding:
-                      const EdgeInsets.only(top: 0, bottom: 0, right: 10),
-                  isDense: true,
-                  filled: true,
-                  fillColor: AppColor.white,
-                  prefixIcon: const Icon(Icons.search),
-                  hintText: "Search",
-                ),
+                ],
               ),
-            ),
-            Container(
-              width: 1,
-              height: 25,
-              margin: const EdgeInsets.symmetric(horizontal: 15),
-              color: AppColor.grey,
-            ),
-          ],
-        ),
         Row(
           children: [
             ActionButtonWidget(
