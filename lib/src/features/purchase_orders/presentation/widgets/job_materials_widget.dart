@@ -6,9 +6,11 @@ import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/utils/launch_url.dart';
 import 'package:bflow_client/src/core/utils/mixins/validator.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
+import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/features/catalog/domain/entities/category_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
+import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/item_entity.dart';
 import 'package:bflow_client/src/features/purchase_orders/domain/entities/purchase_order_entity.dart';
@@ -21,6 +23,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../aggregators/item_view.dart';
 import 'write_material_widget.dart';
@@ -57,7 +60,8 @@ class JobMaterialsWidget extends StatelessWidget with Validator {
           child: BlocProvider<ItemsBloc>(
             create: (context) =>
                 DependencyInjection.sl()..add(GetItemsEvent(jobId: jobId)),
-            child: BlocBuilder<ItemsBloc, ItemsState>(
+            child: BlocConsumer<ItemsBloc, ItemsState>(
+              listener: _onMaterialStateUpdated,
               builder: (context, state) {
                 if (state is ItemsLoading) {
                   return const LoadingWidget();
@@ -81,41 +85,48 @@ class JobMaterialsWidget extends StatelessWidget with Validator {
                 final Map<int, List<ItemView>> itemsPerCategoryMap =
                     _itemsPerCategoryMap(items, categories, orders, suppliers);
 
-                return Column(
+                return Stack(
                   children: [
-                    const MaterialsViewBarWidget(),
-                    const SizedBox(height: 15),
-                    Expanded(
-                      child: items.isEmpty
-                          ? NoMaterialsWidget(
-                              jobId: jobId,
-                              itemsBloc: context.read(),
-                            )
-                          : CrossScrollWidget(
-                              child: Column(
-                                children: [
-                                  _tableHeader(),
-                                  ...itemsPerCategoryMap.entries.map(
-                                    (e) =>
-                                        _categoryTable(context, e.value, jobId),
-                                  )
-                                ],
-                              ),
-                            ),
+                    Column(
+                      children: [
+                        const MaterialsViewBarWidget(),
+                        const SizedBox(height: 15),
+                        Expanded(
+                          child: items.isEmpty
+                              ? NoMaterialsWidget(
+                                  jobId: jobId,
+                                  itemsBloc: context.read(),
+                                )
+                              : CrossScrollWidget(
+                                  child: Column(
+                                    children: [
+                                      _tableHeader(),
+                                      ...itemsPerCategoryMap.entries.map(
+                                        (e) => _categoryTable(
+                                            context, e.value, jobId),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          alignment: context.isMobile || context.isSmallTablet
+                              ? Alignment.centerLeft
+                              : Alignment.centerRight,
+                          padding: const EdgeInsets.all(10),
+                          width: double.infinity,
+                          color: AppColor.lightGrey,
+                          child: Text(
+                            'Total: ${total.toCurrency()}',
+                            style: context.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
                     ),
-                    const SizedBox(height: 10),
-                    Container(
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.all(10),
-                      width: double.infinity,
-                      color: AppColor.lightGrey,
-                      child: Text(
-                        'Total: ${total.toCurrency()}',
-                        style: context.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
+                    _addButton(context, jobId),
                   ],
                 );
               },
@@ -124,6 +135,21 @@ class JobMaterialsWidget extends StatelessWidget with Validator {
         );
       },
     );
+  }
+
+  Widget _addButton(BuildContext context, int jobId) {
+    return context.isMobile || context.isSmallTablet
+        ? Positioned(
+            bottom: 30.0,
+            right: 5,
+            child: FloatingActionButton(
+              onPressed: () => _openWriteMaterialWidget(context, jobId),
+              backgroundColor: AppColor.blue,
+              shape: const CircleBorder(),
+              child: const Icon(Icons.add),
+            ),
+          )
+        : const SizedBox.shrink();
   }
 
   Map<int, List<ItemView>> _itemsPerCategoryMap(
@@ -396,5 +422,70 @@ class JobMaterialsWidget extends StatelessWidget with Validator {
       return false;
     }
     return null;
+  }
+
+  void _onMaterialStateUpdated(BuildContext context, ItemsState state) {
+    ItemsBloc itemsBloc = context.read();
+    HomeBloc homeBloc = context.read();
+
+    if (state is ItemsLoaded) {
+      var itemModified = state.selectedItems.isNotEmpty;
+      if (itemModified) {
+        homeBloc.add(
+          ShowFooterActionEvent(
+            showCancelButton: false,
+            actions: [
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ActionButtonWidget(
+                      onPressed: () {
+                        context.showCustomModal(
+                          ConfirmationWidget(
+                            title: "Delete materials",
+                            description:
+                                "Are you sure you want to delete the selected material(s)?",
+                            onConfirm: () {
+                              itemsBloc.add(DeleteItemsEvent());
+                              context.pop();
+                            },
+                            confirmText: "Delete",
+                          ),
+                        );
+                        homeBloc.add(
+                          HideFooterActionEvent(),
+                        );
+                      },
+                      type: ButtonType.textButton,
+                      title: "Delete",
+                      icon: Icons.delete_outline,
+                      paddingHorizontal: 15,
+                      paddingVertical: 18,
+                    ),
+                    const SizedBox(width: 12),
+                    ActionButtonWidget(
+                      onPressed: state.selectedItems.isEmpty
+                          ? null
+                          : () => itemsBloc.add(CreatePurchaseOrderEvent(
+                              jobId: state.selectedItems.first.job)),
+                      type: ButtonType.elevatedButton,
+                      title: "Create purchase order",
+                      icon: Icons.monetization_on_outlined,
+                      backgroundColor: AppColor.blue,
+                      foregroundColor: AppColor.white,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      } else {
+        homeBloc.add(
+          HideFooterActionEvent(),
+        );
+      }
+    }
   }
 }

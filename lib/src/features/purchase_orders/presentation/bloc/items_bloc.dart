@@ -126,17 +126,17 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
     List<Item> items = (state as ItemsLoaded).items;
     List<Item> selectedItems = (state as ItemsLoaded).selectedItems.toList();
 
-    bool selected = !_checkIfCategorySelected(categoryId, selectedItems, items);
+    bool selected = _checkIfCategorySelected(categoryId, selectedItems, items);
 
     var itemsOfCategory = items.where((item) => item.category == categoryId);
 
     for (var item in itemsOfCategory) {
       if (selectedItems.contains(item)) {
-        if (!selected) {
+        if (selected) {
           selectedItems.remove(item);
         }
       } else {
-        if (selected) {
+        if (!selected) {
           selectedItems.add(item);
         }
       }
