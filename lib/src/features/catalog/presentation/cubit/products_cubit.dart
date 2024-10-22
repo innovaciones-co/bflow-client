@@ -137,18 +137,18 @@ class ProductsCubit extends Cubit<ProductsState> {
         (state as ProductsLoaded).selectedProducts.toList();
 
     bool selected =
-        !_checkIfCategorySelected(categoryId, selectedProducts, products);
+        _checkIfCategorySelected(categoryId, selectedProducts, products);
 
     var productsOfCategory =
         products.where((product) => product.category == categoryId);
 
     for (var product in productsOfCategory) {
       if (selectedProducts.contains(product)) {
-        if (!selected) {
+        if (selected) {
           selectedProducts.remove(product);
         }
       } else {
-        if (selected) {
+        if (!selected) {
           selectedProducts.add(product);
         }
       }

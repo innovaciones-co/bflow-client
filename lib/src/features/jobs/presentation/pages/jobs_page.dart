@@ -155,7 +155,8 @@ class _JobsPageState extends State<JobsPage> {
                       children: [
                         Text(
                           title,
-                          maxLines: 2,
+                          maxLines:
+                              context.isMobile || context.isSmallTablet ? 1 : 2,
                           overflow: TextOverflow.ellipsis,
                           style: context.isMobile || context.isSmallTablet
                               ? context.titleSmall
