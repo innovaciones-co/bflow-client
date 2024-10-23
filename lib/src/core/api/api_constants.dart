@@ -1,6 +1,7 @@
 class ApiConstants {
   //static String baseUrl = 'http://localhost:8080/api';
   //static String baseUrl = 'http://10.0.2.2:8080/api';
+  static String serverDomain = 'https://bflowserver.innovaciones.co';
   static String baseUrl = 'https://bflowserver.innovaciones.co/api';
 
   static String jobsEndpoint = 'jobs';
