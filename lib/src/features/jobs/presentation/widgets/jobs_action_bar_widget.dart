@@ -1,5 +1,7 @@
+import 'package:bflow_client/src/core/api/api_constants.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
+import 'package:bflow_client/src/core/utils/launch_url.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/jobs_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_job_widget.dart';
@@ -46,14 +48,30 @@ class JobsActionBarWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          ActionButtonWidget(
-            onPressed: () =>
-                context.showLeftDialog('New Job', WriteJobWidget()),
-            icon: Icons.add,
-            type: ButtonType.elevatedButton,
-            title: 'New Job',
-            backgroundColor: AppColor.blue,
-            foregroundColor: AppColor.white,
+          Row(
+            children: [
+              ActionButtonWidget(
+                onPressed: () {
+                  launchURL(
+                      "${ApiConstants.serverDomain}/jobs/report?reportType=pdf");
+                },
+                icon: Icons.download,
+                type: ButtonType.elevatedButton,
+                title: 'Download report',
+                backgroundColor: AppColor.lightBlue,
+                foregroundColor: AppColor.blue,
+              ),
+              const SizedBox(width: 10),
+              ActionButtonWidget(
+                onPressed: () =>
+                    context.showLeftDialog('New Job', WriteJobWidget()),
+                icon: Icons.add,
+                type: ButtonType.elevatedButton,
+                title: 'New Job',
+                backgroundColor: AppColor.blue,
+                foregroundColor: AppColor.white,
+              ),
+            ],
           ),
         ],
       ),

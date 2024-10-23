@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:bflow_client/src/core/api/api_constants.dart';
 import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
@@ -344,7 +345,7 @@ class JobMaterialsWidget extends StatelessWidget with Validator {
               ? ActionButtonWidget(
                   onPressed: () {
                     launchURL(
-                        "http://localhost:8080/orders/${itemView.order?.id}");
+                        "${ApiConstants.serverDomain}/orders/${itemView.order?.id}");
                   },
                   type: ButtonType.textButton,
                   title: itemView.order?.number ?? "",
