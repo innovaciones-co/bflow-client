@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:bflow_client/src/core/exceptions/bad_response_exception.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
-import 'package:bflow_client/src/core/exceptions/not_found_exception.dart';
 import 'package:bflow_client/src/core/exceptions/remote_data_source_exception.dart';
 import 'package:bflow_client/src/features/login/data/models/jwt_payload_model.dart';
 import 'package:bflow_client/src/features/login/data/models/password_change_model.dart';
