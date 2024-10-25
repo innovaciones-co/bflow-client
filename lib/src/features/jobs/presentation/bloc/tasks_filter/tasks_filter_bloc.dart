@@ -36,13 +36,6 @@ class TasksFilterBloc extends Bloc<TasksFilterEvent, TasksFilterState> {
           .where((task) => event.statusFilter.contains(task.status))
           .toList();
       emit(TasksFilterLoaded(tasks: filteredTasks, status: event.statusFilter));
-      /*  if (state is TasksFilterLoaded) {
-        emit((state as TasksFilterLoaded)
-            .copyWith(tasks: filteredTasks, statusFilter: event.statusFilter));
-      } else {
-        emit(TasksFilterLoaded(
-            tasks: filteredTasks, status: event.statusFilter));
-      } */
     }
   }
 
