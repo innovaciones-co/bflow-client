@@ -74,7 +74,7 @@ class _AdaptiveNavigationState extends State<AdaptiveNavigation> {
                 Container(
                   color: AppColor.black,
                   padding: const EdgeInsets.all(10),
-                  child: const LogoWidget(),
+                  child: const SafeArea(child: LogoWidget()),
                 ),
                 Expanded(
                   child: NavigationRail(
