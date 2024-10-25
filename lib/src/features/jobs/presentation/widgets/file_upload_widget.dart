@@ -226,7 +226,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
 
   void _pickFile() async {
     final events = await _controller?.pickFiles();
-    if (events?.isEmpty ?? false) return;
+    if (events?.isEmpty ?? false || events == null) return;
 
     for (var element in events!) {
       _addFile(element);
