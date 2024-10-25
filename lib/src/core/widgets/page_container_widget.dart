@@ -11,11 +11,13 @@ class PageContainerWidget extends StatefulWidget {
     required this.title,
     this.child,
     this.actions,
+    this.onBack,
   });
 
   final String title;
   final Widget? child;
   final List<Widget>? actions;
+  final Function()? onBack;
 
   @override
   State<PageContainerWidget> createState() => _PageContainerWidgetState();
@@ -66,12 +68,7 @@ class _PageContainerWidgetState extends State<PageContainerWidget> {
                   children: [
                     Row(
                       children: [
-                        context.canPop()
-                            ? IconButton(
-                                onPressed: () => context.pop(),
-                                icon: const Icon(Icons.back_hand_outlined),
-                              )
-                            : const SizedBox.shrink(),
+                        _backButton(context),
                         Text(
                           widget.title,
                           style: context.displaySmall,
@@ -112,6 +109,24 @@ class _PageContainerWidgetState extends State<PageContainerWidget> {
         ),
       ),
     );
+  }
+
+  Widget _backButton(BuildContext context) {
+    if (Theme.of(context).platform == TargetPlatform.iOS ||
+        Theme.of(context).platform == TargetPlatform.android) {
+      return context.canPop()
+          ? IconButton(
+              onPressed: () => context.pop(),
+              icon: const Icon(Icons.arrow_back_ios),
+            )
+          : widget.onBack != null
+              ? IconButton(
+                  onPressed: widget.onBack,
+                  icon: const Icon(Icons.arrow_back_ios),
+                )
+              : const SizedBox.shrink();
+    }
+    return const SizedBox.shrink();
   }
 
   EdgeInsets _getPadding(BuildContext context) {

@@ -78,7 +78,13 @@ class _RoundedTabBarWidgetState extends State<RoundedTabBarWidget> {
           children: [
             Icon(icon, size: 18),
             SizedBox(width: isExpanded ? 6 : 0),
-            Text(isExpanded ? text : ''), // TODO: Delay 300ms
+            Flexible(
+              child: Text(
+                isExpanded ? text : '',
+                overflow: TextOverflow.fade,
+                maxLines: 1,
+              ),
+            ),
           ],
         ),
       ),

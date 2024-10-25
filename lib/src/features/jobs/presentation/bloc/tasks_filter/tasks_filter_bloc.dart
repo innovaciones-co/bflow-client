@@ -29,20 +29,13 @@ class TasksFilterBloc extends Bloc<TasksFilterEvent, TasksFilterState> {
 
   FutureOr<void> _onUpdateTasks(
       UpdateTasks event, Emitter<TasksFilterState> emit) {
-    //emit(TasksFilterLoading());
+    emit(TasksFilterLoading());
     var taskBlocState = _tasksBloc.state;
     if (taskBlocState is TasksLoaded) {
       List<Task> filteredTasks = taskBlocState.tasks
           .where((task) => event.statusFilter.contains(task.status))
           .toList();
-
-      if (state is TasksFilterLoaded) {
-        emit((state as TasksFilterLoaded)
-            .copyWith(tasks: filteredTasks, statusFilter: event.statusFilter));
-      } else {
-        emit(TasksFilterLoaded(
-            tasks: filteredTasks, status: event.statusFilter));
-      }
+      emit(TasksFilterLoaded(tasks: filteredTasks, status: event.statusFilter));
     }
   }
 

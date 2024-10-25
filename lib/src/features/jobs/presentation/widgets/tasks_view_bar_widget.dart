@@ -197,6 +197,18 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
     );
   }
 
+  void _removeStatus(TaskStatus? value) {
+    var filterBloc = context.read<TasksFilterBloc>();
+    if (filterBloc.state is! TasksFilterLoaded) {
+      return;
+    }
+
+    var selection = (filterBloc.state as TasksFilterLoaded).statusFilter;
+    selection.remove(value);
+
+    filterBloc.add(UpdateFilter());
+  }
+
   void _toggleStatus(TaskStatus? value) {
     var filterBloc = context.read<TasksFilterBloc>();
     if (filterBloc.state is! TasksFilterLoaded) {
@@ -210,8 +222,6 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
       selection.add(value!);
     }
     filterBloc.add(UpdateFilter());
-
-    filterBloc.add(UpdateTasks(statusFilter: selection));
   }
 
   _showSelectedStatus() {
@@ -230,11 +240,11 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
           child: Wrap(
             children: state.statusFilter
                 .map(
-                  (e) => Padding(
+                  (status) => Padding(
                     padding: const EdgeInsets.all(5.0),
                     child: Chip(
                       label: Text(
-                        e.toString(),
+                        status.toString(),
                         style: context.bodySmall,
                       ),
                       deleteIcon: const Icon(
@@ -242,7 +252,7 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
                         size: 12,
                       ),
                       deleteButtonTooltipMessage: "Remove",
-                      onDeleted: () => _toggleStatus(e),
+                      onDeleted: () => _removeStatus(status),
                     ),
                   ),
                 )
