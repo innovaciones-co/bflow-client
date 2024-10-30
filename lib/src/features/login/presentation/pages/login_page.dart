@@ -92,6 +92,7 @@ class _LoginPageState extends State<LoginPage>
                                         : 6),
                                 child: TabBarView(
                                   controller: _controller,
+                                  physics: const NeverScrollableScrollPhysics(),
                                   children: [
                                     _loginForm(context),
                                     ResetPasswordWidget(
