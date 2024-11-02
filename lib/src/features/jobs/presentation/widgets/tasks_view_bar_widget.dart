@@ -33,13 +33,13 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
       children: [
         Row(
           children: [
-            const Text("Search"),
+            /* const Text("Search"),
             Container(
               width: 1,
               height: 20,
               margin: const EdgeInsets.symmetric(horizontal: 10),
               color: AppColor.grey,
-            ),
+            ), */
             _buildDropdown(context),
           ],
         ),
