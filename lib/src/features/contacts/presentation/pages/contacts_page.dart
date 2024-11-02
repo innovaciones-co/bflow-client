@@ -160,53 +160,62 @@ class ContactsPage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(
-              onPressed: () => context.showLeftDialog(
-                "Edit Contact",
-                WriteContactWidget(
-                  contactsCubit: context.read(),
-                  contact: contact,
+            SizedBox(
+              width: context.isDesktop ? null : 35,
+              child: IconButton(
+                onPressed: () => context.showLeftDialog(
+                  "Edit Contact",
+                  WriteContactWidget(
+                    contactsCubit: context.read(),
+                    contact: contact,
+                  ),
                 ),
+                color: AppColor.blue,
+                icon: const Icon(Icons.edit_outlined),
+                tooltip: 'Edit',
               ),
-              color: AppColor.blue,
-              icon: const Icon(Icons.edit_outlined),
-              tooltip: 'Edit',
             ),
             Builder(builder: (context) {
-              return IconButton(
-                onPressed: () {
-                  context.showCustomModal(
-                    ConfirmationWidget(
-                      title: "Delete contact",
-                      description:
-                          "Are you sure you want to delete contact \"${contact.name}\"?",
-                      onConfirm: () {
-                        context
-                            .read<ContactsCubit>()
-                            .deleteContact(contact.id!);
-                        context.pop();
-                      },
-                      confirmText: "Delete",
-                    ),
-                  );
-                },
-                color: AppColor.blue,
-                icon: const Icon(
-                  Icons.delete_outline_outlined,
-                  size: 20,
+              return SizedBox(
+                width: context.isDesktop ? null : 35,
+                child: IconButton(
+                  onPressed: () {
+                    context.showCustomModal(
+                      ConfirmationWidget(
+                        title: "Delete contact",
+                        description:
+                            "Are you sure you want to delete contact \"${contact.name}\"?",
+                        onConfirm: () {
+                          context
+                              .read<ContactsCubit>()
+                              .deleteContact(contact.id!);
+                          context.pop();
+                        },
+                        confirmText: "Delete",
+                      ),
+                    );
+                  },
+                  color: AppColor.blue,
+                  icon: const Icon(
+                    Icons.delete_outline_outlined,
+                    size: 20,
+                  ),
+                  tooltip: 'Delete',
                 ),
-                tooltip: 'Delete',
               );
             }),
             contact.type == ContactType.supplier
-                ? IconButton(
-                    onPressed: () => _goToDetails(context, contact.id!),
-                    color: AppColor.blue,
-                    icon: const Icon(
-                      Icons.menu_book_outlined,
-                      size: 20,
+                ? SizedBox(
+                    width: context.isDesktop ? null : 35,
+                    child: IconButton(
+                      onPressed: () => _goToDetails(context, contact.id!),
+                      color: AppColor.blue,
+                      icon: const Icon(
+                        Icons.menu_book_outlined,
+                        size: 20,
+                      ),
+                      tooltip: 'See Catalog',
                     ),
-                    tooltip: 'See Catalog',
                   )
                 : const SizedBox.shrink(),
           ],
