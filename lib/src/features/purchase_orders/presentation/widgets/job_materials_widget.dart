@@ -431,7 +431,7 @@ class JobMaterialsWidget extends StatelessWidget with Validator {
 
     if (state is ItemsLoaded) {
       var itemModified = state.selectedItems.isNotEmpty;
-      if (itemModified) {
+      if (itemModified && (context.isMobile || context.isSmallTablet)) {
         homeBloc.add(
           ShowFooterActionEvent(
             showCancelButton: false,
