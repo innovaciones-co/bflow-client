@@ -107,7 +107,14 @@ class ContactsPage extends StatelessWidget {
             children: [
               const TableHeaderWidget(label: "Name"),
               const TableHeaderWidget(label: "Email"),
-              if (!context.isMobile) const TableHeaderWidget(label: "Address"),
+              if (!(context.isMobile ||
+                  context.isSmallTablet ||
+                  context.isSmall))
+                const TableHeaderWidget(label: "Phone"),
+              if (!(context.isMobile ||
+                  context.isSmallTablet ||
+                  context.isSmall))
+                const TableHeaderWidget(label: "Address"),
               const TableHeaderWidget(label: "Actions"),
             ],
           ),
@@ -119,7 +126,14 @@ class ContactsPage extends StatelessWidget {
               children: [
                 _tableData(context, e.name),
                 _tableData(context, e.email),
-                if (!context.isMobile) _tableData(context, e.address),
+                if (!(context.isMobile ||
+                    context.isSmallTablet ||
+                    context.isSmall))
+                  _tableData(context, e.phone),
+                if (!(context.isMobile ||
+                    context.isSmallTablet ||
+                    context.isSmall))
+                  _tableData(context, e.address),
                 _tableActions(context, e),
               ],
             ),
@@ -142,7 +156,7 @@ class ContactsPage extends StatelessWidget {
     return TableCell(
       child: Container(
         padding: EdgeInsets.symmetric(
-            horizontal: context.isMobile ? 2 : 10, vertical: 10),
+            horizontal: !context.isDesktop ? 2 : 10, vertical: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
