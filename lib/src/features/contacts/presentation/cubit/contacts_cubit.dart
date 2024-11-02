@@ -1,5 +1,6 @@
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
+import 'package:bflow_client/src/core/extensions/string_utils_extension.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/delete_contact_usecase.dart';
@@ -28,7 +29,7 @@ class ContactsCubit extends Cubit<ContactsState> {
     final contactsUseCase = await getContactsUseCase.execute(params);
     contactsUseCase.fold(
       (l) => emit(ContactsError(failure: l)),
-      (r) => emit(ContactsLoaded(contacts: r)),
+      (r) => emit(ContactsLoaded(contacts: r, contactsFiltered: r)),
     );
   }
 
@@ -51,5 +52,24 @@ class ContactsCubit extends Cubit<ContactsState> {
         );
       },
     );
+  }
+
+  filterContacts(String value) async {
+    final contacts = (state as ContactsLoaded).contacts;
+
+    if (value.isNotEmpty) {
+      List<Contact> contactsFiltered =
+          contacts.where((contact) => contact.name.search(value)).toList();
+
+      emit(ContactsLoaded(
+        contacts: contacts,
+        contactsFiltered: contactsFiltered,
+      ));
+    } else {
+      emit(ContactsLoaded(
+        contacts: contacts,
+        contactsFiltered: contacts,
+      ));
+    }
   }
 }

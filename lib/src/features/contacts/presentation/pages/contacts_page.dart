@@ -25,21 +25,22 @@ class ContactsPage extends StatelessWidget {
       child: PageContainerWidget(
         title: 'Contacts',
         actions: [
-          Builder(builder: (context) {
-            return ActionButtonWidget(
-              onPressed: () => context.showLeftDialog(
-                "New Contact",
-                WriteContactWidget(
-                  contactsCubit: context.read(),
+          if (context.isMobile || context.isSmallTablet)
+            Builder(builder: (context) {
+              return ActionButtonWidget(
+                onPressed: () => context.showLeftDialog(
+                  "New Contact",
+                  WriteContactWidget(
+                    contactsCubit: context.read(),
+                  ),
                 ),
-              ),
-              type: ButtonType.elevatedButton,
-              title: "New contact",
-              backgroundColor: AppColor.blue,
-              foregroundColor: AppColor.white,
-              icon: Icons.add,
-            );
-          }),
+                type: ButtonType.elevatedButton,
+                title: "New contact",
+                backgroundColor: AppColor.blue,
+                foregroundColor: AppColor.white,
+                icon: Icons.add,
+              );
+            }),
         ],
         child: BlocBuilder<ContactsCubit, ContactsState>(
           builder: (context, state) {
@@ -52,37 +53,97 @@ class ContactsPage extends StatelessWidget {
               );
             }
             if (state is ContactsLoaded) {
-              var contacts = state.contacts;
-              return DefaultTabController(
-                length: ContactType.values.length,
-                child: Column(
-                  children: [
-                    TabBar(
-                      tabs: ContactType.values
-                          .map((e) => Tab(text: e.name))
-                          .toList(),
-                      labelColor: AppColor.blue,
-                      indicatorColor: AppColor.blue,
-                      indicatorSize: TabBarIndicatorSize.tab,
-                      indicatorWeight: 3,
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Expanded(
-                      child: TabBarView(
-                        children: ContactType.values
-                            .map(
-                              (e) => _contactsTable(
-                                context,
-                                contacts.where((c) => c.type == e).toList(),
+              var contacts = state.contactsFiltered;
+              return Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Container(
+                          constraints: const BoxConstraints(
+                            maxWidth: 600,
+                          ),
+                          child: TextField(
+                            onChanged: (val) => _searchContacts(val, context),
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(22),
+                                borderSide:
+                                    BorderSide(color: AppColor.grey, width: 1),
                               ),
-                            )
-                            .toList(),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(22),
+                                borderSide: BorderSide(
+                                    color: AppColor.grey, width: 1.5),
+                              ),
+                              contentPadding: const EdgeInsets.only(
+                                  top: 0, bottom: 0, right: 10),
+                              isDense: true,
+                              filled: true,
+                              fillColor: AppColor.white,
+                              prefixIcon: const Icon(Icons.search),
+                              hintText: "Search",
+                            ),
+                          ),
+                        ),
                       ),
-                    )
-                  ],
-                ),
+                      if (!(context.isMobile || context.isSmallTablet))
+                        const SizedBox(width: 15),
+                      if (!(context.isMobile || context.isSmallTablet))
+                        ActionButtonWidget(
+                          onPressed: () => context.showLeftDialog(
+                            "New Contact",
+                            WriteContactWidget(
+                              contactsCubit: context.read(),
+                            ),
+                          ),
+                          type: ButtonType.elevatedButton,
+                          title: "New contact",
+                          backgroundColor: AppColor.blue,
+                          foregroundColor: AppColor.white,
+                          icon: Icons.add,
+                        ),
+                    ],
+                  ),
+                  if (!(context.isMobile || context.isSmallTablet))
+                    const SizedBox(height: 10),
+                  Expanded(
+                    child: DefaultTabController(
+                      length: ContactType.values.length,
+                      child: Column(
+                        children: [
+                          TabBar(
+                            tabs: ContactType.values
+                                .map((e) => Tab(text: e.name))
+                                .toList(),
+                            labelColor: AppColor.blue,
+                            indicatorColor: AppColor.blue,
+                            indicatorSize: TabBarIndicatorSize.tab,
+                            indicatorWeight: 3,
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Expanded(
+                            child: TabBarView(
+                              children: ContactType.values
+                                  .map(
+                                    (e) => _contactsTable(
+                                      context,
+                                      contacts!
+                                          .where((c) => c.type == e)
+                                          .toList(),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               );
             }
 
@@ -226,5 +287,9 @@ class ContactsPage extends StatelessWidget {
 
   void _goToDetails(BuildContext context, int supplierId) {
     context.go(RoutesName.catalog.replaceAll(":id", supplierId.toString()));
+  }
+
+  void _searchContacts(String value, BuildContext context) {
+    context.read<ContactsCubit>().filterContacts(value);
   }
 }
