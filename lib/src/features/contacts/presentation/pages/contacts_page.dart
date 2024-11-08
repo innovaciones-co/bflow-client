@@ -62,7 +62,7 @@ class ContactsPage extends StatelessWidget {
                       Flexible(
                         child: Container(
                           constraints: const BoxConstraints(
-                            maxWidth: 600,
+                            maxWidth: 500,
                           ),
                           child: TextField(
                             onChanged: (val) => _searchContacts(val, context),
