@@ -61,13 +61,11 @@ class ContactsCubit extends Cubit<ContactsState> {
       List<Contact> contactsFiltered =
           contacts.where((contact) => contact.name.search(value)).toList();
 
-      emit(ContactsLoaded(
-        contacts: contacts,
+      emit((state as ContactsLoaded).copyWith(
         contactsFiltered: contactsFiltered,
       ));
     } else {
-      emit(ContactsLoaded(
-        contacts: contacts,
+      emit((state as ContactsLoaded).copyWith(
         contactsFiltered: contacts,
       ));
     }

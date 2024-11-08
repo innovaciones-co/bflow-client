@@ -13,15 +13,28 @@ class ContactsLoading extends ContactsState {}
 
 class ContactsLoaded extends ContactsState {
   final List<Contact> contacts;
-  final List<Contact>? contactsFiltered;
+  final List<Contact> contactsFiltered;
 
-  const ContactsLoaded({required this.contacts, this.contactsFiltered});
+  const ContactsLoaded({
+    required this.contacts,
+    this.contactsFiltered = const [],
+  });
 
   @override
   List<Object> get props => [
         contacts,
-        contactsFiltered ?? [],
+        contactsFiltered,
       ];
+
+  ContactsLoaded copyWith({
+    List<Contact>? contacts,
+    List<Contact>? contactsFiltered,
+  }) {
+    return ContactsLoaded(
+      contacts: contacts ?? this.contacts,
+      contactsFiltered: contactsFiltered ?? this.contactsFiltered,
+    );
+  }
 }
 
 class ContactsError extends ContactsState {
