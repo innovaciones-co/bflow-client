@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:bflow_client/src/core/api/api.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/exceptions/failure.dart';
+import 'package:bflow_client/src/core/extensions/string_utils_extension.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/get_contacts_usecase.dart';
@@ -69,6 +70,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<UpdateTaskDataEvent>(_updateTaskData);
     // on<SaveUpdatedTasks>(_saveUpdatedTasks);
     on<OnReceivedTaskEvent>(_receiveTaskEvent);
+    on<SearchTasks>(_searchTasks);
 
     if (jobBloc.state is JobLoaded) {
       add(GetTasksEvent(jobId: (jobBloc.state as JobLoaded).job.id));
@@ -172,6 +174,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
             emit(
               TasksLoaded(
                 tasks: t,
+                tasksSearched: t,
                 contacts: List.of(suppliers)..add(null),
                 updatedTasks: const [],
               ),
@@ -377,6 +380,23 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     var tasks = event.updatedTasks;
     if (state is TasksLoaded) {
       emit((state as TasksLoaded).copyWith(updatedTasks: tasks));
+    }
+  }
+
+  _searchTasks(SearchTasks event, Emitter<TasksState> emit) {
+    var value = event.value;
+
+    if (state is TasksLoaded) {
+      final tasks = (state as TasksLoaded).tasks;
+
+      if (value.isNotEmpty) {
+        List<Task> tasksSearched =
+            tasks.where((contact) => contact.name.search(value)).toList();
+
+        emit((state as TasksLoaded).copyWith(tasksSearched: tasksSearched));
+      } else {
+        emit((state as TasksLoaded).copyWith(tasksSearched: tasks));
+      }
     }
   }
 }
