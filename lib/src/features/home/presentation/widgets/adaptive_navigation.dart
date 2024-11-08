@@ -23,7 +23,7 @@ class AdaptiveNavigation extends StatefulWidget {
 }
 
 class _AdaptiveNavigationState extends State<AdaptiveNavigation> {
-  bool isExtended = true;
+  bool isExtended = false;
 
   @override
   Widget build(BuildContext context) {
