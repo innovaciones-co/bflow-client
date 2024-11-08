@@ -131,7 +131,7 @@ class ContactsPage extends StatelessWidget {
                                   .map(
                                     (e) => _contactsTable(
                                       context,
-                                      contacts!
+                                      contacts
                                           .where((c) => c.type == e)
                                           .toList(),
                                     ),
