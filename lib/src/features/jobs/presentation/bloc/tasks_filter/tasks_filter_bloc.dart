@@ -32,7 +32,7 @@ class TasksFilterBloc extends Bloc<TasksFilterEvent, TasksFilterState> {
     //emit(TasksFilterLoading());
     var taskBlocState = _tasksBloc.state;
     if (taskBlocState is TasksLoaded) {
-      List<Task> filteredTasks = taskBlocState.tasks
+      List<Task> filteredTasks = taskBlocState.tasksSearched
           .where((task) => event.statusFilter.contains(task.status))
           .toList();
 

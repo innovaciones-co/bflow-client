@@ -28,118 +28,149 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            /* const Text("Search"),
-            Container(
+            _buildDropdown(context),
+            Expanded(
+              child: _showSelectedStatus(),
+            ),
+            BlocSelector<TasksBloc, TasksState, bool>(
+              selector: (state) {
+                if (state is TasksLoaded) {
+                  return state.selectedTasks.isNotEmpty;
+                }
+                return false;
+              },
+              builder: (context, selectedTasks) {
+                return Row(
+                  children: [
+                    selectedTasks
+                        ? BlocSelector<TasksBloc, TasksState, bool>(
+                            selector: (state) {
+                              return state is TasksDeleting;
+                            },
+                            builder: (context, isLoading) {
+                              return ActionButtonWidget(
+                                onPressed: () {
+                                  context.showCustomModal(
+                                    ConfirmationWidget(
+                                      title: "Delete tasks",
+                                      description:
+                                          "Are you sure you want to delete the selected task(s)?",
+                                      onConfirm: () {
+                                        context
+                                            .read<TasksBloc>()
+                                            .add(DeleteTasksEvent());
+                                        context.pop();
+                                      },
+                                      confirmText: "Delete",
+                                    ),
+                                  );
+                                },
+                                type: ButtonType.textButton,
+                                title: "Delete",
+                                icon: Icons.delete_outline,
+                                paddingHorizontal: 15,
+                                paddingVertical: 18,
+                                inProgress: isLoading,
+                              );
+                            },
+                          )
+                        : const SizedBox.shrink(),
+                    const SizedBox(width: 12),
+                    selectedTasks
+                        ? BlocSelector<TasksBloc, TasksState, bool>(
+                            selector: (state) {
+                              return state is TasksSending;
+                            },
+                            builder: (context, isLoading) {
+                              return ActionButtonWidget(
+                                onPressed: () => context
+                                    .read<TasksBloc>()
+                                    .add(SendSelectedTasksEvent()),
+                                type: ButtonType.elevatedButton,
+                                title: "Send tasks",
+                                icon: Icons.mail_outline,
+                                backgroundColor: AppColor.lightBlue,
+                                inProgress: isLoading,
+                              );
+                            },
+                          )
+                        : const SizedBox.shrink(),
+                    const SizedBox(width: 12),
+                    BlocBuilder<JobBloc, JobState>(
+                      builder: (context, state) {
+                        if (state is! JobLoaded) {
+                          return const Center(child: Text("No active job"));
+                        }
+
+                        int? jobId = (state).job.id;
+
+                        return context.isMobile || context.isSmallTablet
+                            ? const SizedBox.shrink()
+                            : ActionButtonWidget(
+                                onPressed: () => context.showLeftDialog(
+                                  'New Activity',
+                                  WriteTaskWidget(
+                                    jobId: jobId!,
+                                    tasksBloc: context.read(),
+                                    jobBloc: context.read(),
+                                  ),
+                                ),
+                                type: ButtonType.elevatedButton,
+                                title: "New Activity",
+                                icon: Icons.add,
+                                backgroundColor: AppColor.blue,
+                                foregroundColor: AppColor.white,
+                              );
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Row(
+          children: [
+            Flexible(
+              child: Container(
+                constraints: const BoxConstraints(
+                  maxWidth: 500,
+                ),
+                child: TextField(
+                  onChanged: (val) => _searchTasks(val, context),
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(22),
+                      borderSide: BorderSide(color: AppColor.grey, width: 1),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(22),
+                      borderSide: BorderSide(color: AppColor.grey, width: 1.5),
+                    ),
+                    contentPadding:
+                        const EdgeInsets.only(top: 0, bottom: 0, right: 10),
+                    isDense: true,
+                    filled: true,
+                    fillColor: AppColor.white,
+                    prefixIcon: const Icon(Icons.search),
+                    hintText: "Search",
+                  ),
+                ),
+              ),
+            ),
+            /* Container(
               width: 1,
               height: 20,
               margin: const EdgeInsets.symmetric(horizontal: 10),
               color: AppColor.grey,
             ), */
-            _buildDropdown(context),
           ],
-        ),
-        Expanded(
-          child: _showSelectedStatus(),
-        ),
-        BlocSelector<TasksBloc, TasksState, bool>(
-          selector: (state) {
-            if (state is TasksLoaded) {
-              return state.selectedTasks.isNotEmpty;
-            }
-            return false;
-          },
-          builder: (context, selectedTasks) {
-            return Row(
-              children: [
-                selectedTasks
-                    ? BlocSelector<TasksBloc, TasksState, bool>(
-                        selector: (state) {
-                          return state is TasksDeleting;
-                        },
-                        builder: (context, isLoading) {
-                          return ActionButtonWidget(
-                            onPressed: () {
-                              context.showCustomModal(
-                                ConfirmationWidget(
-                                  title: "Delete tasks",
-                                  description:
-                                      "Are you sure you want to delete the selected task(s)?",
-                                  onConfirm: () {
-                                    context
-                                        .read<TasksBloc>()
-                                        .add(DeleteTasksEvent());
-                                    context.pop();
-                                  },
-                                  confirmText: "Delete",
-                                ),
-                              );
-                            },
-                            type: ButtonType.textButton,
-                            title: "Delete",
-                            icon: Icons.delete_outline,
-                            paddingHorizontal: 15,
-                            paddingVertical: 18,
-                            inProgress: isLoading,
-                          );
-                        },
-                      )
-                    : const SizedBox.shrink(),
-                const SizedBox(width: 12),
-                selectedTasks
-                    ? BlocSelector<TasksBloc, TasksState, bool>(
-                        selector: (state) {
-                          return state is TasksSending;
-                        },
-                        builder: (context, isLoading) {
-                          return ActionButtonWidget(
-                            onPressed: () => context
-                                .read<TasksBloc>()
-                                .add(SendSelectedTasksEvent()),
-                            type: ButtonType.elevatedButton,
-                            title: "Send tasks",
-                            icon: Icons.mail_outline,
-                            backgroundColor: AppColor.lightBlue,
-                            inProgress: isLoading,
-                          );
-                        },
-                      )
-                    : const SizedBox.shrink(),
-                const SizedBox(width: 12),
-                BlocBuilder<JobBloc, JobState>(
-                  builder: (context, state) {
-                    if (state is! JobLoaded) {
-                      return const Center(child: Text("No active job"));
-                    }
-
-                    int? jobId = (state).job.id;
-
-                    return context.isMobile || context.isSmallTablet
-                        ? const SizedBox.shrink()
-                        : ActionButtonWidget(
-                            onPressed: () => context.showLeftDialog(
-                              'New Activity',
-                              WriteTaskWidget(
-                                jobId: jobId!,
-                                tasksBloc: context.read(),
-                                jobBloc: context.read(),
-                              ),
-                            ),
-                            type: ButtonType.elevatedButton,
-                            title: "New Activity",
-                            icon: Icons.add,
-                            backgroundColor: AppColor.blue,
-                            foregroundColor: AppColor.white,
-                          );
-                  },
-                ),
-              ],
-            );
-          },
         ),
       ],
     );
@@ -251,5 +282,9 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
         );
       },
     );
+  }
+
+  void _searchTasks(String value, BuildContext context) {
+    context.read<TasksBloc>().add(SearchTasks(value: value));
   }
 }
