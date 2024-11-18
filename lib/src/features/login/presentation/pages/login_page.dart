@@ -1,16 +1,12 @@
-import 'package:bflow_client/src/core/config/config.dart';
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
 import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/core/routes/names.dart';
 import 'package:bflow_client/src/core/utils/mixins/validator.dart';
-import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
-import 'package:bflow_client/src/core/widgets/input_widget.dart';
 import 'package:bflow_client/src/features/login/presentation/bloc/login/login_cubit.dart';
 import 'package:bflow_client/src/features/login/presentation/widgets/login_form_widget.dart';
 import 'package:bflow_client/src/features/login/presentation/widgets/reset_password_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -71,23 +67,30 @@ class _LoginPageState extends State<LoginPage>
                 child: LayoutBuilder(
                   builder: (context, state) {
                     double height = context.height / 8;
+
+                    if (!(context.isMobile || context.isSmallTablet)) {
+                      return Container(
+                        constraints: const BoxConstraints(maxWidth: 500),
+                        padding: const EdgeInsets.all(35),
+                        child: _loginBody(height, context),
+                      );
+                    }
+
                     return Stack(
                       children: [
-                        context.isMobile || context.isSmallTablet
-                            ? Positioned(
-                                right: 0,
-                                left: 0,
-                                top: 0,
-                                bottom: height * 6,
-                                child: Container(
-                                  color: AppColor.black,
-                                  padding: const EdgeInsets.all(15),
-                                  child: Image.asset(
-                                    'assets/img/sh_logo_and_text.png',
-                                  ),
-                                ),
-                              )
-                            : const SizedBox.shrink(),
+                        Positioned(
+                          right: 0,
+                          left: 0,
+                          top: 0,
+                          bottom: height * 6,
+                          child: Container(
+                            color: AppColor.black,
+                            padding: const EdgeInsets.all(15),
+                            child: Image.asset(
+                              'assets/img/sh_logo_and_text.png',
+                            ),
+                          ),
+                        ),
                         Positioned(
                           bottom: 0,
                           left: 0,
@@ -96,34 +99,7 @@ class _LoginPageState extends State<LoginPage>
                             height: height * 6,
                             constraints: const BoxConstraints(maxWidth: 500),
                             padding: const EdgeInsets.all(35),
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: TabBarView(
-                                    controller: _controller,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    children: [
-                                      LoginFormWidget(
-                                        onForgotPassword: () =>
-                                            _controller.animateTo(1),
-                                      ),
-                                      ResetPasswordWidget(
-                                        onBackPressed: () =>
-                                            _controller.animateTo(0),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: height *
-                                      (context.isMobile || context.isSmallTablet
-                                          ? 0.5
-                                          : 1),
-                                  child: _versionInfo(),
-                                ),
-                              ],
-                            ),
+                            child: _loginBody(height, context),
                           ),
                         )
                       ],
@@ -135,6 +111,32 @@ class _LoginPageState extends State<LoginPage>
           ],
         ),
       ),
+    );
+  }
+
+  Column _loginBody(double height, BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: TabBarView(
+            controller: _controller,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              LoginFormWidget(
+                onForgotPassword: () => _controller.animateTo(1),
+              ),
+              ResetPasswordWidget(
+                onBackPressed: () => _controller.animateTo(0),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height:
+              height * (context.isMobile || context.isSmallTablet ? 0.5 : 1),
+          child: _versionInfo(),
+        ),
+      ],
     );
   }
 
