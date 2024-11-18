@@ -72,3 +72,9 @@ class OnReceivedTaskEvent extends TasksEvent {
 
   const OnReceivedTaskEvent({required this.frame});
 }
+
+class SearchTasks extends TasksEvent {
+  final String value;
+
+  const SearchTasks({required this.value});
+}

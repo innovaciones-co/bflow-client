@@ -43,62 +43,39 @@ class _MaterialsViewBarWidgetState extends State<MaterialsViewBarWidget> {
         ), */
         Row(
           children: [
-            BlocBuilder<ItemsBloc, ItemsState>(
-              builder: (context, state) {
-                if (state is ItemsLoaded) {
-                  var itemModified = (state).itemModified;
-
-                  return itemModified
-                      ? ActionButtonWidget(
-                          onPressed: () =>
-                              context.read<ItemsBloc>().add(SaveUpdatedItems()),
-                          type: ButtonType.elevatedButton,
-                          title: "Save",
-                          //icon: Icons.save,
-                          backgroundColor: AppColor.blue,
-                          foregroundColor: AppColor.white,
-                        )
-                      : const SizedBox.shrink();
-                }
-
-                return const SizedBox.shrink();
-              },
-            ),
-          ],
-        ),
-        Row(
-          children: [
             if (!(context.isMobile || context.isSmallTablet)) ...[
-              ActionButtonWidget(
-                onPressed: () {
-                  context.showCustomModal(
-                    ConfirmationWidget(
-                      title: "Delete materials",
-                      description:
-                          "Are you sure you want to delete the selected material(s)?",
-                      onConfirm: () {
-                        context.read<ItemsBloc>().add(DeleteItemsEvent());
-                        context.pop();
-                      },
-                      confirmText: "Delete",
-                    ),
-                  );
+              BlocBuilder<ItemsBloc, ItemsState>(
+                builder: (context, state) {
+                  if (state is ItemsLoaded) {
+                    var itemModified = (state).itemModified;
+
+                    return itemModified
+                        ? Row(
+                            children: [
+                              ActionButtonWidget(
+                                onPressed: () => context
+                                    .read<ItemsBloc>()
+                                    .add(SaveUpdatedItems()),
+                                type: ButtonType.elevatedButton,
+                                title: "Save",
+                                icon: Icons.save,
+                                backgroundColor: AppColor.lightBlue,
+                              ),
+                              Container(
+                                width: 1,
+                                height: 20,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                color: AppColor.grey,
+                              ),
+                            ],
+                          )
+                        : const SizedBox.shrink();
+                  }
+
+                  return const SizedBox.shrink();
                 },
-                type: ButtonType.textButton,
-                title: "Delete",
-                icon: Icons.delete_outline,
-                paddingHorizontal: 15,
-                paddingVertical: 18,
               ),
-              const SizedBox(width: 12),
-              ActionButtonWidget(
-                onPressed: () => _openWriteMaterialWidget(context),
-                type: ButtonType.elevatedButton,
-                title: "Add Materials",
-                icon: Icons.add,
-                backgroundColor: AppColor.lightBlue,
-              ),
-              const SizedBox(width: 12),
               BlocBuilder<JobBloc, JobState>(
                 builder: (context, state) {
                   if (state is! JobLoaded) {
@@ -114,21 +91,57 @@ class _MaterialsViewBarWidgetState extends State<MaterialsViewBarWidget> {
                       if (state is! ItemsLoaded) {
                         return const SizedBox.shrink();
                       }
-
-                      return ActionButtonWidget(
-                        onPressed: state.selectedItems.isEmpty
-                            ? null
-                            : () => itemsBloc
-                                .add(CreatePurchaseOrderEvent(jobId: jobId)),
-                        type: ButtonType.elevatedButton,
-                        title: "Create purchase order",
-                        icon: Icons.monetization_on_outlined,
-                        backgroundColor: AppColor.blue,
-                        foregroundColor: AppColor.white,
-                      );
+                      if (state.selectedItems.isNotEmpty) {
+                        return Row(
+                          children: [
+                            ActionButtonWidget(
+                              onPressed: () {
+                                context.showCustomModal(
+                                  ConfirmationWidget(
+                                    title: "Delete materials",
+                                    description:
+                                        "Are you sure you want to delete the selected material(s)?",
+                                    onConfirm: () {
+                                      context
+                                          .read<ItemsBloc>()
+                                          .add(DeleteItemsEvent());
+                                      context.pop();
+                                    },
+                                    confirmText: "Delete",
+                                  ),
+                                );
+                              },
+                              type: ButtonType.textButton,
+                              title: "Delete",
+                              icon: Icons.delete_outline,
+                              paddingHorizontal: 15,
+                              paddingVertical: 18,
+                            ),
+                            const SizedBox(width: 12),
+                            ActionButtonWidget(
+                              onPressed: () => itemsBloc
+                                  .add(CreatePurchaseOrderEvent(jobId: jobId)),
+                              type: ButtonType.elevatedButton,
+                              title: "Create purchase order",
+                              icon: Icons.monetization_on_outlined,
+                              backgroundColor: AppColor.lightBlue,
+                            ),
+                          ],
+                        );
+                      }
+                      return const SizedBox.shrink();
                     },
                   );
                 },
+              ),
+              const SizedBox(width: 12),
+              ActionButtonWidget(
+                onPressed: () => _openWriteMaterialWidget(context),
+                type: ButtonType.elevatedButton,
+                title: "Add Materials",
+                icon: Icons.add,
+                backgroundColor: AppColor.blue,
+                foregroundColor: AppColor.white,
               ),
             ],
           ],

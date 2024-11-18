@@ -23,7 +23,7 @@ class JobsActionBarWidget extends StatelessWidget {
           Flexible(
             child: Container(
               constraints: const BoxConstraints(
-                maxWidth: 400,
+                maxWidth: 500,
               ),
               child: TextField(
                 onChanged: (val) => _searchJobs(val, context),

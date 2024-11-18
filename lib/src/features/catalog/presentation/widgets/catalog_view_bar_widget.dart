@@ -33,7 +33,7 @@ class CatalogViewBarWidget extends StatelessWidget {
                 children: [
                   Container(
                     constraints: const BoxConstraints(
-                      maxWidth: 400,
+                      maxWidth: 500,
                     ),
                     child: TextField(
                       onChanged: null,

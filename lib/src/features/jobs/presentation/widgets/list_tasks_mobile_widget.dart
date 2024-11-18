@@ -46,14 +46,54 @@ class ListTasksMobileWidget extends StatelessWidget {
         return Expanded(
           child: Stack(
             children: [
-              ListView(
+              Column(
                 children: [
                   const SizedBox(height: 10),
-                  ...tasks.map(
-                    (task) => Builder(builder: (context) {
-                      bool isSelected = selectedTasks.contains(task);
-                      return _taskItemCard(tasksBloc, task, isSelected);
-                    }),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Container(
+                          constraints: const BoxConstraints(
+                            maxWidth: 500,
+                          ),
+                          child: TextField(
+                            onChanged: (val) => _searchTasks(val, context),
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(22),
+                                borderSide:
+                                    BorderSide(color: AppColor.grey, width: 1),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(22),
+                                borderSide: BorderSide(
+                                    color: AppColor.grey, width: 1.5),
+                              ),
+                              contentPadding: const EdgeInsets.only(
+                                  top: 0, bottom: 0, right: 10),
+                              isDense: true,
+                              filled: true,
+                              fillColor: AppColor.white,
+                              prefixIcon: const Icon(Icons.search),
+                              hintText: "Search",
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        const SizedBox(height: 5),
+                        ...tasks.map(
+                          (task) => Builder(builder: (context) {
+                            bool isSelected = selectedTasks.contains(task);
+                            return _taskItemCard(tasksBloc, task, isSelected);
+                          }),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -243,5 +283,9 @@ class ListTasksMobileWidget extends StatelessWidget {
         );
       }
     }
+  }
+
+  void _searchTasks(String value, BuildContext context) {
+    context.read<TasksBloc>().add(SearchTasks(value: value));
   }
 }
