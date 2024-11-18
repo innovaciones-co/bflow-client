@@ -25,6 +25,7 @@ class BflowApp extends StatelessWidget {
         BlocProvider<LoginCubit>(create: (_) => DependencyInjection.sl()),
       ],
       child: MaterialApp.router(
+        title: 'Bflow',
         theme: MaterialTheme(textTheme(context)).light(),
         darkTheme: MaterialTheme(textTheme(context)).dark(),
         debugShowCheckedModeBanner: false,

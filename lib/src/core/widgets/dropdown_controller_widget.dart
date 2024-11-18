@@ -78,8 +78,8 @@ class _DropdownControllerWidgetState<T>
             ),
             controller: _controller,
             menuStyle: MenuStyle(
-              backgroundColor: MaterialStateProperty.all(AppColor.white),
-              surfaceTintColor: MaterialStateProperty.all(AppColor.grey),
+              backgroundColor: WidgetStateProperty.all(AppColor.white),
+              surfaceTintColor: WidgetStateProperty.all(AppColor.grey),
             ),
             expandedInsets: EdgeInsets.zero,
             trailingIcon: const Icon(
@@ -128,8 +128,8 @@ class _DropdownControllerWidgetState<T>
               DropdownMenu<T>(
                 controller: _controller,
                 menuStyle: MenuStyle(
-                  backgroundColor: MaterialStateProperty.all(AppColor.white),
-                  surfaceTintColor: MaterialStateProperty.all(AppColor.grey),
+                  backgroundColor: WidgetStateProperty.all(AppColor.white),
+                  surfaceTintColor: WidgetStateProperty.all(AppColor.grey),
                 ),
                 expandedInsets: EdgeInsets.zero,
                 trailingIcon: const Icon(Icons.keyboard_arrow_down_outlined),

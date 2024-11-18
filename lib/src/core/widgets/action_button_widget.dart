@@ -37,14 +37,14 @@ class ActionButtonWidget extends StatelessWidget {
         return TextButton(
           onPressed: inProgress ? null : onPressed,
           style: ButtonStyle(
-            padding: MaterialStatePropertyAll(EdgeInsets.symmetric(
+            padding: WidgetStatePropertyAll(EdgeInsets.symmetric(
                 vertical: paddingVertical ?? 0,
                 horizontal: paddingHorizontal ?? 5)),
             overlayColor:
-                MaterialStateProperty.all(foregroundColor?.withOpacity(0.05)),
-            backgroundColor: MaterialStateProperty.all(backgroundColor),
-            foregroundColor: MaterialStateProperty.all(foregroundColor),
-            shape: MaterialStatePropertyAll(
+                WidgetStateProperty.all(foregroundColor?.withOpacity(0.05)),
+            backgroundColor: WidgetStateProperty.all(backgroundColor),
+            foregroundColor: WidgetStateProperty.all(foregroundColor),
+            shape: WidgetStatePropertyAll(
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
           ),
           child: Row(
@@ -73,13 +73,13 @@ class ActionButtonWidget extends StatelessWidget {
         return ElevatedButton(
           onPressed: inProgress ? null : onPressed,
           style: ButtonStyle(
-            padding: MaterialStatePropertyAll(EdgeInsets.symmetric(
+            padding: WidgetStatePropertyAll(EdgeInsets.symmetric(
                 vertical: paddingVertical ?? 18,
                 horizontal: paddingHorizontal ?? 15)),
-            overlayColor: MaterialStateProperty.all(Colors.transparent),
-            backgroundColor: MaterialStateProperty.all(backgroundColor),
-            foregroundColor: MaterialStateProperty.all(foregroundColor),
-            shape: MaterialStatePropertyAll(
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
+            backgroundColor: WidgetStateProperty.all(backgroundColor),
+            foregroundColor: WidgetStateProperty.all(foregroundColor),
+            shape: WidgetStatePropertyAll(
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
           ),
           child: Row(

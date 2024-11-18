@@ -61,13 +61,13 @@ class _RoundedTabBarWidgetState extends State<RoundedTabBarWidget> {
       child: TextButton(
         onPressed: onPressed,
         style: ButtonStyle(
-          padding: const MaterialStatePropertyAll(
-              EdgeInsets.symmetric(horizontal: 5)),
+          padding:
+              const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 5)),
           overlayColor:
-              MaterialStateProperty.all(foregroundColor.withOpacity(0.05)),
-          backgroundColor: MaterialStateProperty.all(backgroundColor),
-          foregroundColor: MaterialStateProperty.all(foregroundColor),
-          shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+              WidgetStateProperty.all(foregroundColor.withOpacity(0.05)),
+          backgroundColor: WidgetStateProperty.all(backgroundColor),
+          foregroundColor: WidgetStateProperty.all(foregroundColor),
+          shape: WidgetStatePropertyAll(RoundedRectangleBorder(
             borderRadius: BorderRadius.horizontal(
                 left: Radius.circular(first ? 15 : 0),
                 right: Radius.circular(last ? 15 : 0)),

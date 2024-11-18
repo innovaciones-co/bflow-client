@@ -68,7 +68,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
                           bottom: 0,
                           child: DropzoneView(
                             onCreated: _onCreated,
-                            onDrop: _addFile,
+                            onDropFile: _addFile,
                             onHover: () => setState(() {
                               isHighlighted = true;
                             }),

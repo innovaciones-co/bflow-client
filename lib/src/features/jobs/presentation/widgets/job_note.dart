@@ -127,7 +127,7 @@ class _JobNoteState extends State<JobNote> {
             ),
             child: IconButton(
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(AppColor.lightBlue),
+                backgroundColor: WidgetStateProperty.all(AppColor.lightBlue),
               ),
               onPressed: () {
                 context.read<NotesCubit>().editNote(widget.note);
@@ -156,7 +156,7 @@ class _JobNoteState extends State<JobNote> {
             ),
             child: IconButton(
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(AppColor.lightBlue),
+                backgroundColor: WidgetStateProperty.all(AppColor.lightBlue),
               ),
               onPressed: () {
                 context.showCustomModal(

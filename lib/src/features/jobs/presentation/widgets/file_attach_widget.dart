@@ -3,7 +3,6 @@ import 'package:bflow_client/src/core/extensions/build_context_extensions.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_category.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/file_tag.dart';
-import 'package:bflow_client/src/features/jobs/presentation/bloc/files/files_cubit.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:dio/dio.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -61,7 +60,7 @@ class _FileAttachWidgetState extends State<FileAttachWidget> {
                       bottom: 0,
                       child: DropzoneView(
                         onCreated: _onCreated,
-                        onDrop: _addFile,
+                        onDropFile: _addFile,
                         onHover: () => setState(() {
                           isHighlighted = true;
                         }),
@@ -228,9 +227,9 @@ class _FileAttachWidgetState extends State<FileAttachWidget> {
     _controller = controller;
   }
 
-  _save(FilesCubit filesCubit) {
+  /* _save(FilesCubit filesCubit) {
     filesCubit.uploadFiles(_selectedFiles);
-  }
+  } */
 
   _removeFile(File file) {
     setState(

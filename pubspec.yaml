@@ -19,7 +19,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.9.0+10
 
 environment:
-  sdk: ">=3.2.3 <4.0.0"
+  sdk: ">=3.3.0 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -44,7 +44,7 @@ dependencies:
   intl: ^0.19.0
   fluttertoast: ^8.2.4
   download: ^1.0.0
-  flutter_dropzone: ^3.0.7
+  flutter_dropzone: ^4.0.0
   dotted_border: ^2.1.0
   collection: ^1.18.0
   url_launcher: ^6.2.5
@@ -53,7 +53,7 @@ dependencies:
   path_provider: ^2.1.3
   universal_html: ^2.2.4
   excel: ^4.0.3
-  package_info_plus: ^5.0.1
+  package_info_plus: ^6.0.0
 
 dev_dependencies:
   flutter_test:

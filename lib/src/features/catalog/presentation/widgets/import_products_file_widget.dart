@@ -236,7 +236,7 @@ class _ImportProductsFileWidgetState extends State<ImportProductsFileWidget> {
                       bottom: 0,
                       child: DropzoneView(
                         onCreated: _onCreated,
-                        onDrop: _addFile,
+                        onDropFile: _addFile,
                         onHover: () => setState(() {
                           isHighlighted = true;
                         }),
