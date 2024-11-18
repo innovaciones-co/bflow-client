@@ -14,6 +14,7 @@ class InputWidget extends StatefulWidget {
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final TextEditingController? controller;
+  final FocusNode? focusNode;
 
   const InputWidget({
     super.key,
@@ -28,6 +29,7 @@ class InputWidget extends StatefulWidget {
     this.onFieldSubmitted,
     this.autofillHints,
     this.validator,
+    this.focusNode,
   });
 
   @override
@@ -64,6 +66,7 @@ class _InputWidgetState extends State<InputWidget> {
           autocorrect: widget.obscureText ? false : true,
           keyboardType: widget.keyboardType,
           inputFormatters: widget.inputFormatters,
+          focusNode: widget.focusNode,
           decoration: InputDecoration(
             hintText: widget.hintText,
             hintStyle: TextStyle(
