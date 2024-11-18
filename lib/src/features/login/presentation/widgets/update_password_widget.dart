@@ -11,19 +11,25 @@ import 'package:bflow_client/src/features/login/presentation/bloc/recover-passwo
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class UpdatePasswordWidget extends StatelessWidget with Validator {
+class UpdatePasswordWidget extends StatefulWidget with Validator {
   final Function()? onSuccess;
 
   const UpdatePasswordWidget({super.key, this.onSuccess});
 
   @override
-  Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormState>();
-    final TextEditingController tokenController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-    final TextEditingController confirmPasswordController =
-        TextEditingController();
+  State<UpdatePasswordWidget> createState() => _UpdatePasswordWidgetState();
+}
 
+class _UpdatePasswordWidgetState extends State<UpdatePasswordWidget>
+    with Validator {
+  final _updatePasswordFormKey = GlobalKey<FormState>();
+  final TextEditingController _tokenController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
           UpdatePasswordCubit(updatePasswordUseCase: DependencyInjection.sl()),
@@ -31,11 +37,11 @@ class UpdatePasswordWidget extends StatelessWidget with Validator {
         listener: (context, state) {
           if (state.message != null) {
             context.showAlert(message: state.message!, type: AlertType.success);
-            tokenController.text = '';
-            passwordController.text = '';
-            confirmPasswordController.text = '';
-            if (onSuccess != null) {
-              onSuccess!();
+            _tokenController.text = '';
+            _passwordController.text = '';
+            _confirmPasswordController.text = '';
+            if (widget.onSuccess != null) {
+              widget.onSuccess!();
             }
           } else if (state.error != null) {
             context.showAlert(
@@ -43,72 +49,69 @@ class UpdatePasswordWidget extends StatelessWidget with Validator {
                 type: AlertType.error);
           }
         },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: formKey,
-            child: Column(
-              children: [
-                InputWidget(
-                  controller: tokenController,
-                  label: "Token",
-                  validator: validateToken,
-                  autofillHints: const [AutofillHints.oneTimeCode],
-                ),
-                const SizedBox(height: 25),
-                InputWidget(
-                  controller: passwordController,
-                  label: "New password",
-                  validator: validatePassword,
-                  autofillHints: const [AutofillHints.password],
-                  obscureText: true,
-                ),
-                const SizedBox(height: 25),
-                InputWidget(
-                  controller: confirmPasswordController,
-                  label: "Confirm password",
-                  validator: (value) =>
-                      validateConfirmPassword(value, passwordController.text),
-                  autofillHints: const [AutofillHints.password],
-                  obscureText: true,
-                ),
-                const SizedBox(height: 50),
-                BlocBuilder<UpdatePasswordCubit, UpdatePasswordState>(
-                  builder: (context, state) {
-                    return ActionButtonWidget(
-                      inProgress: state.isLoading,
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          BlocProvider.of<UpdatePasswordCubit>(context)
-                              .updatePassword(
-                            tokenController.text,
-                            passwordController.text,
-                          );
-                        }
-                      },
-                      type: ButtonType.elevatedButton,
-                      title: 'Update Password',
-                      backgroundColor: AppColor.blue,
-                      foregroundColor: AppColor.white,
-                    );
-                  },
-                ),
-                Builder(builder: (context) {
-                  var requestPasswordUpdateBloc =
-                      context.read<RequestPasswordUpdateCubit>();
-                  return Container(
-                    margin: const EdgeInsets.only(top: 15),
-                    child: Center(
-                      child: TextButton(
-                        onPressed: () =>
-                            requestPasswordUpdateBloc.tokenRequested(false),
-                        child: const Text("Request a new token"),
-                      ),
-                    ),
+        child: Form(
+          key: _updatePasswordFormKey,
+          child: Column(
+            children: [
+              InputWidget(
+                controller: _tokenController,
+                label: "Token",
+                validator: validateToken,
+                autofillHints: const [AutofillHints.oneTimeCode],
+              ),
+              const SizedBox(height: 15),
+              InputWidget(
+                controller: _passwordController,
+                label: "New password",
+                validator: validatePassword,
+                autofillHints: const [AutofillHints.password],
+                obscureText: true,
+              ),
+              const SizedBox(height: 15),
+              InputWidget(
+                controller: _confirmPasswordController,
+                label: "Confirm password",
+                validator: (value) =>
+                    validateConfirmPassword(value, _passwordController.text),
+                autofillHints: const [AutofillHints.password],
+                obscureText: true,
+              ),
+              const SizedBox(height: 20),
+              BlocBuilder<UpdatePasswordCubit, UpdatePasswordState>(
+                builder: (context, state) {
+                  return ActionButtonWidget(
+                    inProgress: state.isLoading,
+                    onPressed: () {
+                      if (_updatePasswordFormKey.currentState!.validate()) {
+                        BlocProvider.of<UpdatePasswordCubit>(context)
+                            .updatePassword(
+                          _tokenController.text,
+                          _passwordController.text,
+                        );
+                      }
+                    },
+                    type: ButtonType.elevatedButton,
+                    title: 'Update Password',
+                    backgroundColor: AppColor.blue,
+                    foregroundColor: AppColor.white,
                   );
-                })
-              ],
-            ),
+                },
+              ),
+              Builder(builder: (context) {
+                var requestPasswordUpdateBloc =
+                    context.read<RequestPasswordUpdateCubit>();
+                return Container(
+                  margin: const EdgeInsets.only(top: 15),
+                  child: Center(
+                    child: TextButton(
+                      onPressed: () =>
+                          requestPasswordUpdateBloc.tokenRequested(false),
+                      child: const Text("Request a new token"),
+                    ),
+                  ),
+                );
+              })
+            ],
           ),
         ),
       ),

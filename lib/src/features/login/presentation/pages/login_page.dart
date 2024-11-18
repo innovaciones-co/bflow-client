@@ -73,45 +73,6 @@ class _LoginPageState extends State<LoginPage>
                     double height = context.height / 8;
                     return Stack(
                       children: [
-                        Container(
-                          constraints: const BoxConstraints(maxWidth: 500),
-                          margin: const EdgeInsets.symmetric(horizontal: 35),
-                          child: Column(
-                            children: [
-                              Container(
-                                height: height *
-                                    (context.isMobile || context.isSmallTablet
-                                        ? 2
-                                        : 1),
-                              ),
-                              SizedBox(
-                                width: double.maxFinite,
-                                height: height *
-                                    (context.isMobile || context.isSmallTablet
-                                        ? 5.5
-                                        : 6),
-                                child: TabBarView(
-                                  controller: _controller,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children: [
-                                    _loginForm(context),
-                                    ResetPasswordWidget(
-                                      onBackPressed: () =>
-                                          _controller.animateTo(0),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                height: height *
-                                    (context.isMobile || context.isSmallTablet
-                                        ? 0.5
-                                        : 1),
-                                child: _versionInfo(),
-                              ),
-                            ],
-                          ),
-                        ),
                         context.isMobile || context.isSmallTablet
                             ? Positioned(
                                 right: 0,
@@ -126,7 +87,42 @@ class _LoginPageState extends State<LoginPage>
                                   ),
                                 ),
                               )
-                            : const SizedBox.shrink()
+                            : const SizedBox.shrink(),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            height: height * 6,
+                            constraints: const BoxConstraints(maxWidth: 500),
+                            padding: const EdgeInsets.all(35),
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: TabBarView(
+                                    controller: _controller,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    children: [
+                                      _loginForm(context),
+                                      ResetPasswordWidget(
+                                        onBackPressed: () =>
+                                            _controller.animateTo(0),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: height *
+                                      (context.isMobile || context.isSmallTablet
+                                          ? 0.5
+                                          : 1),
+                                  child: _versionInfo(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
                       ],
                     );
                   },

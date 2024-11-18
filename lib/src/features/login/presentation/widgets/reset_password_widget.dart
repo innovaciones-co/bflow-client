@@ -11,11 +11,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ResetPasswordWidget extends StatelessWidget with Validator {
-  final _passwordFormKey = GlobalKey<FormState>();
+class ResetPasswordWidget extends StatefulWidget with Validator {
   final Function()? onBackPressed;
 
   ResetPasswordWidget({super.key, this.onBackPressed});
+
+  @override
+  State<ResetPasswordWidget> createState() => _ResetPasswordWidgetState();
+}
+
+class _ResetPasswordWidgetState extends State<ResetPasswordWidget>
+    with Validator {
+  final _passwordFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +49,7 @@ class ResetPasswordWidget extends StatelessWidget with Validator {
               Row(
                 children: [
                   IconButton(
-                    onPressed: onBackPressed,
+                    onPressed: widget.onBackPressed,
                     icon: const Icon(Icons.arrow_back_ios_outlined),
                   ),
                   const SizedBox(
@@ -61,7 +68,7 @@ class ResetPasswordWidget extends StatelessWidget with Validator {
                 builder: (context, tokenRequested) {
                   return tokenRequested
                       ? UpdatePasswordWidget(
-                          onSuccess: onBackPressed,
+                          onSuccess: widget.onBackPressed,
                         )
                       : _requestTokenForm();
                 },
@@ -73,8 +80,7 @@ class ResetPasswordWidget extends StatelessWidget with Validator {
     );
   }
 
-  BlocSelector<RequestPasswordUpdateCubit, RequestPasswordUpdateState,
-      AutovalidateMode> _requestTokenForm() {
+  Widget _requestTokenForm() {
     return BlocSelector<RequestPasswordUpdateCubit, RequestPasswordUpdateState,
         AutovalidateMode>(
       bloc: DependencyInjection.sl(),
