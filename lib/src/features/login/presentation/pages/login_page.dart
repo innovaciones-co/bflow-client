@@ -6,7 +6,8 @@ import 'package:bflow_client/src/core/routes/names.dart';
 import 'package:bflow_client/src/core/utils/mixins/validator.dart';
 import 'package:bflow_client/src/core/widgets/action_button_widget.dart';
 import 'package:bflow_client/src/core/widgets/input_widget.dart';
-import 'package:bflow_client/src/features/login/presentation/bloc/login/login_bloc.dart';
+import 'package:bflow_client/src/features/login/presentation/bloc/login/login_cubit.dart';
+import 'package:bflow_client/src/features/login/presentation/widgets/login_form_widget.dart';
 import 'package:bflow_client/src/features/login/presentation/widgets/reset_password_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,7 +26,6 @@ class LoginPage extends StatefulWidget with Validator {
 
 class _LoginPageState extends State<LoginPage>
     with Validator, TickerProviderStateMixin {
-  final _loginFormKey = GlobalKey<FormState>();
   late final TabController _controller;
 
   @override
@@ -104,7 +104,10 @@ class _LoginPageState extends State<LoginPage>
                                     physics:
                                         const NeverScrollableScrollPhysics(),
                                     children: [
-                                      _loginForm(context),
+                                      LoginFormWidget(
+                                        onForgotPassword: () =>
+                                            _controller.animateTo(1),
+                                      ),
                                       ResetPasswordWidget(
                                         onBackPressed: () =>
                                             _controller.animateTo(0),
@@ -184,107 +187,6 @@ class _LoginPageState extends State<LoginPage>
         }
 
         return const SizedBox();
-      },
-    );
-  }
-
-  Widget _loginForm(BuildContext context) {
-    return BlocSelector<LoginCubit, LoginFormState, AutovalidateMode>(
-      bloc: DependencyInjection.sl(),
-      selector: (state) => state.autovalidateMode,
-      builder: (context, autovalidateMode) {
-        var loginBloc = context.read<LoginCubit>();
-        return Form(
-          key: _loginFormKey,
-          autovalidateMode: autovalidateMode,
-          child: AutofillGroup(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "Welcome back!",
-                  style: TextStyle(fontSize: 24),
-                ),
-                SizedBox(
-                    height:
-                        context.isMobile || context.isSmallTablet ? 25 : 35),
-                const Text(
-                  "Please enter your details",
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-                SizedBox(
-                    height:
-                        context.isMobile || context.isSmallTablet ? 20 : 25),
-                InputWidget(
-                  label: "Username",
-                  onChanged: loginBloc.updateUsername,
-                  validator: validateName,
-                  initialValue: loginBloc.state.username,
-                  autofillHints: const [AutofillHints.username],
-                ),
-                const SizedBox(height: 20),
-                InputWidget(
-                  label: "Password",
-                  obscureText: true,
-                  onChanged: loginBloc.updatePassword,
-                  validator: validatePassword,
-                  initialValue: loginBloc.state.password,
-                  autofillHints: const [AutofillHints.password],
-                  onFieldSubmitted: (pass) {
-                    TextInput.finishAutofillContext();
-
-                    if (_loginFormKey.currentState != null &&
-                        _loginFormKey.currentState!.validate()) {
-                      loginBloc.login();
-                    } else {
-                      loginBloc.updateAutovalidateMode(AutovalidateMode.always);
-                    }
-                  },
-                ),
-                SizedBox(
-                    height:
-                        context.isMobile || context.isSmallTablet ? 25 : 50),
-                Padding(
-                  padding: EdgeInsets.only(
-                    right: context.isDesktop ? 20 : 0,
-                    left: context.isDesktop ? 20 : 0,
-                  ),
-                  child: ActionButtonWidget(
-                    onPressed: () {
-                      TextInput.finishAutofillContext();
-
-                      if (_loginFormKey.currentState != null &&
-                          _loginFormKey.currentState!.validate()) {
-                        loginBloc.login();
-                      } else {
-                        loginBloc
-                            .updateAutovalidateMode(AutovalidateMode.always);
-                      }
-                    },
-                    type: ButtonType.elevatedButton,
-                    title: "Log in",
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    paddingVertical: 24,
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(
-                      top: context.isMobile || context.isSmallTablet ? 10 : 15),
-                  child: Center(
-                    child: TextButton(
-                      onPressed: () {
-                        _controller.animateTo(1);
-                      },
-                      child: const Text("Forgot password?"),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        );
       },
     );
   }
