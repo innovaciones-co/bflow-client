@@ -74,7 +74,7 @@ import 'package:bflow_client/src/features/login/domain/usecases/login_use_case.d
 import 'package:bflow_client/src/features/login/domain/usecases/logout_use_case.dart';
 import 'package:bflow_client/src/features/login/domain/usecases/request_password_update._use_case.dart';
 import 'package:bflow_client/src/features/login/domain/usecases/update_password_use_case.dart';
-import 'package:bflow_client/src/features/login/presentation/bloc/login/login_bloc.dart';
+import 'package:bflow_client/src/features/login/presentation/bloc/login/login_cubit.dart';
 import 'package:bflow_client/src/features/login/presentation/bloc/recover-password/request_password_update_cubit.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/implements/items_repository_imp.dart';
 import 'package:bflow_client/src/features/purchase_orders/data/implements/purchase_orders_repository_imp.dart';

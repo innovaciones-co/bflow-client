@@ -1,4 +1,4 @@
-part of 'login_bloc.dart';
+part of 'login_cubit.dart';
 
 abstract class LoginState extends Equatable {
   const LoginState();
@@ -13,13 +13,16 @@ class LoginFormState extends LoginState {
   final String username;
   final String password;
   final String? errorMessage;
+  final bool isLoading;
 
-  const LoginFormState(
-      {this.username = '',
-      this.password = '',
-      this.autovalidateMode = AutovalidateMode.disabled,
-      this.status = FormStatus.initialized,
-      this.errorMessage});
+  const LoginFormState({
+    this.username = '',
+    this.password = '',
+    this.autovalidateMode = AutovalidateMode.disabled,
+    this.status = FormStatus.initialized,
+    this.errorMessage,
+    this.isLoading = false,
+  });
 
   LoginFormState copyWith({
     String? username,
@@ -27,6 +30,7 @@ class LoginFormState extends LoginState {
     AutovalidateMode? autovalidateMode,
     String? errorMessage,
     FormStatus? status,
+    bool? isLoading,
   }) =>
       LoginFormState(
         autovalidateMode: autovalidateMode ?? this.autovalidateMode,
@@ -34,6 +38,7 @@ class LoginFormState extends LoginState {
         password: password ?? this.password,
         errorMessage: errorMessage ?? this.errorMessage,
         status: status ?? this.status,
+        isLoading: isLoading ?? this.isLoading,
       );
 
   @override
@@ -43,5 +48,6 @@ class LoginFormState extends LoginState {
         autovalidateMode,
         errorMessage ?? '',
         status,
+        isLoading,
       ];
 }

@@ -49,9 +49,12 @@ class LoginCubit extends Cubit<LoginFormState> {
   }
 
   void login() async {
+    emit(state.copyWith(isLoading: true));
+
     final params =
         LoginParams(username: state.username, password: state.password);
     final response = await loginUseCase.execute(params);
+
     response.fold(
       (l) => emit(
         state.copyWith(status: FormStatus.failed, errorMessage: l.message),
