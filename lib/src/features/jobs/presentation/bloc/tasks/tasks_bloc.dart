@@ -282,42 +282,29 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     List<Task> updatedTasks = List.of(loadedState.updatedTasks);
     List<Task> tasks = List.of(loadedState.tasks);
     Task newTask = event.task;
+
     Map<int, Task> updatedTasksMap = {
       for (var item in updatedTasks) item.id!: item
     };
 
-    // Update the tasks list with the updated tasks
-    for (var task in tasks) {
-      if (updatedTasksMap.containsKey(task.id)) {
-        Task updatedTask = updatedTasksMap[task.id]!;
-        task = task.copyWith(
-          id: updatedTask.id,
-          name: updatedTask.name,
-          callDate: updatedTask.callDate,
-          startDate: updatedTask.startDate,
-          endDate: updatedTask.endDate,
-          comments: updatedTask.comments,
-          progress: updatedTask.progress,
-          stage: updatedTask.stage,
-          status: updatedTask.status,
-          supplier: updatedTask.supplier,
-          order: updatedTask.order,
-        );
+    // Properly update the tasks list
+    for (int i = 0; i < tasks.length; i++) {
+      if (updatedTasksMap.containsKey(tasks[i].id)) {
+        tasks[i] = updatedTasksMap[tasks[i].id]!;
       }
     }
 
+    // Handle the new task
     bool exists = updatedTasks.indexWhere((i) => i.id == newTask.id) != -1;
     if (exists) {
       updatedTasks.removeWhere((i) => i.id == newTask.id);
     }
     updatedTasks.add(newTask);
 
-    emit(
-      loadedState.copyWith(
-        updatedTasks: updatedTasks,
-        tasks: tasks,
-      ),
-    );
+    emit(loadedState.copyWith(
+      updatedTasks: updatedTasks,
+      tasks: tasks,
+    ));
   }
 
   /* FutureOr<void> _saveUpdatedTasks(
