@@ -79,10 +79,18 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
         if (state is TasksLoaded) {
           var contacts = state.contacts;
 
+          final mergedTasks = initialTasks.map((task) {
+            final updated = state.updatedTasks.firstWhere(
+              (updatedTask) => updatedTask.id == task.id,
+              orElse: () => task,
+            );
+            return updated;
+          }).toList();
+
           return ReorderableListView(
             header: _header(),
             onReorder: _onReorderTasks,
-            children: initialTasks
+            children: mergedTasks
                 .map(
                   (task) => Table(
                     key: Key('${task.id}'),
