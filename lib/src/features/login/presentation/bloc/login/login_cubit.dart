@@ -57,10 +57,17 @@ class LoginCubit extends Cubit<LoginFormState> {
 
     response.fold(
       (l) => emit(
-        state.copyWith(status: FormStatus.failed, errorMessage: l.message),
+        state.copyWith(
+          status: FormStatus.failed,
+          errorMessage: l.message,
+          isLoading: false,
+        ),
       ),
       (r) {
-        emit(state.copyWith(status: FormStatus.success));
+        emit(state.copyWith(
+          status: FormStatus.success,
+          isLoading: false,
+        ));
         reset();
       },
     );

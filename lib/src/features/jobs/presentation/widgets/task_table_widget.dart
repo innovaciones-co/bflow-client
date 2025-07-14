@@ -79,10 +79,18 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
         if (state is TasksLoaded) {
           var contacts = state.contacts;
 
+          final mergedTasks = initialTasks.map((task) {
+            final updated = state.updatedTasks.firstWhere(
+              (updatedTask) => updatedTask.id == task.id,
+              orElse: () => task,
+            );
+            return updated;
+          }).toList();
+
           return ReorderableListView(
             header: _header(),
             onReorder: _onReorderTasks,
-            children: initialTasks
+            children: mergedTasks
                 .map(
                   (task) => Table(
                     key: Key('${task.id}'),
@@ -451,12 +459,17 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
     );
   }
 
-  void _onTasksStateUpdated(context, state) {
+  void _onTasksStateUpdated(BuildContext context, TasksState state) {
+    var tasksBloc = context.read<TasksBloc>();
+    var homeBloc = context.read<HomeBloc>();
+
     if (state is TasksLoaded) {
+      setState(() {
+        initialTasks = state.tasks;
+      });
       var taskModified = state.updatedTasks.isNotEmpty;
 
       if (taskModified) {
-        HomeBloc homeBloc = this.context.read();
         homeBloc.add(
           ShowFooterActionEvent(
             leading: Row(
@@ -474,23 +487,20 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
             ),
             showCancelButton: true,
             onCancel: () {
-              this
-                  .context
-                  .read<TasksBloc>()
-                  .add(GetTasksEvent(jobId: state.tasks.first.job));
-              this.context.read<HomeBloc>().add(
-                    HideFooterActionEvent(),
-                  );
+              tasksBloc.add(GetTasksEvent(jobId: (state).tasks.first.job));
+              homeBloc.add(
+                HideFooterActionEvent(),
+              );
             },
             actions: [
               ActionButtonWidget(
                 onPressed: () {
-                  this.context.read<TasksBloc>().add(
-                        UpdateTasksEvent(tasks: state.updatedTasks),
-                      );
-                  this.context.read<HomeBloc>().add(
-                        HideFooterActionEvent(),
-                      );
+                  tasksBloc.add(
+                    UpdateTasksEvent(tasks: (state).updatedTasks),
+                  );
+                  homeBloc.add(
+                    HideFooterActionEvent(),
+                  );
                 },
                 type: ButtonType.elevatedButton,
                 title: "Save changes",
