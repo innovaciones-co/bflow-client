@@ -5,6 +5,7 @@ import 'package:bflow_client/src/core/widgets/confirmation_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_state.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/tasks_filter_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_task_widget.dart';
 import 'package:flutter/material.dart';
@@ -39,10 +40,7 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
             ),
             BlocSelector<TasksBloc, TasksState, bool>(
               selector: (state) {
-                if (state is TasksLoaded) {
-                  return state.selectedTasks.isNotEmpty;
-                }
-                return false;
+                return state.selectedTasks.isNotEmpty;
               },
               builder: (context, selectedTasks) {
                 return Row(
@@ -50,7 +48,7 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
                     selectedTasks
                         ? BlocSelector<TasksBloc, TasksState, bool>(
                             selector: (state) {
-                              return state is TasksDeleting;
+                              return state.isDeleting;
                             },
                             builder: (context, isLoading) {
                               return ActionButtonWidget(
@@ -84,7 +82,7 @@ class _TasksViewBarWidgetState extends State<TasksViewBarWidget> {
                     selectedTasks
                         ? BlocSelector<TasksBloc, TasksState, bool>(
                             selector: (state) {
-                              return state is TasksSending;
+                              return state.isSending;
                             },
                             builder: (context, isLoading) {
                               return ActionButtonWidget(

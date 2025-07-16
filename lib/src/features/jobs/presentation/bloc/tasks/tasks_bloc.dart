@@ -3,9 +3,7 @@ import 'dart:async';
 
 import 'package:bflow_client/src/core/api/api.dart';
 import 'package:bflow_client/src/core/domain/entities/alert_type.dart';
-import 'package:bflow_client/src/core/exceptions/failure.dart';
 import 'package:bflow_client/src/core/extensions/string_utils_extension.dart';
-import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
 import 'package:bflow_client/src/features/contacts/domain/entities/contact_type.dart';
 import 'package:bflow_client/src/features/contacts/domain/usecases/get_contacts_usecase.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
@@ -17,12 +15,12 @@ import 'package:bflow_client/src/features/jobs/domain/usecases/send_tasks_use_ca
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_task_use_case.dart';
 import 'package:bflow_client/src/features/jobs/domain/usecases/update_tasks_use_case.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_state.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 part 'tasks_event.dart';
-part 'tasks_state.dart';
 
 class TasksBloc extends Bloc<TasksEvent, TasksState> {
   final JobBloc jobBloc;
@@ -45,7 +43,9 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     required this.getContactsUseCase,
     required this.homeBloc,
     required this.socketService,
-  }) : super(TasksInitial()) {
+  }) : super(const TasksState(
+          allTasks: [],
+        )) {
     socketService.init();
     socketService.addSubscription(
       SocketSubscription(
@@ -78,85 +78,75 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   }
 
   FutureOr<void> _sendTasks(event, emit) async {
-    if (state is TasksLoaded) {
-      var loadedState = (state as TasksLoaded);
-      var selectedTasks = List<Task>.from(loadedState.selectedTasks);
+    var selectedTasks = List<Task>.from(state.selectedTasks);
 
-      emit(TasksLoading());
+    emit(state.copyWith(isLoading: true));
 
-      var task =
-          await sendTasksUseCase.execute(SendTasksParams(tasks: selectedTasks));
+    var task =
+        await sendTasksUseCase.execute(SendTasksParams(tasks: selectedTasks));
+    task.fold(
+      (failure) {
+        homeBloc?.add(
+          ShowMessageEvent(
+              message:
+                  "There was a failure sending the tasks: ${failure.message}",
+              type: AlertType.error),
+        );
+        emit(state);
+      },
+      (r) {
+        homeBloc?.add(
+          ShowMessageEvent(
+              message:
+                  "A confirmation email was sent for the suppliers of the selected tasks.",
+              type: AlertType.success),
+        );
+
+        add(GetTasksEvent(jobId: state.allTasks.first.job));
+      },
+    );
+  }
+
+  FutureOr<void> _deleteTasks(event, emit) async {
+    var selectedTasks = List<Task>.from(state.selectedTasks);
+
+    emit(state.copyWith(isDeleting: true));
+
+    for (var e in selectedTasks) {
+      var task = await deleteTaskUseCase.execute(DeleteTaskParams(id: e.id!));
       task.fold(
         (failure) {
           homeBloc?.add(
             ShowMessageEvent(
-                message:
-                    "There was a failure sending the tasks: ${failure.message}",
+                message: "Task ${e.id} couldn't be deleted: ${failure.message}",
                 type: AlertType.error),
           );
-          emit(loadedState);
+          emit(state);
         },
         (r) {
-          homeBloc?.add(
-            ShowMessageEvent(
-                message:
-                    "A confirmation email was sent for the suppliers of the selected tasks.",
-                type: AlertType.success),
-          );
-
-          add(GetTasksEvent(jobId: loadedState.tasks.first.job));
+          add(GetTasksEvent(jobId: e.job));
         },
       );
-    }
-  }
-
-  FutureOr<void> _deleteTasks(event, emit) async {
-    if (state is TasksLoaded) {
-      var loadedState = (state as TasksLoaded);
-      var selectedTasks = List<Task>.from(loadedState.selectedTasks);
-
-      emit(TasksDeleting());
-
-      for (var e in selectedTasks) {
-        var task = await deleteTaskUseCase.execute(DeleteTaskParams(id: e.id!));
-        task.fold(
-          (failure) {
-            homeBloc?.add(
-              ShowMessageEvent(
-                  message:
-                      "Task ${e.id} couldn't be deleted: ${failure.message}",
-                  type: AlertType.error),
-            );
-            emit(loadedState);
-          },
-          (r) {
-            add(GetTasksEvent(jobId: e.job));
-          },
-        );
-      }
     }
   }
 
   FutureOr<void> _toggleSelectedTask(event, emit) {
-    if (state is TasksLoaded) {
-      var loadedState = (state as TasksLoaded);
-      var selectedTasks = List<Task>.from(loadedState.selectedTasks);
-      var task = event.task;
+    var selectedTasks = List<Task>.from(state.selectedTasks);
+    var task = event.task;
 
-      if (selectedTasks.contains(task)) {
-        selectedTasks.remove(task);
-      } else {
-        selectedTasks.add(task);
-      }
-
-      emit(
-        loadedState.copyWith(selectedTasks: selectedTasks),
-      );
+    if (selectedTasks.contains(task)) {
+      selectedTasks.remove(task);
+    } else {
+      selectedTasks.add(task);
     }
+
+    emit(
+      state.copyWith(selectedTasks: selectedTasks),
+    );
   }
 
   _getTasks(GetTasksEvent event, Emitter<TasksState> emit) async {
-    emit(TasksLoading());
+    emit(state.copyWith(isLoading: true));
 
     GetTasksParams taskParams = GetTasksParams(jobId: event.jobId);
     var tasksOrFailure = await getTasksUseCase.execute(taskParams);
@@ -165,18 +155,18 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     var suppliersOrFailure = await getContactsUseCase.execute(contactParams);
 
     suppliersOrFailure.fold(
-      (l) => emit(TasksError(failure: l)),
+      (l) => emit(state.copyWith(error: l)),
       (suppliers) {
         tasksOrFailure.fold(
-          (l) => emit(TasksError(failure: l)),
+          (l) => emit(state.copyWith(error: l)),
           (t) {
             t.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
             emit(
-              TasksLoaded(
-                tasks: t,
-                tasksSearched: t,
+              TasksState(
+                allTasks: t,
+                filteredTasks: t,
                 contacts: List.of(suppliers)..add(null),
-                updatedTasks: const [],
+                tasksUpdated: const [],
               ),
             );
           },
@@ -187,67 +177,61 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
 
   FutureOr<void> _loadingTasks(
       LoadingTasksEvent event, Emitter<TasksState> emit) {
-    emit(TasksLoading());
+    emit(state.copyWith(isLoading: true));
   }
 
   FutureOr<void> _removeSelectedTask(
       RemoveSelectedTask event, Emitter<TasksState> emit) {
-    var loadedState = (state as TasksLoaded);
-    var selectedTasks = List<Task>.from(loadedState.selectedTasks);
+    var selectedTasks = List<Task>.from(state.selectedTasks);
     var task = event.task;
 
-    emit(TasksDeleting());
+    emit(state.copyWith(isDeleting: true));
 
     selectedTasks.remove(task);
 
     emit(
-      loadedState.copyWith(selectedTasks: selectedTasks),
+      state.copyWith(selectedTasks: selectedTasks),
     );
   }
 
   FutureOr<void> _addSelectedTask(
       AddSelectedTask event, Emitter<TasksState> emit) {
-    var loadedState = (state as TasksLoaded);
-    var selectedTasks = List<Task>.from(loadedState.selectedTasks);
+    var selectedTasks = List<Task>.from(state.selectedTasks);
     var task = event.task;
 
     selectedTasks.add(task);
 
     emit(
-      loadedState.copyWith(selectedTasks: selectedTasks),
+      state.copyWith(selectedTasks: selectedTasks),
     );
   }
 
   FutureOr<void> _sendTask(
       SendTaskEvent event, Emitter<TasksState> emit) async {
-    if (state is TasksLoaded) {
-      var loadedState = (state as TasksLoaded);
+    emit(state.copyWith(isSending: true));
 
-      emit(TasksSending());
-
-      var taskorFailure =
-          await sendTasksUseCase.execute(SendTasksParams(tasks: [event.task]));
-      taskorFailure.fold(
-        (failure) {
-          homeBloc?.add(
-            ShowMessageEvent(
-                message:
-                    "There was a failure sending the tasks: ${failure.message}",
-                type: AlertType.error),
-          );
-          emit(loadedState);
-        },
-        (r) {
-          homeBloc?.add(
-            ShowMessageEvent(
-                message:
-                    "A confirmation email was sent for the suppliers of the selected tasks.",
-                type: AlertType.success),
-          );
-          add(GetTasksEvent(jobId: loadedState.tasks.first.job));
-        },
-      );
-    }
+    var taskorFailure =
+        await sendTasksUseCase.execute(SendTasksParams(tasks: [event.task]));
+    taskorFailure.fold(
+      (failure) {
+        homeBloc?.add(
+          ShowMessageEvent(
+              message:
+                  "There was a failure sending the tasks: ${failure.message}",
+              type: AlertType.error),
+        );
+        emit(state);
+      },
+      (r) {
+        homeBloc?.add(
+          ShowMessageEvent(
+              message:
+                  "A confirmation email was sent for the suppliers of the selected tasks.",
+              type: AlertType.success),
+        );
+        add(GetTasksEvent(jobId: state.allTasks.first.job));
+      },
+    );
   }
 
   FutureOr<void> _updateTasks(
@@ -276,11 +260,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   }
 
   void _updateTaskData(event, Emitter<TasksState> emit) {
-    if (state is! TasksLoaded) return;
-
-    var loadedState = (state as TasksLoaded);
-    List<Task> updatedTasks = List.of(loadedState.updatedTasks);
-    List<Task> tasks = List.of(loadedState.tasks);
+    List<Task> updatedTasks = List.of(state.tasksUpdated);
+    List<Task> tasks = List.of(state.allTasks);
     Task newTask = event.task;
 
     Map<int, Task> updatedTasksMap = {
@@ -301,17 +282,16 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     }
     updatedTasks.add(newTask);
 
-    emit(loadedState.copyWith(
-      updatedTasks: updatedTasks,
-      tasks: tasks,
+    emit(state.copyWith(
+      tasksUpdated: updatedTasks,
+      allTasks: tasks,
     ));
   }
 
   /* FutureOr<void> _saveUpdatedTasks(
       SaveUpdatedTasks event, Emitter<TasksState> emit) async {
     if (state is TasksLoaded) {
-      var loadedState = (state as TasksLoaded);
-      var updatedTasks = List<Task>.from(loadedState.updatedTasks);
+        var updatedTasks = List<Task>.from(state.updatedTasks);
 
       List<String> errorMessages = [];
 
@@ -341,7 +321,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
             type: AlertType.success,
           ),
         );
-        emit(loadedState.copyWith(taskDataModified: false));
+        emit(state.copyWith(taskDataModified: false));
         add(GetTasksEvent(jobId: updatedTasks.first.job));
       }
     }
@@ -350,12 +330,12 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   FutureOr<void> _receiveTaskEvent(
       OnReceivedTaskEvent event, Emitter<TasksState> emit) {
     if (jobBloc.state is JobLoaded) {
-      if (state is TasksLoaded && event.frame.body != null) {
+      if (event.frame.body != null) {
         Task updatedTask = TaskModel.fromJson(event.frame.body!);
-        List<Task> currentTasks = (state as TasksLoaded).tasks;
+        List<Task> currentTasks = state.allTasks;
         currentTasks.removeWhere((element) => element.id == updatedTask.id);
         currentTasks.add(updatedTask);
-        emit((state as TasksLoaded).copyWith(tasks: currentTasks));
+        emit(state.copyWith(allTasks: currentTasks));
       } else {
         add(GetTasksEvent(jobId: (jobBloc.state as JobLoaded).job.id));
       }
@@ -365,25 +345,21 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   FutureOr<void> _addUpdatedTasks(
       AddUpdatedTasks event, Emitter<TasksState> emit) {
     var tasks = event.updatedTasks;
-    if (state is TasksLoaded) {
-      emit((state as TasksLoaded).copyWith(updatedTasks: tasks));
-    }
+    emit(state.copyWith(tasksUpdated: tasks));
   }
 
   _searchTasks(SearchTasks event, Emitter<TasksState> emit) {
     var value = event.value;
 
-    if (state is TasksLoaded) {
-      final tasks = (state as TasksLoaded).tasks;
+    final tasks = state.allTasks;
 
-      if (value.isNotEmpty) {
-        List<Task> tasksSearched =
-            tasks.where((contact) => contact.name.search(value)).toList();
+    if (value.isNotEmpty) {
+      List<Task> tasksSearched =
+          tasks.where((contact) => contact.name.search(value)).toList();
 
-        emit((state as TasksLoaded).copyWith(tasksSearched: tasksSearched));
-      } else {
-        emit((state as TasksLoaded).copyWith(tasksSearched: tasks));
-      }
+      emit(state.copyWith(filteredTasks: tasksSearched));
+    } else {
+      emit(state.copyWith(filteredTasks: tasks));
     }
   }
 }

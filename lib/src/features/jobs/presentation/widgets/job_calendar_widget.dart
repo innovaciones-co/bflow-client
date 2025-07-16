@@ -5,6 +5,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/job_entity.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_state.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks_filter/tasks_filter_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/no_tasks_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/tasks_view_bar_widget.dart';
@@ -39,7 +40,7 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
                 Expanded(
                   child: BlocBuilder<TasksBloc, TasksState>(
                       builder: (context, state) {
-                    if (state is TasksLoaded && state.tasks.isEmpty) {
+                    if (state.allTasks.isEmpty) {
                       return BlocBuilder<JobBloc, JobState>(
                         builder: (context, state) {
                           if (state is! JobLoaded) {
@@ -179,9 +180,6 @@ class _JobCalendarWidgetState extends State<JobCalendarWidget> {
                     BlocBuilder<TasksBloc, TasksState>(
                       builder: (context, state) {
                         TasksBloc tasksBloc = context.read<TasksBloc>();
-                        if (state is! TasksLoaded) {
-                          return const SizedBox.shrink();
-                        }
 
                         var taskSelected =
                             state.selectedTasks.contains(e.value);
