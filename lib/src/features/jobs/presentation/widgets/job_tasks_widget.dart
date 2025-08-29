@@ -20,10 +20,10 @@ class JobTasksWidget extends StatelessWidget {
 
         if (state is TasksFilterLoaded) {
           var tasks = state.tasks;
-          var tabIndex = state.tabIndex;
+
           return context.isMobile || context.isSmallTablet
               ? ListTasksMobileWidget(tasks: tasks)
-              : ListTasksDesktopWidget(tasks: tasks, tabIndex: tabIndex);
+              : ListTasksDesktopWidget(tasks: tasks);
         }
 
         return const SizedBox.shrink();

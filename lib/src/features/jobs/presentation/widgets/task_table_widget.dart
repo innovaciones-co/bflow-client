@@ -39,12 +39,13 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
     0: const FixedColumnWidth(40),
     1: const FixedColumnWidth(40),
     4: const FixedColumnWidth(110),
-    5: const FixedColumnWidth(100),
+    5: const FixedColumnWidth(110),
     6: const FixedColumnWidth(100),
     7: const FixedColumnWidth(100),
-    9: const FixedColumnWidth(80),
-    10: const FixedColumnWidth(110),
-    11: const FixedColumnWidth(40),
+    8: const FixedColumnWidth(100),
+    10: const FixedColumnWidth(80),
+    11: const FixedColumnWidth(110),
+    12: const FixedColumnWidth(40),
   };
 
   List<Task> initialTasks = [];
@@ -226,6 +227,17 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
                 label: task.status.toString(),
                 backgroundColor: task.statusColor,
                 textColor: task.labelStatusColor,
+              ),
+            ],
+          ),
+        ),
+        _tableCell(
+          Row(
+            children: [
+              CustomChipWidget(
+                label: task.stage.toString(),
+                backgroundColor: task.backgroundStageColor,
+                textColor: task.labelStageColor,
               ),
             ],
           ),
@@ -435,6 +447,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
             _tableCell(const Text("Task")),
             _tableCell(const Text("Supplier")),
             _tableCell(const Text("Status")),
+            _tableCell(const Text("Stage")),
             _tableCell(const Text("Call date")),
             _tableCell(const Text("Booking date")),
             _tableCell(const Text("Completion date")),
