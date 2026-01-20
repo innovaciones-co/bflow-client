@@ -9,6 +9,7 @@ import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_state.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_task_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
@@ -29,16 +30,12 @@ class ListTasksMobileWidget extends StatelessWidget {
       builder: (context, state) {
         TasksBloc tasksBloc = context.read();
 
-        if (state is TasksError) {
-          return FailureWidget(failure: state.failure);
+        if (state.error != null) {
+          return FailureWidget(failure: state.error!);
         }
 
-        if (state is TasksLoading) {
+        if (state.isLoading) {
           return const LoadingWidget();
-        }
-
-        if (state is! TasksLoaded) {
-          return const SizedBox();
         }
 
         List<Task> selectedTasks = state.selectedTasks;
@@ -224,64 +221,62 @@ class ListTasksMobileWidget extends StatelessWidget {
     TasksBloc tasksBloc = context.read();
     HomeBloc homeBloc = context.read();
 
-    if (state is TasksLoaded) {
-      var taskModified = state.selectedTasks.isNotEmpty;
-      if (taskModified) {
-        homeBloc.add(
-          ShowFooterActionEvent(
-            showCancelButton: false,
-            actions: [
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ActionButtonWidget(
-                      onPressed: () {
-                        context.showCustomModal(
-                          ConfirmationWidget(
-                            title: "Delete tasks",
-                            description:
-                                "Are you sure you want to delete the selected task(s)?",
-                            onConfirm: () {
-                              tasksBloc.add(DeleteTasksEvent());
-                              context.pop();
-                            },
-                            confirmText: "Delete",
-                          ),
-                        );
-                        homeBloc.add(
-                          HideFooterActionEvent(),
-                        );
-                      },
-                      type: ButtonType.textButton,
-                      title: "Delete",
-                      icon: Icons.delete_outline,
-                      paddingHorizontal: 15,
-                      paddingVertical: 18,
-                    ),
-                    const SizedBox(width: 12),
-                    ActionButtonWidget(
-                      onPressed: () {
-                        tasksBloc.add(SendSelectedTasksEvent());
-                        homeBloc.add(
-                          HideFooterActionEvent(),
-                        );
-                      },
-                      type: ButtonType.elevatedButton,
-                      title: "Send tasks",
-                      icon: Icons.email_outlined,
-                    ),
-                  ],
-                ),
+    var taskModified = state.selectedTasks.isNotEmpty;
+    if (taskModified) {
+      homeBloc.add(
+        ShowFooterActionEvent(
+          showCancelButton: false,
+          actions: [
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ActionButtonWidget(
+                    onPressed: () {
+                      context.showCustomModal(
+                        ConfirmationWidget(
+                          title: "Delete tasks",
+                          description:
+                              "Are you sure you want to delete the selected task(s)?",
+                          onConfirm: () {
+                            tasksBloc.add(DeleteTasksEvent());
+                            context.pop();
+                          },
+                          confirmText: "Delete",
+                        ),
+                      );
+                      homeBloc.add(
+                        HideFooterActionEvent(),
+                      );
+                    },
+                    type: ButtonType.textButton,
+                    title: "Delete",
+                    icon: Icons.delete_outline,
+                    paddingHorizontal: 15,
+                    paddingVertical: 18,
+                  ),
+                  const SizedBox(width: 12),
+                  ActionButtonWidget(
+                    onPressed: () {
+                      tasksBloc.add(SendSelectedTasksEvent());
+                      homeBloc.add(
+                        HideFooterActionEvent(),
+                      );
+                    },
+                    type: ButtonType.elevatedButton,
+                    title: "Send tasks",
+                    icon: Icons.email_outlined,
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-      } else {
-        homeBloc.add(
-          HideFooterActionEvent(),
-        );
-      }
+            ),
+          ],
+        ),
+      );
+    } else {
+      homeBloc.add(
+        HideFooterActionEvent(),
+      );
     }
   }
 

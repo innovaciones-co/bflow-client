@@ -25,6 +25,14 @@ class AppColor {
   static Color red = const Color(0xfff23d4f);
   static Color lightRed = const Color.fromARGB(255, 254, 160, 169);
 
+  // Task Stage Colors
+  static Color slabDown = const Color(0xFFB3E5FC); // Light Blue
+  static Color plateHeigh = const Color(0xFFFFF9C4); // Light Yellow
+  static Color roofCover = const Color(0xFFD1C4E9); // Light Purple
+  static Color lockUp = const Color(0xFFC8E6C9); // Light Green
+  static Color cabinets = const Color(0xFFFFCCBC); // Light Orange
+  static Color pci = const Color(0xFFFFCDD2); // Light Red
+
   // To do list Colors
   static List<Color> todoColors = [
     const Color(0xfFF0ECFF),

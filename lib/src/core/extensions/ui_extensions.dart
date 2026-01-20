@@ -1,5 +1,6 @@
 import 'package:bflow_client/src/core/constants/colors.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
 import 'package:flutter/material.dart';
 
@@ -48,6 +49,40 @@ extension TaskUIExtension on Task {
         return AppColor.lightGreen.withOpacity(0.4);
       default:
         return AppColor.white;
+    }
+  }
+
+  Color get labelStageColor {
+    switch (stage) {
+      case TaskStage.slabDown:
+        return AppColor.blue;
+      case TaskStage.plateHeigh:
+        return AppColor.orange;
+      case TaskStage.roofCover:
+        return AppColor.purple;
+      case TaskStage.lockUp:
+        return AppColor.green;
+      case TaskStage.cabinets:
+        return AppColor.orange;
+      case TaskStage.pCI:
+        return AppColor.red;
+    }
+  }
+
+  Color get backgroundStageColor {
+    switch (stage) {
+      case TaskStage.slabDown:
+        return AppColor.slabDown.withOpacity(0.5);
+      case TaskStage.plateHeigh:
+        return AppColor.plateHeigh.withOpacity(0.5);
+      case TaskStage.roofCover:
+        return AppColor.roofCover.withOpacity(0.5);
+      case TaskStage.lockUp:
+        return AppColor.lockUp.withOpacity(0.5);
+      case TaskStage.cabinets:
+        return AppColor.cabinets.withOpacity(0.5);
+      case TaskStage.pCI:
+        return AppColor.pci.withOpacity(0.5);
     }
   }
 }

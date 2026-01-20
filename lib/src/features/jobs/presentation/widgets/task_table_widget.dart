@@ -16,6 +16,7 @@ import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart'
 import 'package:bflow_client/src/features/jobs/presentation/bloc/job/job_bloc.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/task/task_cubit.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_state.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/no_tasks_widget.dart';
 import 'package:bflow_client/src/features/jobs/presentation/widgets/write_task_widget.dart';
 import 'package:bflow_client/src/features/shared/presentation/widgets/loading_widget.dart';
@@ -38,12 +39,13 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
     0: const FixedColumnWidth(40),
     1: const FixedColumnWidth(40),
     4: const FixedColumnWidth(110),
-    5: const FixedColumnWidth(100),
+    5: const FixedColumnWidth(110),
     6: const FixedColumnWidth(100),
     7: const FixedColumnWidth(100),
-    9: const FixedColumnWidth(80),
-    10: const FixedColumnWidth(110),
-    11: const FixedColumnWidth(40),
+    8: const FixedColumnWidth(100),
+    10: const FixedColumnWidth(80),
+    11: const FixedColumnWidth(110),
+    12: const FixedColumnWidth(40),
   };
 
   List<Task> initialTasks = [];
@@ -63,7 +65,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
           return const LoadingWidget();
         }
         // As the tasks from the widget are filtered, we should use the tasks bloc
-        if (state is TasksLoaded && state.tasks.isEmpty) {
+        if (state.allTasks.isEmpty) {
           return BlocBuilder<JobBloc, JobState>(
             builder: (context, state) {
               if (state is! JobLoaded) {
@@ -76,45 +78,41 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
             },
           );
         }
-        if (state is TasksLoaded) {
-          var contacts = state.contacts;
+        var contacts = state.contacts;
 
-          final mergedTasks = initialTasks.map((task) {
-            final updated = state.updatedTasks.firstWhere(
-              (updatedTask) => updatedTask.id == task.id,
-              orElse: () => task,
-            );
-            return updated;
-          }).toList();
-
-          return ReorderableListView(
-            header: _header(),
-            onReorder: _onReorderTasks,
-            children: mergedTasks
-                .map(
-                  (task) => Table(
-                    key: Key('${task.id}'),
-                    columnWidths: columnWidths,
-                    border: TableBorder(
-                      top: BorderSide(width: 0.5, color: AppColor.lightGrey),
-                      right: BorderSide(width: 1.0, color: AppColor.lightGrey),
-                      bottom: BorderSide(width: 0.5, color: AppColor.lightGrey),
-                      left: BorderSide(width: 1.0, color: AppColor.lightGrey),
-                      horizontalInside:
-                          BorderSide(width: 1.0, color: AppColor.lightGrey),
-                      verticalInside:
-                          BorderSide(width: 1.0, color: AppColor.lightGrey),
-                    ),
-                    children: [
-                      _tableRow(
-                          task: task, context: context, contacts: contacts),
-                    ],
-                  ),
-                )
-                .toList(),
+        final mergedTasks = initialTasks.map((task) {
+          final updated = state.tasksUpdated.firstWhere(
+            (updatedTask) => updatedTask.id == task.id,
+            orElse: () => task,
           );
-        }
-        return const SizedBox.shrink();
+          return updated;
+        }).toList();
+
+        return ReorderableListView(
+          header: _header(),
+          onReorder: _onReorderTasks,
+          children: mergedTasks
+              .map(
+                (task) => Table(
+                  key: Key('${task.id}'),
+                  columnWidths: columnWidths,
+                  border: TableBorder(
+                    top: BorderSide(width: 0.5, color: AppColor.lightGrey),
+                    right: BorderSide(width: 1.0, color: AppColor.lightGrey),
+                    bottom: BorderSide(width: 0.5, color: AppColor.lightGrey),
+                    left: BorderSide(width: 1.0, color: AppColor.lightGrey),
+                    horizontalInside:
+                        BorderSide(width: 1.0, color: AppColor.lightGrey),
+                    verticalInside:
+                        BorderSide(width: 1.0, color: AppColor.lightGrey),
+                  ),
+                  children: [
+                    _tableRow(task: task, context: context, contacts: contacts),
+                  ],
+                ),
+              )
+              .toList(),
+        );
       },
     );
   }
@@ -162,12 +160,8 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
           Builder(
             builder: (context) {
               TasksBloc tasksBloc = context.read<TasksBloc>();
-              if (tasksBloc.state is! TasksLoaded) {
-                return const SizedBox.shrink();
-              }
 
-              var taskSelected =
-                  (tasksBloc.state as TasksLoaded).selectedTasks.contains(task);
+              var taskSelected = tasksBloc.state.selectedTasks.contains(task);
               return Checkbox(
                 value: taskSelected,
                 onChanged: (val) =>
@@ -233,6 +227,17 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
                 label: task.status.toString(),
                 backgroundColor: task.statusColor,
                 textColor: task.labelStatusColor,
+              ),
+            ],
+          ),
+        ),
+        _tableCell(
+          Row(
+            children: [
+              CustomChipWidget(
+                label: task.stage.toString(),
+                backgroundColor: task.backgroundStageColor,
+                textColor: task.labelStageColor,
               ),
             ],
           ),
@@ -418,11 +423,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
           children: [
             _tableCell(BlocSelector<TasksBloc, TasksState, List<Task>>(
               selector: (state) {
-                if (state is TasksLoaded) {
-                  return state.selectedTasks;
-                }
-
-                return [];
+                return state.selectedTasks;
               },
               builder: (context, selectedTasks) {
                 TasksBloc tasksBloc = context.read();
@@ -446,6 +447,7 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
             _tableCell(const Text("Task")),
             _tableCell(const Text("Supplier")),
             _tableCell(const Text("Status")),
+            _tableCell(const Text("Stage")),
             _tableCell(const Text("Call date")),
             _tableCell(const Text("Booking date")),
             _tableCell(const Text("Completion date")),
@@ -463,54 +465,52 @@ class _TaskTableListViewState extends State<TaskTableWidget> with Validator {
     var tasksBloc = context.read<TasksBloc>();
     var homeBloc = context.read<HomeBloc>();
 
-    if (state is TasksLoaded) {
-      setState(() {
-        initialTasks = state.tasks;
-      });
-      var taskModified = state.updatedTasks.isNotEmpty;
+    setState(() {
+      initialTasks = state.allTasks;
+    });
+    var taskModified = state.tasksUpdated.isNotEmpty;
 
-      if (taskModified) {
-        homeBloc.add(
-          ShowFooterActionEvent(
-            leading: Row(
-              children: [
-                Icon(
-                  Icons.warning_rounded,
-                  color: AppColor.red,
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  "(${state.updatedTasks.length}) tasks have been modified",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            showCancelButton: true,
-            onCancel: () {
-              tasksBloc.add(GetTasksEvent(jobId: (state).tasks.first.job));
-              homeBloc.add(
-                HideFooterActionEvent(),
-              );
-            },
-            actions: [
-              ActionButtonWidget(
-                onPressed: () {
-                  tasksBloc.add(
-                    UpdateTasksEvent(tasks: (state).updatedTasks),
-                  );
-                  homeBloc.add(
-                    HideFooterActionEvent(),
-                  );
-                },
-                type: ButtonType.elevatedButton,
-                title: "Save changes",
-                backgroundColor: AppColor.blue,
-                foregroundColor: AppColor.white,
-              )
+    if (taskModified) {
+      homeBloc.add(
+        ShowFooterActionEvent(
+          leading: Row(
+            children: [
+              Icon(
+                Icons.warning_rounded,
+                color: AppColor.red,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                "(${state.tasksUpdated.length}) tasks have been modified",
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ],
           ),
-        );
-      }
+          showCancelButton: true,
+          onCancel: () {
+            tasksBloc.add(GetTasksEvent(jobId: (state).allTasks.first.job));
+            homeBloc.add(
+              HideFooterActionEvent(),
+            );
+          },
+          actions: [
+            ActionButtonWidget(
+              onPressed: () {
+                tasksBloc.add(
+                  UpdateTasksEvent(tasks: (state).tasksUpdated),
+                );
+                homeBloc.add(
+                  HideFooterActionEvent(),
+                );
+              },
+              type: ButtonType.elevatedButton,
+              title: "Save changes",
+              backgroundColor: AppColor.blue,
+              foregroundColor: AppColor.white,
+            )
+          ],
+        ),
+      );
     }
   }
 }

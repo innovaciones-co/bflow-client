@@ -21,9 +21,7 @@ class TasksFilterBloc extends Bloc<TasksFilterEvent, TasksFilterState> {
     on<UpdateTabIndex>(_onUpdateTabIndex);
 
     _tasksBloc.stream.listen((state) {
-      if (state is TasksLoaded) {
-        add(UpdateTasks());
-      }
+      add(UpdateTasks());
     });
   }
 
@@ -31,12 +29,10 @@ class TasksFilterBloc extends Bloc<TasksFilterEvent, TasksFilterState> {
       UpdateTasks event, Emitter<TasksFilterState> emit) {
     emit(TasksFilterLoading());
     var taskBlocState = _tasksBloc.state;
-    if (taskBlocState is TasksLoaded) {
-      List<Task> filteredTasks = taskBlocState.tasksSearched
-          .where((task) => event.statusFilter.contains(task.status))
-          .toList();
-      emit(TasksFilterLoaded(tasks: filteredTasks, status: event.statusFilter));
-    }
+    List<Task> filteredTasks = taskBlocState.filteredTasks
+        .where((task) => event.statusFilter.contains(task.status))
+        .toList();
+    emit(TasksFilterLoaded(tasks: filteredTasks, status: event.statusFilter));
   }
 
   FutureOr<void> _onUpdateFilter(

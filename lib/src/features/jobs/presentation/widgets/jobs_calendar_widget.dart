@@ -6,6 +6,7 @@ import 'package:bflow_client/src/core/extensions/format_extensions.dart';
 import 'package:bflow_client/src/core/widgets/failure_widget.dart';
 import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
 import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_bloc.dart';
+import 'package:bflow_client/src/features/jobs/presentation/bloc/tasks/tasks_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -129,63 +130,59 @@ class _JobsCalendarWidgetState extends State<JobsCalendarWidget> {
             ),
             BlocBuilder<TasksBloc, TasksState>(
               builder: (context, state) {
-                if (state is TasksLoading) {
+                if (state.isLoading) {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
 
-                if (state is TasksLoaded) {
-                  final tasks = state.tasks
-                      .where((task) => _isTaskInSelectedDate(task))
-                      .toList();
+                if (state.error != null) {
+                  FailureWidget(failure: state.error!);
+                }
 
-                  if (tasks.isEmpty) {
-                    return const Expanded(
-                      child: Center(
-                        child: Text(
-                            "Excellent, you don't have pending tasks for today!"),
-                      ),
-                    );
-                  }
+                final tasks = state.allTasks
+                    .where((task) => _isTaskInSelectedDate(task))
+                    .toList();
 
-                  return Expanded(
-                    child: ListView.builder(
-                      itemCount: tasks.length,
-                      itemBuilder: (_, i) {
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          padding: const EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                            color: AppColor.getRandomColor(),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                tasks[i].name,
-                                style: context.titleMedium,
-                              ),
-                              Text(tasks[i].supplier?.name ?? ''),
-                              Text(
-                                "${tasks[i].startDate?.toDateFormat()} - ${tasks[i].endDate?.toDateFormat()}",
-                                style: context.labelSmall,
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                if (tasks.isEmpty) {
+                  return const Expanded(
+                    child: Center(
+                      child: Text(
+                          "Excellent, you don't have pending tasks for today!"),
                     ),
                   );
                 }
 
-                if (state is TasksError) {
-                  FailureWidget(failure: state.failure);
-                }
-
-                return const SizedBox();
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: tasks.length,
+                    itemBuilder: (_, i) {
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: AppColor.getRandomColor(),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              tasks[i].name,
+                              style: context.titleMedium,
+                            ),
+                            Text(tasks[i].supplier?.name ?? ''),
+                            Text(
+                              "${tasks[i].startDate?.toDateFormat()} - ${tasks[i].endDate?.toDateFormat()}",
+                              style: context.labelSmall,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                );
               },
             ),
           ],

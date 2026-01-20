@@ -1,67 +1,97 @@
-part of 'tasks_bloc.dart';
+import 'package:bflow_client/src/core/exceptions/failure.dart';
+import 'package:bflow_client/src/features/contacts/domain/entities/contact_entity.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/task_entity.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/task_stage.dart';
+import 'package:bflow_client/src/features/jobs/domain/entities/task_status.dart';
+import 'package:equatable/equatable.dart';
 
-sealed class TasksState extends Equatable {
-  const TasksState();
-
-  @override
-  List<Object> get props => [];
-}
-
-final class TasksInitial extends TasksState {}
-
-class TasksLoading extends TasksState {}
-
-class TasksDeleting extends TasksState {}
-
-class TasksSending extends TasksState {}
-
-class TasksLoaded extends TasksState {
-  final List<Task> tasks;
+class TasksState extends Equatable {
+  final List<Task> allTasks;
+  final List<Task> filteredTasks;
   final List<Task> selectedTasks;
-  final List<Task> updatedTasks;
+  final List<Task> tasksUpdated;
   final List<Contact?> contacts;
-  final List<Task> tasksSearched;
+  final String searchQuery;
+  final TaskStatus? filterStatus;
+  final TaskStage? filterStage;
+  final bool isLoading;
+  final bool isSending;
+  final bool isDeleting;
+  final Failure? error;
 
-  const TasksLoaded({
-    required this.tasks,
+  const TasksState({
+    this.allTasks = const [],
+    this.filteredTasks = const [],
     this.selectedTasks = const [],
-    this.updatedTasks = const [],
+    this.tasksUpdated = const [],
     this.contacts = const [],
-    this.tasksSearched = const [],
+    this.searchQuery = '',
+    this.filterStatus,
+    this.filterStage,
+    this.isLoading = false,
+    this.isSending = false,
+    this.isDeleting = false,
+    this.error,
   });
 
-  @override
-  List<Object> get props => [
-        tasks,
-        selectedTasks,
-        updatedTasks,
-        contacts,
-        tasksSearched,
-      ];
+  factory TasksState.initial() => const TasksState(
+        allTasks: [],
+        filteredTasks: [],
+        selectedTasks: [],
+        tasksUpdated: [],
+        contacts: [],
+        searchQuery: '',
+        filterStatus: null,
+        filterStage: null,
+        isLoading: false,
+        isSending: false,
+        isDeleting: false,
+        error: null,
+      );
 
-  TasksLoaded copyWith({
-    List<Task>? tasks,
+  TasksState copyWith({
+    List<Task>? allTasks,
+    List<Task>? filteredTasks,
     List<Task>? selectedTasks,
-    List<Task>? updatedTasks,
-    List<Contact?>? contacts,
-    List<Task>? tasksSearched,
+    List<Task>? tasksUpdated,
+    List<Contact>? contacts,
+    String? searchQuery,
+    TaskStatus? filterStatus,
+    TaskStage? filterStage,
+    bool? isLoading,
+    bool? isSending,
+    bool? isDeleting,
+    Failure? error,
   }) {
-    return TasksLoaded(
-      tasks: tasks ?? this.tasks,
+    return TasksState(
+      allTasks: allTasks ?? this.allTasks,
+      filteredTasks: filteredTasks ?? this.filteredTasks,
       selectedTasks: selectedTasks ?? this.selectedTasks,
-      updatedTasks: updatedTasks ?? this.updatedTasks,
+      tasksUpdated: tasksUpdated ?? this.tasksUpdated,
       contacts: contacts ?? this.contacts,
-      tasksSearched: tasksSearched ?? this.tasksSearched,
+      searchQuery: searchQuery ?? this.searchQuery,
+      filterStatus: filterStatus ?? this.filterStatus,
+      filterStage: filterStage ?? this.filterStage,
+      isLoading: isLoading ?? this.isLoading,
+      isSending: isSending ?? this.isSending,
+      isDeleting: isDeleting ?? this.isDeleting,
+      error: error,
     );
   }
-}
-
-class TasksError extends TasksState {
-  final Failure failure;
-  const TasksError({
-    required this.failure,
-  });
 
   @override
-  List<Object> get props => [failure];
+  List<Object?> get props => [
+        allTasks,
+        filteredTasks,
+        selectedTasks,
+        tasksUpdated,
+        contacts,
+        searchQuery,
+        filterStatus,
+        filterStage,
+        isLoading,
+        isDeleting,
+        isSending,
+        error,
+      ];
 }
