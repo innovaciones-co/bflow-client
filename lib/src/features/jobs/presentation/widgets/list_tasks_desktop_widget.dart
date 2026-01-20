@@ -23,7 +23,7 @@ class ListTasksDesktopWidget extends StatelessWidget {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
-                      width: 1500, // TODO: Implement a valid width
+                      width: 1500,
                       child: TaskTableWidget(tasks: tasks),
                     ),
                   ),
